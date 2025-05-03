@@ -6,6 +6,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/constants/resources.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
@@ -65,24 +66,22 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
   FutureOr<void> _initAudioPlayersBE(event, emit) async {
     scratchSoundPlayer = AudioPlayer();
     scratchSoundPlayer?.setReleaseMode(ReleaseMode.loop);
-    await scratchSoundPlayer?.setSource(AssetSource('sounds/scratching2.mp3'));
+    await scratchSoundPlayer?.setSource(AudioAsset.scratch.source);
 
     crowdCheeringPlayer = AudioPlayer();
     crowdCheeringPlayer?.setVolume(1);
     crowdCheeringPlayer?.setReleaseMode(ReleaseMode.release);
-    await crowdCheeringPlayer?.setSource(
-      AssetSource('sounds/audience_cheering_clapping_short.mp3'),
-    );
+    await crowdCheeringPlayer?.setSource(AudioAsset.audienceCheering.source);
 
     partyPopperPlayer = AudioPlayer();
     partyPopperPlayer?.setVolume(1);
     partyPopperPlayer?.setReleaseMode(ReleaseMode.release);
-    await partyPopperPlayer?.setSource(AssetSource('sounds/party_popper.mp3'));
+    await partyPopperPlayer?.setSource(AudioAsset.partyPopper.source);
 
     wrongAnswerPlayer = AudioPlayer();
     wrongAnswerPlayer?.setVolume(1);
     wrongAnswerPlayer?.setReleaseMode(ReleaseMode.release);
-    await wrongAnswerPlayer?.setSource(AssetSource('sounds/wrong_answer.mp3'));
+    await wrongAnswerPlayer?.setSource(AudioAsset.wrongAnswer.source);
   }
 
   FutureOr<void> _initGamesImageBE(event, emit) async {
