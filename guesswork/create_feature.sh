@@ -46,15 +46,15 @@ echo "- Camel case name: $snake_case"
 echo "- Feature name: $feature_name"
 
 # Create target directory if it doesn't exist
-mkdir -p lib/features/$snake_case
+mkdir -p lib/fragments/$snake_case
 
-# Copy template directory to features directory, excluding .freezed.dart and .g.dart files
+# Copy template directory to fragments directory, excluding .freezed.dart and .g.dart files
 echo "Copying template files..."
-rsync -av --exclude="*.freezed.dart" --exclude="*.g.dart" lib/templates/feature/ lib/features/$snake_case/
+rsync -av --exclude="*.freezed.dart" --exclude="*.g.dart" lib/templates/feature/ lib/fragments/$snake_case/
 
 # Process all files in the new feature directory
 echo "Processing files..."
-find lib/features/$snake_case -type f | while read file; do
+find lib/fragments/$snake_case -type f | while read file; do
     # Replace content in files
     sed -i '' "s/tmpl_/$snake_case\_/g" "$file"
     sed -i '' "s/tmpl/$snake_case/g" "$file"

@@ -7,11 +7,11 @@ import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/extension/route_name_extension.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/repository/auth_repository.dart';
-import 'package:guesswork/features/sag/sag_game/di/sag_game_module.dart';
-import 'package:guesswork/features/sag/sag_game_item/di/sag_game_item_module.dart';
-import 'package:guesswork/features/sag/sag_games/di/sag_games_module.dart';
-import 'package:guesswork/features/settings/di/settings_module.dart';
-import 'package:guesswork/features/sign_in/di/sign_in_module.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/di/sag_game_module.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game_item/di/sag_game_item_module.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_games/di/sag_games_module.dart';
+import 'package:guesswork/fragments/standalone/settings/di/settings_module.dart';
+import 'package:guesswork/fragments/standalone/sign_in/di/sign_in_module.dart';
 import 'package:injectable/injectable.dart';
 
 const signInRouteName = "signInRouteName";
@@ -71,7 +71,7 @@ abstract class NavModule {
       path: signInRouteName.rootPath,
       name: signInRouteName,
       builder: (context, state) {
-        return GetIt.instance.get<Widget>(instanceName: sign_inWidget);
+        return GetIt.instance.get<Widget>(instanceName: signInWidget);
       },
     );
   }
