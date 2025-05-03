@@ -13,7 +13,6 @@ class ScratchableWidget extends StatelessWidget {
   final double brushRadius;
   final Widget background;
   final Widget foreground;
-  final Function(double progress, Set<Offset> revealedPoints) revealedListener;
 
   const ScratchableWidget({
     super.key,
@@ -23,7 +22,6 @@ class ScratchableWidget extends StatelessWidget {
     required this.background,
     required this.foreground,
     required this.brushRadius,
-    required this.revealedListener,
   });
 
   @override

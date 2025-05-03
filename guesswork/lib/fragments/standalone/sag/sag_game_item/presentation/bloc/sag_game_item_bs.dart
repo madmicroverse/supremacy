@@ -18,7 +18,7 @@ abstract class SAGGameItemBS with _$SAGGameItemBS {
   }) = _SAGGameItemBS;
 }
 
-extension SAGGameItemBSCUtils on SAGGameItemBS {
+extension SAGGameItemBSCMutations on SAGGameItemBS {
   SAGGameItemBS withSagGameItem(SAGGameItem sagGameItem) =>
       copyWith(sagGameItem: sagGameItem);
 
@@ -34,6 +34,11 @@ extension SAGGameItemBSCUtils on SAGGameItemBS {
   SAGGameItemBS withRevealedPath(Path revealedPath) =>
       copyWith(revealedPath: revealedPath);
 
+  SAGGameItemBS withRevealedRatio(double revealedRatio) =>
+      copyWith(revealedRatio: revealedRatio);
+}
+
+extension SAGGameItemBSCQueries on SAGGameItemBS {
   bool doesGamesImageBecameAvailable(SAGGameItemBS nextState) =>
       gamesImage != nextState.gamesImage;
 
@@ -50,6 +55,8 @@ extension SAGGameItemBSCUtils on SAGGameItemBS {
 
   bool get isGameComplete => sagGameItemAnswer?.isCompleted ?? false;
 
+  bool get isGameIncomplete => !isGameComplete;
+
   bool get isCorrectAnswer => sagGameItemAnswer?.isCorrect ?? false;
 
   bool isSelectedOption(Option option) =>
@@ -59,7 +66,7 @@ extension SAGGameItemBSCUtils on SAGGameItemBS {
     return sagGameItem?.answer == option.id;
   }
 
-  double get concealedRatio => 1 - revealedRatio;
+  // double get concealedRatio => 1 - revealedRatio;
 
   bool doesRevealedRatioChange(SAGGameItemBS nextState) =>
       revealedRatio != nextState.revealedRatio;

@@ -3,13 +3,15 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:confetti/confetti.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
+import 'package:guesswork/core/domain/extension/audio_player.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/get_game_settings_use_case.dart';
-import 'package:guesswork/core/domain/use_case/get_network_image_spect_ratio_use_case.dart';
 import 'package:guesswork/core/domain/use_case/get_network_image_use_case.dart';
 
 import 'sag_game_item_be.dart';
@@ -18,14 +20,15 @@ import 'sag_game_item_bs.dart';
 class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
   final IRouter _router;
   final GetNetworkImageUseCase _getNetworkImageUseCase;
-  final GetNetworkImageSizeUseCase _getNetworkImageAspectRatioUseCase;
   final GetGamesSettingsUseCase _getGamesSettingsUseCase;
 
   Set<Offset> concealedPoints = {};
   Set<Offset> pathPoints = {};
+  late int concealablePointsNum;
   final int _samplingResolution = 200;
   StreamSubscription<GamesSettings>? _gamesSettingsSubscription;
 
+  ConfettiController confettiController;
   AudioPlayer? scratchSoundPlayer;
   AudioPlayer? crowdCheeringPlayer;
   AudioPlayer? partyPopperPlayer;
@@ -34,39 +37,32 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
   SAGGameItemBloc(
     this._router,
     this._getNetworkImageUseCase,
-    this._getNetworkImageAspectRatioUseCase,
     this._getGamesSettingsUseCase,
-  ) : super(SAGGameItemBS()) {
+  ) : confettiController = ConfettiController(duration: 800.ms),
+      super(SAGGameItemBS()) {
     on<InitSAGGameItemBE>(_initSAGGameItemBE);
     on<InitGamesImageBE>(_initGamesImageBE);
     on<InitPathBE>(_initPathBE);
     on<AddPathPointBE>(_addPathPointBE);
     on<InitGameSettingsBE>(_initGameSettingsBE);
     on<GamesSettingsUpdateBE>(_gamesSettingsUpdateBE);
-    on<LoadImageSAGGameItemBE>(_loadImageScratchAndGuessBlocEvent);
-    on<UpdateProgressInfoBE>(_updateProgressInfoBE);
     on<GuessSAGGameItemBE>(_guessBlocEvent);
     on<ContinueSAGGameItemBE>(_continueBlocEvent);
     on<InitAudioPlayersBE>(_initAudioPlayersBE);
     on<StopScratchPlayerBE>(_stopScratchPlayerBE);
-    on<PlayPartyPopperSoundBE>(_playPartyPopperSoundBE);
-    on<PlayWrongAnswerSoundBE>(_playWrongAnswerSoundBE);
   }
 
-  FutureOr<void> _initSAGGameItemBE(
-    InitSAGGameItemBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) async {
+  /*
+  Events ↓
+   */
+  FutureOr<void> _initSAGGameItemBE(event, emit) async {
     emit(state.withSagGameItem(event.sagGameItem));
     add(InitAudioPlayersBE());
     add(InitGamesImageBE(event.sagGameItem.guessImageUrl));
     add(InitGameSettingsBE());
   }
 
-  FutureOr<void> _initAudioPlayersBE(
-    InitAudioPlayersBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) async {
+  FutureOr<void> _initAudioPlayersBE(event, emit) async {
     scratchSoundPlayer = AudioPlayer();
     scratchSoundPlayer?.setReleaseMode(ReleaseMode.loop);
     await scratchSoundPlayer?.setSource(AssetSource('sounds/scratching2.mp3'));
@@ -89,10 +85,7 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     await wrongAnswerPlayer?.setSource(AssetSource('sounds/wrong_answer.mp3'));
   }
 
-  FutureOr<void> _initGamesImageBE(
-    InitGamesImageBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) async {
+  FutureOr<void> _initGamesImageBE(event, emit) async {
     final result = await _getNetworkImageUseCase(event.url);
     switch (result) {
       case Success():
@@ -102,10 +95,7 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     }
   }
 
-  FutureOr<void> _initGameSettingsBE(
-    InitGameSettingsBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) async {
+  FutureOr<void> _initGameSettingsBE(event, emit) async {
     final result = await _getGamesSettingsUseCase();
     switch (result) {
       case Success():
@@ -121,9 +111,6 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
   }
 
   FutureOr<void> _initPathBE(InitPathBE event, Emitter<SAGGameItemBS> emit) {
-    print("""
-    bloc -> ${runtimeType} ---> ${hashCode}
-    """);
     Path revealedPath =
         Path()..addRect(Rect.fromLTWH(0, 0, event.width, event.height));
 
@@ -137,16 +124,13 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
       }
     }
 
+    concealablePointsNum = concealedPoints.length;
+
     emit(state.withRevealedPath(revealedPath));
   }
 
-  FutureOr<void> _addPathPointBE(
-    AddPathPointBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) {
-    if (scratchSoundPlayer?.state == PlayerState.stopped) {
-      scratchSoundPlayer?.resume();
-    }
+  FutureOr<void> _addPathPointBE(event, emit) {
+    scratchSoundPlayer.safeResume;
 
     pathPoints.add(event.point);
 
@@ -168,8 +152,12 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     concealedPoints.removeWhere(
       (checkpoint) => _inCircle(checkpoint, event.point, brushRadius),
     );
-
-    emit(state.withRevealedPath(updatedRevealedPath));
+    final newRevealedRatio = concealedPoints.length / concealablePointsNum;
+    emit(
+      state
+          .withRevealedPath(updatedRevealedPath)
+          .withRevealedRatio(newRevealedRatio),
+    );
   }
 
   bool _inCircle(Offset center, Offset point, double radius) {
@@ -179,30 +167,11 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     return h <= pow(radius, 2);
   }
 
-  FutureOr<void> _gamesSettingsUpdateBE(
-    GamesSettingsUpdateBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) {
+  FutureOr<void> _gamesSettingsUpdateBE(event, emit) {
     emit(state.withGamesSettings(event.gamesSettings));
   }
 
-  FutureOr<void> _loadImageScratchAndGuessBlocEvent(
-    LoadImageSAGGameItemBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) async {}
-
-  FutureOr<void> _updateProgressInfoBE(
-    UpdateProgressInfoBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) {
-    // final revealedPoints = state.revealedPoints;
-    // emit(state.withProgressInfo(event.revealedPoints, event.revealedRatio));
-  }
-
-  FutureOr<void> _guessBlocEvent(
-    GuessSAGGameItemBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) {
+  FutureOr<void> _guessBlocEvent(event, emit) {
     final guessGame = state.sagGameItem!;
     final guessGameAnswer = SAGGameItemAnswer(
       guessGameId: guessGame.id,
@@ -212,51 +181,35 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
       points: guessGame.points,
     );
     if (guessGameAnswer.isCorrect) {
-      add(PlayPartyPopperSoundBE());
-      // add(PlayWrongAnswerSoundBE());
+      partyPopperPlayer.safeResume;
+      crowdCheeringPlayer.safeResume;
+      confettiController.play();
     } else {
-      wrongAnswerPlayer?.resume();
+      wrongAnswerPlayer.safeResume;
     }
     emit(state.withSAGGameItemAnswer(guessGameAnswer));
   }
 
-  FutureOr<void> _continueBlocEvent(
-    ContinueSAGGameItemBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) {
-    _router.pop(state.sagGameItemAnswer);
-  }
+  FutureOr<void> _stopScratchPlayerBE(_, _) => scratchSoundPlayer.safeStop;
+
+  FutureOr<void> _continueBlocEvent(_, _) =>
+      _router..pop(state.sagGameItemAnswer);
+
+  /*
+  Events ↑ Methods ↓
+   */
 
   @override
   Future<void> close() {
     _gamesSettingsSubscription?.cancel();
-    scratchSoundPlayer?.stop();
+    scratchSoundPlayer.safeStop;
     scratchSoundPlayer?.dispose();
-    partyPopperPlayer?.stop();
+    scratchSoundPlayer.safeStop;
     partyPopperPlayer?.dispose();
-    crowdCheeringPlayer?.stop();
+    partyPopperPlayer.safeStop;
     crowdCheeringPlayer?.dispose();
-    wrongAnswerPlayer?.stop();
+    crowdCheeringPlayer.safeStop;
     wrongAnswerPlayer?.dispose();
     return super.close();
   }
-
-  FutureOr<void> _stopScratchPlayerBE(
-    StopScratchPlayerBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) {
-    if (scratchSoundPlayer?.state == PlayerState.playing) {
-      scratchSoundPlayer?.stop();
-    }
-  }
-
-  FutureOr<void> _playPartyPopperSoundBE(
-    PlayPartyPopperSoundBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) => partyPopperPlayer?.resume();
-
-  FutureOr<void> _playWrongAnswerSoundBE(
-    PlayWrongAnswerSoundBE event,
-    Emitter<SAGGameItemBS> emit,
-  ) => crowdCheeringPlayer?.resume();
 }

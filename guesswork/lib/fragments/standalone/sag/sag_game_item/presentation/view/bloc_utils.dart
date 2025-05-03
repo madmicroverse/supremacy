@@ -1,3 +1,4 @@
+import 'package:confetti/confetti.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,4 +9,6 @@ extension ContextBloc on BuildContext {
   SAGGameItemBloc get bloc => read<SAGGameItemBloc>();
 
   addEvent(SAGGameItemBE coinsBE) => bloc.add(coinsBE);
+
+  ConfettiController get confettiController => bloc.confettiController;
 }

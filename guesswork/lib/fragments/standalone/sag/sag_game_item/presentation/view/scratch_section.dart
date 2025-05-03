@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/view/bloc_utils.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/view/scratchable.dart';
 
-import '../bloc/sag_game_item_be.dart';
 import '../bloc/sag_game_item_bs.dart';
 import 'question.dart';
 import 'scratch_foreground.dart';
@@ -58,11 +56,6 @@ class ScratchSection extends StatelessWidget {
                       width: bestFitSize.width,
                       height: bestFitSize.height,
                     ),
-                    revealedListener: (progress, revealedPoints) {
-                      context.addEvent(
-                        UpdateProgressInfoBE(revealedPoints, progress),
-                      );
-                    },
                     sagGameItemBS: sagGameItemBS,
                   ),
                 ),

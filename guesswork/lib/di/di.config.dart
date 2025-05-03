@@ -37,8 +37,6 @@ import 'package:guesswork/core/domain/use_case/get_game_settings_use_case.dart'
     as _i937;
 import 'package:guesswork/core/domain/use_case/get_game_user_info_use_case.dart'
     as _i548;
-import 'package:guesswork/core/domain/use_case/get_network_image_spect_ratio_use_case.dart'
-    as _i973;
 import 'package:guesswork/core/domain/use_case/get_network_image_use_case.dart'
     as _i861;
 import 'package:guesswork/core/domain/use_case/set_game_settings_use_case.dart'
@@ -215,11 +213,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i861.GetNetworkImageUseCase>(
       () => global.getNetworkImageUseCaseFactory(gh<_i780.ImageRepository>()),
     );
-    gh.factory<_i973.GetNetworkImageSizeUseCase>(
-      () => global.getNetworkImageAspectRatioUseCaseFactory(
-        gh<_i780.ImageRepository>(),
-      ),
-    );
     await gh.singletonAsync<_i583.GoRouter>(
       () => navModule.goRouterFactory(
         gh<_i440.AuthRepository>(),
@@ -305,7 +298,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => scratchAndGuessModule.sagGameItemBlocFactory(
         gh<_i5.IRouter>(),
         gh<_i861.GetNetworkImageUseCase>(),
-        gh<_i973.GetNetworkImageSizeUseCase>(),
         gh<_i937.GetGamesSettingsUseCase>(),
       ),
     );

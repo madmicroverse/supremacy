@@ -13,8 +13,6 @@ class InitSAGGameItemBE extends SAGGameItemBE {
 
 class InitAudioPlayersBE extends SAGGameItemBE {}
 
-class StopScratchPlayerBE extends SAGGameItemBE {}
-
 class InitGamesImageBE extends SAGGameItemBE {
   final String url;
 
@@ -31,12 +29,6 @@ class GamesSettingsUpdateBE extends SAGGameItemBE {
   GamesSettingsUpdateBE(this.gamesSettings);
 }
 
-class LoadImageSAGGameItemBE extends SAGGameItemBE {
-  final String url;
-
-  LoadImageSAGGameItemBE(this.url);
-}
-
 class InitPathBE extends SAGGameItemBE {
   final double width;
   final double height;
@@ -50,13 +42,6 @@ class AddPathPointBE extends SAGGameItemBE {
   AddPathPointBE(this.point);
 }
 
-class UpdateProgressInfoBE extends SAGGameItemBE {
-  final Set<Offset> revealedPoints;
-  final double revealedRatio;
-
-  UpdateProgressInfoBE(this.revealedPoints, this.revealedRatio);
-}
-
 class GuessSAGGameItemBE extends SAGGameItemBE {
   final Option guess;
 
@@ -67,6 +52,4 @@ class ContinueSAGGameItemBE extends SAGGameItemBE {
   ContinueSAGGameItemBE();
 }
 
-class PlayPartyPopperSoundBE extends SAGGameItemBE {}
-
-class PlayWrongAnswerSoundBE extends SAGGameItemBE {}
+class StopScratchPlayerBE extends SAGGameItemBE {}

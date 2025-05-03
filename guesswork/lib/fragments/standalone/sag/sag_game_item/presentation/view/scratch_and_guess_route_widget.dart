@@ -5,6 +5,7 @@ import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/vi
 
 import '../bloc/sag_game_item_bloc.dart';
 import '../bloc/sag_game_item_bs.dart';
+import 'completed_effects.dart';
 import 'guess_options.dart';
 import 'scratch_and_guess_app_bar.dart';
 import 'scratch_section.dart';
@@ -62,9 +63,7 @@ class SAGGameItemRouteWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              // CompleteEffects(
-              //   gamesSettings: state.content.gamesSettings,
-              // ),
+              CompleteEffects(),
             ],
           ),
         );
