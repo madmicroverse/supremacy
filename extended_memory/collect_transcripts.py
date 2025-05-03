@@ -58,7 +58,8 @@ for file_path in json_files:
             "file_path": relative_path,
             "transcript": data.get("transcript", ""),
             "modified_date": modified_time.strftime("%Y-%m-%d"),
-            "modified_time": modified_time.strftime("%H:%M:%S")
+            "modified_time": modified_time.strftime("%H:%M:%S"),
+            "is_completed": False  # Adding default is_completed property
         }
         
         # Add to our collection
