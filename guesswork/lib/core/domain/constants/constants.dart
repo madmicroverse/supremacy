@@ -1,0 +1,1 @@
+const minCoinsAmount = 0;

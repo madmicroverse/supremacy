@@ -1,0 +1,23 @@
+We need a new feature, first here are some variables you will need
+
+feature_file_name=sign_in
+camel_case_feature_name=signIn
+feature_name=SignIn
+
+
+Create a sh script that accept the above parameters and
+
+makes copy lib/templates/feature directory into features/{feature_file_name}
+ignore *.freezed.dart files and *.g.dart
+
+
+for every file in features/{feature_file_name}/**
+
+    -change the file name tmpl section for {feature_file_name}
+    -change the tmpl_ references inside the file for {feature_file_name}
+    -change the tmpl references inside the file for {camel_case_feature_name}
+    -change the Tmpl references inside the file for {feature_name}
+
+at the end runs ./setup.sh
+
+save the script to create_feature.sh
