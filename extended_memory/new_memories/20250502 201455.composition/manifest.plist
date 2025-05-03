@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>RCComposedAVURL</key>
+	<string>file:///Users/roldan/Library/Group%20Containers/group.com.apple.VoiceMemos.shared/Recordings/20250502%20201455.m4a</string>
+	<key>RCComposedWaveformURL</key>
+	<string>file:///Users/roldan/Library/Group%20Containers/group.com.apple.VoiceMemos.shared/Recordings/20250502%20201455.waveform</string>
+	<key>RCDecomposedFragments</key>
+	<array/>
+	<key>RCSavedRecordingCreationDate</key>
+	<date>2025-05-03T02:14:55Z</date>
+	<key>RCSavedRecordingCreationTime</key>
+	<real>767931295.291484</real>
+	<key>RCSavedRecordingTitle</key>
+	<string>WGU/memory 3</string>
+	<key>RCSavedRecordingUUID</key>
+	<string>B61F0A91-6067-4836-9D71-2BEC2DD2E34C</string>
+</dict>
+</plist>
