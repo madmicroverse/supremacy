@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>RCComposedAVURL</key>
+	<string>file:///Users/roldan/Library/Group%20Containers/group.com.apple.VoiceMemos.shared/Recordings/20250503%20003504.m4a</string>
+	<key>RCComposedWaveformURL</key>
+	<string>file:///Users/roldan/Library/Group%20Containers/group.com.apple.VoiceMemos.shared/Recordings/20250503%20003504.waveform</string>
+	<key>RCDecomposedFragments</key>
+	<array/>
+	<key>RCSavedRecordingCreationDate</key>
+	<date>2025-05-03T06:35:04Z</date>
+	<key>RCSavedRecordingCreationTime</key>
+	<real>767946904.91687298</real>
+	<key>RCSavedRecordingTitle</key>
+	<string>NotesApp/memory</string>
+	<key>RCSavedRecordingUUID</key>
+	<string>2CD7F3C8-2E5D-42B4-AA59-C54F39002179</string>
+</dict>
+</plist>
