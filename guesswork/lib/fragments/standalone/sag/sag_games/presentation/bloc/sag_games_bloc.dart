@@ -45,7 +45,7 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, BlocState<SAGGamesBSC>> {
     SelectGameBlocEvent event,
     Emitter<BlocState<SAGGamesBSC>> emit,
   ) {
-    _router.pushNamed(sagGameRouteName, extra: event.sagGamePreview);
+    _router.pushNamed(sagGameRouteName, extra: event.sagGamePreview.id);
   }
 
   FutureOr<void> _signOutBlocEvent(

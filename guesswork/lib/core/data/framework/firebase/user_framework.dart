@@ -2,12 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 
-extension UserTools on User {}
-
-class UserFramework {
+class GetAuthGamesUserOperation {
   final FirebaseAuth _firebaseAuth;
 
-  UserFramework(this._firebaseAuth);
+  GetAuthGamesUserOperation(this._firebaseAuth);
 
   Future<Result<GamesUser, BaseError>> call() async {
     final currentUser = _firebaseAuth.currentUser;
@@ -31,6 +29,7 @@ class UserFramework {
       id: currentUser.uid,
       isAnonymous: currentUser.isAnonymous,
       gamesUserInfoList: gamesUserInfoList,
+      gamesSettings: GamesSettings(),
     );
 
     return Success(entangledUser);

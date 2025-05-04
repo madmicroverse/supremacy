@@ -1,19 +1,19 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
-import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
-import 'package:guesswork/core/domain/use_case/get_game_settings_use_case.dart';
-import 'package:guesswork/core/domain/use_case/set_game_settings_use_case.dart';
 import 'package:guesswork/core/presentation/bloc_sate.dart';
+import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
+import 'package:guesswork/fragments/standalone/settings/domain/use_case/set_game_settings_use_case.dart';
 
 import 'settings_be.dart';
 import 'settings_bsc.dart';
 
 class SettingsBloc extends Bloc<SettingsBE, BlocState<SettingsBSC>> {
   final IRouter _router;
-  final GetGamesSettingsUseCase _getGamesSettingsUseCase;
+  final GetGamesSettingsStreamUseCase _getGamesSettingsUseCase;
   final SetGamesSettingsUseCase _setGamesSettingsUseCase;
 
   StreamSubscription<GamesSettings>? _gamesSettingsSubscription;

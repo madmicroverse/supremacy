@@ -5,7 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gaimon/gaimon.dart';
-import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
+import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/presentation/extension/offset_utils.dart';
 
 class ScratchableWidget extends StatefulWidget {

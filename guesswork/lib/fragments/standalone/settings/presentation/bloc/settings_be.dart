@@ -1,4 +1,5 @@
-import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
+
+import 'package:guesswork/core/domain/entity/account/games_user.dart';
 
 sealed class SettingsBE {}
 

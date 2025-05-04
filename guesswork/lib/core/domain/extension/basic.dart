@@ -11,7 +11,7 @@ extension BoolUtils on bool {
 extension RatioUtils on double {
   double get oneMinus => 1 - this;
 
-  double get inverse => 1 / this;
+  double get inverse => this == 0 ? 0 : 1 / this;
 
   int remapped(int min, int max) => ((max - min) * this + min).toInt();
 }

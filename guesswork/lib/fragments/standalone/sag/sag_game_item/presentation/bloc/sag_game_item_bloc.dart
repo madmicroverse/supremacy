@@ -7,13 +7,14 @@ import 'package:confetti/confetti.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/constants/resources.dart';
+import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
-import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
 import 'package:guesswork/core/domain/extension/audio_player.dart';
+import 'package:guesswork/core/domain/extension/offset.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
-import 'package:guesswork/core/domain/use_case/get_game_settings_use_case.dart';
 import 'package:guesswork/core/domain/use_case/get_network_image_use_case.dart';
+import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 
 import 'sag_game_item_be.dart';
 import 'sag_game_item_bs.dart';
@@ -21,7 +22,7 @@ import 'sag_game_item_bs.dart';
 class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
   final IRouter _router;
   final GetNetworkImageUseCase _getNetworkImageUseCase;
-  final GetGamesSettingsUseCase _getGamesSettingsUseCase;
+  final GetGamesSettingsStreamUseCase _getGamesSettingsUseCase;
 
   Set<Offset> concealedPoints = {};
   Set<Offset> pathPoints = {};
@@ -116,7 +117,6 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     final xStep = event.width / _samplingResolution;
     final yStep = event.height / _samplingResolution;
 
-    var concealedPoints = <Offset>{};
     for (var x = 0; x < _samplingResolution; x++) {
       for (var y = 0; y < _samplingResolution; y++) {
         concealedPoints.add(Offset(x * xStep, y * yStep));
@@ -128,8 +128,12 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     emit(state.withRevealedPath(revealedPath));
   }
 
-  FutureOr<void> _addPathPointBE(event, emit) {
-    scratchSoundPlayer.safeResume;
+  FutureOr<void> _addPathPointBE(event, emit) async {
+    if (state.isGameComplete) return;
+
+    if (state.gamesSettings.isSoundEnabled) {
+      scratchSoundPlayer.safeResume;
+    }
 
     pathPoints.add(event.point);
 
@@ -170,7 +174,7 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     emit(state.withGamesSettings(event.gamesSettings));
   }
 
-  FutureOr<void> _guessBlocEvent(event, emit) {
+  FutureOr<void> _guessBlocEvent(event, emit) async {
     final guessGame = state.sagGameItem!;
     final guessGameAnswer = SAGGameItemAnswer(
       guessGameId: guessGame.id,
@@ -178,21 +182,29 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
       answerOptionId: event.guess.id,
       isCorrect: guessGame.answer == event.guess.id,
       points: guessGame.points,
+      isCompleted: true,
+      revealedRatio: state.revealedRatio,
+      pathPoints: pathPoints.toPathPointList,
     );
-    if (guessGameAnswer.isCorrect) {
-      partyPopperPlayer.safeResume;
-      crowdCheeringPlayer.safeResume;
-      confettiController.play();
-    } else {
-      wrongAnswerPlayer.safeResume;
-    }
     emit(state.withSAGGameItemAnswer(guessGameAnswer));
+
+    if (guessGameAnswer.isCorrect) {
+      if (state.gamesSettings.isSoundEnabled) {
+        partyPopperPlayer.safeResume;
+        crowdCheeringPlayer.safeResume;
+      }
+      Future.microtask(confettiController.play);
+    } else {
+      if (state.gamesSettings.isSoundEnabled) {
+        wrongAnswerPlayer.safeResume;
+      }
+    }
   }
 
   FutureOr<void> _stopScratchPlayerBE(_, _) => scratchSoundPlayer.safeStop;
 
-  FutureOr<void> _continueBlocEvent(_, _) =>
-      _router..pop(state.sagGameItemAnswer);
+  FutureOr<void> _continueBlocEvent(_, _) async =>
+      _router.pop(state.sagGameItemAnswer);
 
   /*
   Events ↑ Methods ↓

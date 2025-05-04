@@ -4,7 +4,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/core/presentation/bloc_sate.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/presentation/view/points_widget.dart';
 
 import '../bloc/sag_game_be.dart';
@@ -49,9 +48,9 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.appBarWidget,
-      body: BlocBuilder<SAGGameBloc, BlocState<SAGGameBSC>>(
+      body: BlocBuilder<SAGGameBloc, SAGGameBSC>(
         builder: (context, state) {
-          if (!state.content.isGameSetCompleted) {
+          if (!state.isGameSetCompleted) {
             return Container();
           }
 
@@ -109,10 +108,7 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
                       ),
                     ),
 
-                  PointsWidget(
-                    key: pointsKey,
-                    points: state.content.totalPoints,
-                  ),
+                  PointsWidget(key: pointsKey, points: state.totalPoints),
                 ],
               );
             },

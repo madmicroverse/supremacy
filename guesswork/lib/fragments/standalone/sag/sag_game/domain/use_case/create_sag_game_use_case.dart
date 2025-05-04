@@ -1,36 +1,21 @@
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
-import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/CreateSagGameOperation.dart';
 
-import '../../domain/repository/sag_game_repository.dart';
-import '../framework/firestore_operations/GetSagGameOperation.dart';
+import '../repository/sag_game_repository.dart';
 
-class SAGGameRepositoryImpl extends SAGGameRepository {
-  final CreateSagGameOperation createSagGameOperation;
-  final GetSagGameOperation getSagGameOperation;
+class CreateSAGGameUseCase {
+  final SAGGameRepository _sagGameRepository;
 
-  SAGGameRepositoryImpl(this.createSagGameOperation, this.getSagGameOperation);
+  CreateSAGGameUseCase(this._sagGameRepository);
 
-  @override
-  Future<Result<void, BaseError>> createSAGGame(SAGGame sagGame) =>
-      createSagGameOperation(sagGame);
-
-  @override
-  Future<Result<SAGGame, BaseError>> getSAGGame(String sagGameId) =>
-      getSagGameOperation(sagGameId);
-
-  @override
-  Future<List<SAGGamePreview>> getSAGGamePreviewList() async {
-    return [
-      SAGGamePreview.fromJson(sagJson).copyWith(id: "P9sYOnr3UYigt0tbUQKD"),
-      SAGGamePreview.fromJson(sagJson).copyWith(id: "P9sYOnr3UYigt0tbUQKD"),
-      SAGGamePreview.fromJson(sagJson).copyWith(id: "P9sYOnr3UYigt0tbUQKD"),
-    ];
+  Future<Result<void, BaseError>> call() async {
+    final sagGame = await _sagGameRepository.getSAGGame("");
+    return _sagGameRepository.createSAGGame(SAGGame.fromJson(sagJson));
   }
 }
 
 final sagJson = {
-  'id': "123",
+  'id': 123,
   'title': 'Animales',
   'previewImage':
       'https://img.freepik.com/vector-gratis/animales-dibujados-mano-parecidos-ninos-leyendo-ilustracion_23-2151345169.jpg',

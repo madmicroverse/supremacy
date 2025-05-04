@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
+import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/presentation/bloc_sate.dart';
 
 part 'settings_bsc.freezed.dart';

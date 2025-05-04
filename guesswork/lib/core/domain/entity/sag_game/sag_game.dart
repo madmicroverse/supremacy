@@ -28,6 +28,14 @@ abstract class SAGGameItem with _$SAGGameItem {
 }
 
 @freezed
+abstract class PathPoint with _$PathPoint {
+  const factory PathPoint({required double x, required double y}) = _PathPoint;
+
+  factory PathPoint.fromJson(Map<String, dynamic> json) =>
+      _$PathPointFromJson(json);
+}
+
+@freezed
 abstract class SAGGameItemAnswer with _$SAGGameItemAnswer {
   const factory SAGGameItemAnswer({
     @Default(false) bool isCompleted,
@@ -37,7 +45,7 @@ abstract class SAGGameItemAnswer with _$SAGGameItemAnswer {
     required bool isCorrect,
     required int points,
     @Default(0.0) double revealedRatio,
-    @Default([]) List<Map<String, double>> concealedPoints,
+    @Default([]) List<PathPoint> pathPoints,
   }) = _SAGGameItemAnswer;
 
   factory SAGGameItemAnswer.fromJson(Map<String, dynamic> json) =>
@@ -47,7 +55,7 @@ abstract class SAGGameItemAnswer with _$SAGGameItemAnswer {
 @freezed
 abstract class SAGGamePreview with _$SAGGamePreview {
   const factory SAGGamePreview({
-    required int id,
+    @JsonKey(includeToJson: false) required String id,
     required String title,
     required String previewImage,
   }) = _SAGGamePreview;
@@ -59,7 +67,7 @@ abstract class SAGGamePreview with _$SAGGamePreview {
 @freezed
 abstract class SAGGame with _$SAGGame {
   const factory SAGGame({
-    required int id,
+    @JsonKey(includeToJson: false) required String id,
     required String title,
     required String previewImage,
     required String description,

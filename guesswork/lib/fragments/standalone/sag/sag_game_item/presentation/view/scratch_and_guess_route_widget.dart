@@ -26,6 +26,8 @@ class SAGGameItemRouteWidget extends StatelessWidget {
       buildWhen:
           (state, nextState) => state.doesGamesImageBecameAvailable(nextState),
       builder: (context, state) {
+        // return ConfettiSample();
+
         if (!state.isGamesImageAvailable) {
           return Center(child: CircularProgressIndicator());
         }
@@ -46,13 +48,11 @@ class SAGGameItemRouteWidget extends StatelessWidget {
                       flex: 1,
                       child: ScratchSection(sagGameItemBS: state),
                     ),
-                    GuessOptions(sagGameItemBS: state),
+                    GuessOptions(),
                     vsMid,
                     InkWell(
                       onTap: () {
-                        print(
-                          "Ad ${context.bloc.runtimeType}-----------------> ${context.bloc.hashCode}",
-                        );
+                        context.confettiController.play();
                       },
                       child: Container(
                         height: 40,

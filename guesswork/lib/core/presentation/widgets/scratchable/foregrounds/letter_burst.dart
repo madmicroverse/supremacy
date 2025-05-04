@@ -8,6 +8,7 @@ class LetterBurst extends StatelessWidget {
   final double height;
   final String letter;
   final Widget background;
+  final Color color;
 
   LetterBurst({
     super.key,
@@ -15,6 +16,7 @@ class LetterBurst extends StatelessWidget {
     required this.height,
     required this.letter,
     required this.background,
+    required this.color,
   });
 
   final Random _random = Random();
@@ -51,7 +53,7 @@ class LetterBurst extends StatelessWidget {
           return Positioned(
             left: point.dx + xRandomNear(),
             top: point.dy + yRandomNear(),
-            child: Text(letter, style: TextStyle(color: Colors.white))
+            child: Text(letter, style: TextStyle(color: color))
                 .animate(onPlay: (controller) => controller.repeat())
                 .effect(
                   // delay: (3000 * _random.nextDouble()).ms,

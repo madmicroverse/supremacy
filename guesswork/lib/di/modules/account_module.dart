@@ -1,4 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_operation.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/data/framework/firebase/sign_in_anonymously.dart';
 import 'package:guesswork/core/data/framework/firebase/sign_in_with_google.dart';
@@ -9,10 +12,10 @@ import 'package:guesswork/core/data/repository/account_repository_impl.dart';
 import 'package:guesswork/core/data/repository/auth_repository_impl.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
 import 'package:guesswork/core/domain/repository/auth_repository.dart';
-import 'package:guesswork/core/domain/use_case/get_game_settings_use_case.dart';
 import 'package:guesswork/core/domain/use_case/get_game_user_info_use_case.dart';
-import 'package:guesswork/core/domain/use_case/set_game_settings_use_case.dart';
 import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart';
+import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
+import 'package:guesswork/fragments/standalone/settings/domain/use_case/set_game_settings_use_case.dart';
 import 'package:injectable/injectable.dart';
 
 const emulated = bool.fromEnvironment('emulated', defaultValue: false);
@@ -20,23 +23,32 @@ const emulated = bool.fromEnvironment('emulated', defaultValue: false);
 @module
 abstract class AccountModule {
   @Singleton()
-  UserFramework userFrameworkFactory(FirebaseAuth firebaseAuth) {
-    return UserFramework(firebaseAuth);
+  GetAuthGamesUserOperation userFrameworkFactory(FirebaseAuth firebaseAuth) {
+    return GetAuthGamesUserOperation(firebaseAuth);
   }
 
   @Injectable()
   AccountRepository accountRepositoryFactory(
-    UserFramework userFramework,
+    GetAuthGamesUserOperation getAuthGamesUserOperation,
+    GetGamesUserOperation getGamesUserOperation,
+    GetGamesUserStreamOperation getGamesUserStreamOperation,
+    SetGamesUserOperation setGamesUserOperation,
     FirestoreFramework firestoreFramework,
   ) {
-    return AccountRepositoryImpl(userFramework, firestoreFramework);
+    return AccountRepositoryImpl(
+      getAuthGamesUserOperation,
+      getGamesUserOperation,
+      getGamesUserStreamOperation,
+      setGamesUserOperation,
+      firestoreFramework,
+    );
   }
 
   @Injectable()
-  GetGamesSettingsUseCase getGamesSettingsUseCaseFactory(
+  GetGamesSettingsStreamUseCase getGamesSettingsUseCaseFactory(
     AccountRepository accountRepository,
   ) {
-    return GetGamesSettingsUseCase(accountRepository);
+    return GetGamesSettingsStreamUseCase(accountRepository);
   }
 
   @Injectable()

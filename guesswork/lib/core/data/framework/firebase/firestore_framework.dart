@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/account/games_user_progress.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
-import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 
-const gamesUserIdPlaceholder = "{entangleId}";
-const gamesSettingsPath = "/users/$gamesUserIdPlaceholder";
+const gamesUserIdPlaceholder = "{gamesUserIdPlaceholder}";
+const userPath = "/users/$gamesUserIdPlaceholder";
 
 extension GamesSettingsData on GamesSettings {
   Map<String, dynamic> get snapshotData => toJson()..remove('id');
@@ -32,10 +32,7 @@ class FirestoreFramework {
     String userId,
   ) async {
     try {
-      final docPath = gamesSettingsPath.replaceAll(
-        gamesUserIdPlaceholder,
-        userId,
-      );
+      final docPath = userPath.replaceAll(gamesUserIdPlaceholder, userId);
       final docRef = _db.doc(docPath);
       final doc = await docRef.get();
 
@@ -45,7 +42,7 @@ class FirestoreFramework {
 
       return Success(docRef.snapshots().map((qs) => qs.gamesSettings(userId)));
     } catch (error) {
-      return Error(StringError(error.toString()));
+      return Error(UnexpectedErrorError(error.toString()));
     }
   }
 
@@ -53,7 +50,7 @@ class FirestoreFramework {
     GamesSettings gamesSettings,
   ) async {
     try {
-      final docPath = gamesSettingsPath.replaceAll(
+      final docPath = userPath.replaceAll(
         gamesUserIdPlaceholder,
         gamesSettings.id,
       );
@@ -64,7 +61,7 @@ class FirestoreFramework {
 
       return Success(true);
     } catch (error) {
-      return Error(StringError(error.toString()));
+      return Error(UnexpectedErrorError(error.toString()));
     }
   }
 }

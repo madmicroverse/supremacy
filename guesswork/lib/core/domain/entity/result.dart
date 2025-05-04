@@ -14,10 +14,10 @@ class NetworkRequestFailedError extends BaseError {}
 
 class UnknownError extends BaseError {}
 
-class StringError extends BaseError {
+class UnexpectedErrorError extends BaseError {
   String error;
 
-  StringError(this.error);
+  UnexpectedErrorError(this.error);
 }
 
 sealed class Result<D, E extends BaseError> {}

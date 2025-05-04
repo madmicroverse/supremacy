@@ -97,7 +97,7 @@ abstract class NavModule {
       builder: (context, state) {
         return GetIt.instance.get<Widget>(
           instanceName: sagGameRouteWidget,
-          param1: '',
+          param1: state.extra,
         );
       },
     );

@@ -30,36 +30,42 @@ class ScratchSection extends StatelessWidget {
 
           if (!sagGameItemBS.isRevealedPathAvailable) {}
 
-          return ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            child: Wrap(
-              children: [
-                SizedBox(
-                  width: bestFitSize.width,
-                  height: questionBarHeight,
-                  child: Question(sagGameItemBS: sagGameItemBS),
-                ),
-                Container(
-                  width: bestFitSize.width,
-                  height: bestFitSize.height,
-                  color: Colors.red,
-                  child: ScratchableWidget(
+          return Card(
+            margin: EdgeInsets.zero,
+            elevation: 10,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+              child: Wrap(
+                children: [
+                  SizedBox(
+                    width: bestFitSize.width,
+                    height: questionBarHeight,
+                    child: Question(sagGameItemBS: sagGameItemBS),
+                  ),
+                  SizedBox(
                     width: bestFitSize.width,
                     height: bestFitSize.height,
-                    brushRadius: bestFitSize.width * 0.1037318312,
-                    background: Image(
-                      image: gamesImage.imageProvider,
-                      fit: BoxFit.fitWidth,
-                    ),
-                    foreground: ScratchForeground(
-                      sagGameItemBS: sagGameItemBS,
+                    child: ScratchableWidget(
                       width: bestFitSize.width,
                       height: bestFitSize.height,
+                      brushRadius: bestFitSize.width * 0.1037318312,
+                      background: Image(
+                        image: gamesImage.imageProvider,
+                        fit: BoxFit.fitWidth,
+                      ),
+                      foreground: ScratchForeground(
+                        sagGameItemBS: sagGameItemBS,
+                        width: bestFitSize.width,
+                        height: bestFitSize.height,
+                      ),
+                      sagGameItemBS: sagGameItemBS,
                     ),
-                    sagGameItemBS: sagGameItemBS,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

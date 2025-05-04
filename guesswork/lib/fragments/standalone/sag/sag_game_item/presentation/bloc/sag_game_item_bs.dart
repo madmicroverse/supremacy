@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/image/games_image.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
-import 'package:guesswork/core/domain/entity/settings/games_settings.dart';
 
 part 'sag_game_item_bs.freezed.dart';
 
@@ -65,8 +65,6 @@ extension SAGGameItemBSCQueries on SAGGameItemBS {
   bool isCorrectOption(Option option) {
     return sagGameItem?.answer == option.id;
   }
-
-  // double get concealedRatio => 1 - revealedRatio;
 
   bool doesRevealedRatioChange(SAGGameItemBS nextState) =>
       revealedRatio != nextState.revealedRatio;
