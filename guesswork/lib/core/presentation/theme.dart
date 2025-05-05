@@ -1,5 +1,5 @@
-import "package:guesswork/core/presentation/color_extra.dart";
 import "package:flutter/material.dart";
+import "package:guesswork/core/presentation/color_extra.dart";
 
 class MaterialTheme {
   final TextTheme textTheme;
@@ -361,22 +361,22 @@ class MaterialTheme {
   }
 
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
-        useMaterial3: true,
-        extensions: <ThemeExtension<dynamic>>[
-          ColorExtra(
-            income: Color(0xFF86AB89),
-            expense: Color.fromARGB(255, 231, 155, 152),
-          ),
-        ],
-        brightness: colorScheme.brightness,
-        colorScheme: colorScheme,
-        textTheme: textTheme.apply(
-          bodyColor: colorScheme.onSurface,
-          displayColor: colorScheme.onSurface,
-        ),
-        scaffoldBackgroundColor: colorScheme.background,
-        canvasColor: colorScheme.surface,
-      );
+    useMaterial3: true,
+    extensions: <ThemeExtension<dynamic>>[
+      GamesColors(
+        correct: Color(0xFF86AB89),
+        incorrect: Color.fromARGB(255, 231, 155, 152),
+      ),
+    ],
+    brightness: colorScheme.brightness,
+    colorScheme: colorScheme,
+    textTheme: textTheme.apply(
+      bodyColor: colorScheme.onSurface,
+      displayColor: colorScheme.onSurface,
+    ),
+    scaffoldBackgroundColor: colorScheme.background,
+    canvasColor: colorScheme.surface,
+  );
 
   List<ExtendedColor> get extendedColors => [];
 }

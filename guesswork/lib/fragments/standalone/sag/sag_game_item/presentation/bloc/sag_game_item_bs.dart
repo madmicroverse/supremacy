@@ -61,9 +61,8 @@ extension SAGGameItemBSCQueries on SAGGameItemBS {
   bool isSelectedOption(Option option) =>
       sagGameItem?.answer?.answerOptionId == option.id;
 
-  bool isCorrectOption(Option option) {
-    return sagGameItem?.answer == option.id;
-  }
+  bool isCorrectOption(Option option) =>
+      sagGameItem?.answerOptionId == option.id;
 
   bool doesRevealedRatioChange(SAGGameItemBS nextState) =>
       concealedRatio != nextState.concealedRatio;

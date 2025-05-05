@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
 
-class ColorExtra extends ThemeExtension<ColorExtra> {
-  ColorExtra({
-    required this.income,
-    required this.expense,
-  });
+class GamesColors extends ThemeExtension<GamesColors> {
+  GamesColors({required this.correct, required this.incorrect});
 
-  final Color income;
-  final Color expense;
+  final Color correct;
+  final Color incorrect;
 
   @override
-  ThemeExtension<ColorExtra> copyWith({
-    Color? income,
-    Color? expense,
-  }) {
-    return ColorExtra(
-      income: income ?? this.income,
-      expense: expense ?? this.expense,
+  ThemeExtension<GamesColors> copyWith({Color? income, Color? expense}) {
+    return GamesColors(
+      correct: income ?? this.correct,
+      incorrect: expense ?? this.incorrect,
     );
   }
 
   @override
-  ThemeExtension<ColorExtra> lerp(
-      covariant ThemeExtension<ColorExtra>? other, double t) {
-    if (other is ColorExtra) {
+  ThemeExtension<GamesColors> lerp(
+    covariant ThemeExtension<GamesColors>? other,
+    double t,
+  ) {
+    if (other is GamesColors) {
       return this;
     }
     return this;

@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/extension/basic.dart';
+import 'package:guesswork/core/presentation/color_extra.dart';
 import 'package:guesswork/core/presentation/extension/animation_utils.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/view/bloc_utils.dart';
 
@@ -55,7 +56,7 @@ class GuessOptions extends StatelessWidget {
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Container(
+                          child: SizedBox(
                             width: double.maxFinite,
                             child: FilledButton(
                               onPressed:
@@ -66,22 +67,16 @@ class GuessOptions extends StatelessWidget {
                                           GuessSAGGameItemBE(option),
                                         );
                                       },
-                              style: ButtonStyle(
-                                backgroundColor: WidgetStateProperty.all(
-                                  _getButtonColor(
+
+                              child: Text(
+                                option.text,
+                                style: TextStyle(
+                                  color: _getButtonColor(
+                                    context,
                                     state,
                                     option,
                                     isGameComplete,
                                   ),
-                                ),
-                              ),
-                              child: Text(
-                                option.text,
-                                style: TextStyle(
-                                  color:
-                                      isGameComplete
-                                          ? Colors.black45
-                                          : Colors.white,
                                   fontSize: 20,
                                 ),
                               ),
@@ -125,16 +120,23 @@ class GuessOptions extends StatelessWidget {
     );
   }
 
-  Color _getButtonColor(SAGGameItemBS state, Option option, bool isCompleted) {
+  Color _getButtonColor(
+    BuildContext context,
+    SAGGameItemBS state,
+    Option option,
+    bool isCompleted,
+  ) {
     if (state.isGameItemComplete &&
         (state.isSelectedOption(option) || state.isCorrectOption(option))) {
+      final gamesColors = Theme.of(context).extension<GamesColors>();
+
       if (state.isCorrectOption(option)) {
-        return Colors.green.withValues(alpha: isCompleted ? 0.5 : 1);
+        return gamesColors!.correct;
       } else {
-        return Colors.red.withValues(alpha: isCompleted ? 0.5 : 1);
+        return gamesColors!.incorrect;
       }
     }
 
-    return Colors.orange.withValues(alpha: isCompleted ? 0.5 : 1);
+    return Theme.of(context).buttonTheme.colorScheme!.onPrimary;
   }
 }
