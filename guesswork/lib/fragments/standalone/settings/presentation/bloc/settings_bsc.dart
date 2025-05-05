@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
-import 'package:guesswork/core/presentation/bloc_sate.dart';
 
 part 'settings_bsc.freezed.dart';
 
@@ -9,7 +8,11 @@ abstract class SettingsBSC with _$SettingsBSC {
   const factory SettingsBSC({GamesSettings? gameSettings}) = _SettingsBSC;
 }
 
-extension BlocStateSettingsBSC on BlocState<SettingsBSC> {
-  BlocState<SettingsBSC> withGamesSettings(GamesSettings gamesSettings) =>
-      copyWith(content: content.copyWith(gameSettings: gamesSettings));
+extension SettingsBSCMutations on SettingsBSC {
+  SettingsBSC withGamesSettings(GamesSettings gamesSettings) =>
+      copyWith(gameSettings: gamesSettings);
+}
+
+extension SettingsBSCMutationsWueries on SettingsBSC {
+  bool get isGameSettingsLoading => gameSettings == null;
 }

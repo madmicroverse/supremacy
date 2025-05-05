@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/core/presentation/bloc_sate.dart';
 
 import '../bloc/settings_button_be.dart';
 import '../bloc/settings_button_bloc.dart';
@@ -17,7 +16,7 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SettingsButtonBloc, BlocState<SettingsButtonBSC>>(
+    return BlocBuilder<SettingsButtonBloc, SettingsButtonBSC>(
       builder: (context, state) {
         return IconButton(
           onPressed: () => context.addEvent(ShowSettingsBE()),

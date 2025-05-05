@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/core/presentation/bloc_sate.dart';
 import 'package:guesswork/core/presentation/widgets/space.dart';
 
 import '../bloc/settings_be.dart';
@@ -26,13 +25,13 @@ class Settings extends StatelessWidget {
         title: Text("Settings"),
         actions: [noAdsButton],
       ),
-      body: BlocBuilder<SettingsBloc, BlocState<SettingsBSC>>(
+      body: BlocBuilder<SettingsBloc, SettingsBSC>(
         builder: (context, state) {
-          if (state.isLoading) {
+          if (state.isGameSettingsLoading) {
             return Center(child: CircularProgressIndicator());
           }
 
-          final gameSettings = state.content.gameSettings!;
+          final gameSettings = state.gameSettings!;
           return ListView(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 24),
             children: [

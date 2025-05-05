@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/core/presentation/bloc_sate.dart';
 import 'package:guesswork/core/presentation/widgets/no_ad_icon_widget.dart';
 
 import '../bloc/no_ads_button_be.dart';
@@ -18,7 +17,7 @@ class NoAdsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NoAdsButtonBloc, BlocState<NoAdsButtonBSC>>(
+    return BlocBuilder<NoAdsButtonBloc, NoAdsButtonBSC>(
       builder: (context, state) {
         return IconButton(
           onPressed: () => context.addEvent(ShowNoAdsBE()),

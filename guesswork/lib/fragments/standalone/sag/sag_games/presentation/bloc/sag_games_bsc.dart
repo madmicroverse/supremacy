@@ -8,3 +8,10 @@ abstract class SAGGamesBSC with _$SAGGamesBSC {
   const factory SAGGamesBSC({List<SAGGamePreview>? sagGamePreviewList}) =
       _SAGGamesBSC;
 }
+
+extension SAGGamesBSCQueries on SAGGamesBSC {
+  bool doesSAGGamePreviewListBecameAvailable(SAGGamesBSC nextState) =>
+      sagGamePreviewList != nextState.sagGamePreviewList;
+
+  bool get isSAGGamePreviewListLoading => sagGamePreviewList == null;
+}

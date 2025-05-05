@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:guesswork/core/presentation/bloc_sate.dart';
 
 part 'coins_bsc.freezed.dart';
 
@@ -8,7 +7,10 @@ abstract class CoinsBSC with _$CoinsBSC {
   const factory CoinsBSC({int? amount}) = _CoinsBSC;
 }
 
-extension BlocStateCoinsBSC on BlocState<CoinsBSC> {
-  BlocState<CoinsBSC> withAmount(int amount) =>
-      copyWith(content: content.copyWith(amount: amount));
+extension CoinsBSCMutations on CoinsBSC {
+  CoinsBSC withAmount(int amount) => copyWith(amount: amount);
+}
+
+extension CoinsBSCQueries on CoinsBSC {
+  bool get isLoadingAmount => amount == null;
 }

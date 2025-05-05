@@ -4,14 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
-import 'package:guesswork/core/presentation/bloc_sate.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/set_game_settings_use_case.dart';
 
 import 'settings_be.dart';
 import 'settings_bsc.dart';
 
-class SettingsBloc extends Bloc<SettingsBE, BlocState<SettingsBSC>> {
+class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
   final IRouter _router;
   final GetGamesSettingsStreamUseCase _getGamesSettingsUseCase;
   final SetGamesSettingsUseCase _setGamesSettingsUseCase;
@@ -22,12 +21,7 @@ class SettingsBloc extends Bloc<SettingsBE, BlocState<SettingsBSC>> {
     this._router,
     this._getGamesSettingsUseCase,
     this._setGamesSettingsUseCase,
-  ) : super(
-        BlocState<SettingsBSC>(
-          status: LoadingStateStatus(),
-          content: SettingsBSC(),
-        ),
-      ) {
+  ) : super(SettingsBSC()) {
     on<InitSettingsBE>(_initSettingsBE);
     on<UpdateSettingsBE>(_updateSettingsBE);
     on<SwitchSettingsBE>(_switchSettingsBE);
@@ -35,7 +29,7 @@ class SettingsBloc extends Bloc<SettingsBE, BlocState<SettingsBSC>> {
 
   FutureOr<void> _initSettingsBE(
     InitSettingsBE event,
-    Emitter<BlocState<SettingsBSC>> emit,
+    Emitter<SettingsBSC> emit,
   ) async {
     final result = await _getGamesSettingsUseCase();
     switch (result) {
@@ -46,21 +40,21 @@ class SettingsBloc extends Bloc<SettingsBE, BlocState<SettingsBSC>> {
       case Error():
         switch (result.error) {
           default:
-            return emit(state.errorState(result.error.toString()));
+          // return emit(state.errorState(result.error.toString()));
         }
     }
   }
 
   FutureOr<void> _updateSettingsBE(
     UpdateSettingsBE event,
-    Emitter<BlocState<SettingsBSC>> emit,
+    Emitter<SettingsBSC> emit,
   ) {
-    emit(state.idleState.withGamesSettings(event.gameSettings));
+    emit(state.withGamesSettings(event.gameSettings));
   }
 
   FutureOr<void> _switchSettingsBE(
     SwitchSettingsBE event,
-    Emitter<BlocState<SettingsBSC>> emit,
+    Emitter<SettingsBSC> emit,
   ) async {
     final result = await _setGamesSettingsUseCase(event.gameSettings);
     switch (result) {

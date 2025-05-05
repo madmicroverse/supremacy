@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
-import 'package:guesswork/core/presentation/bloc_sate.dart';
 import 'package:guesswork/core/presentation/widgets/backgound_widget.dart';
 
 import '../bloc/sag_games_be.dart';
@@ -48,10 +46,12 @@ class SAGGamesRouteWidget extends StatelessWidget {
       //   ],
       // ),
       body: BackgroundWidget(
-        child: BlocBuilder<SAGGamesBloc, BlocState<SAGGamesBSC>>(
-          buildWhen: (state, nextState) => state.isLoadingCompleted(nextState),
+        child: BlocBuilder<SAGGamesBloc, SAGGamesBSC>(
+          buildWhen:
+              (state, nextState) =>
+                  state.doesSAGGamePreviewListBecameAvailable(nextState),
           builder: (context, state) {
-            if (state.isLoading) {
+            if (state.isSAGGamePreviewListLoading) {
               return const Center(
                 child: CircularProgressIndicator(
                   color: Colors.white,
@@ -59,10 +59,7 @@ class SAGGamesRouteWidget extends StatelessWidget {
                 ),
               );
             }
-
-            List<SAGGamePreview> sagGamePreviewList =
-                state.content.sagGamePreviewList!;
-
+            final sagGamePreviewList = state.sagGamePreviewList!;
             return GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

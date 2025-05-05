@@ -55,9 +55,6 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     on<StopScratchPlayerBE>(_stopScratchPlayerBE);
   }
 
-  /*
-  Events ↓
-   */
   FutureOr<void> _initSAGGameItemBE(event, emit) async {
     emit(state.withSagGameItem(event.sagGameItem));
     add(InitAudioPlayersBE());
