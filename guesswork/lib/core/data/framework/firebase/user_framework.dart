@@ -30,6 +30,7 @@ class GetAuthGamesUserOperation {
       isAnonymous: currentUser.isAnonymous,
       gamesUserInfoList: gamesUserInfoList,
       gamesSettings: GamesSettings(),
+      progress: GamesUserProgress(),
     );
 
     return Success(entangledUser);

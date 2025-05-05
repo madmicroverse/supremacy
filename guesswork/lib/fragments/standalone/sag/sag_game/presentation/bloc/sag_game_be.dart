@@ -24,6 +24,6 @@ class ShowSAGGameBE extends SAGGameBE {
   ShowSAGGameBE();
 }
 
-class IncreasePointsSAGGameBE extends SAGGameBE {
-  IncreasePointsSAGGameBE();
+class AddPointsSAGGameBE extends SAGGameBE {
+  AddPointsSAGGameBE();
 }

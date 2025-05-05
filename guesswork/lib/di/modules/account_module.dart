@@ -3,7 +3,6 @@ import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/data/framework/firebase/sign_in_anonymously.dart';
 import 'package:guesswork/core/data/framework/firebase/sign_in_with_google.dart';
 import 'package:guesswork/core/data/framework/firebase/sign_out.dart';
@@ -13,7 +12,7 @@ import 'package:guesswork/core/data/repository/account_repository_impl.dart';
 import 'package:guesswork/core/data/repository/auth_repository_impl.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
 import 'package:guesswork/core/domain/repository/auth_repository.dart';
-import 'package:guesswork/core/domain/use_case/get_game_user_info_use_case.dart';
+import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
 import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart';
 import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
@@ -36,7 +35,6 @@ abstract class AccountModule {
     GetGamesUserStreamOperation getGamesUserStreamOperation,
     SetGamesUserOperation setGamesUserOperation,
     UpsertUserSAGGameOperation upsertUserSAGGameOperation,
-    FirestoreFramework firestoreFramework,
   ) {
     return AccountRepositoryImpl(
       getAuthGamesUserOperation,
@@ -44,7 +42,6 @@ abstract class AccountModule {
       getGamesUserStreamOperation,
       setGamesUserOperation,
       upsertUserSAGGameOperation,
-      firestoreFramework,
     );
   }
 
@@ -70,10 +67,10 @@ abstract class AccountModule {
   }
 
   @Injectable()
-  GetGamesUserInfoUseCase getGamesUserInfoUseCaseFactory(
+  AddCoinsStreamUseCase addCoinsStreamUseCaseFactory(
     AccountRepository accountRepository,
   ) {
-    return GetGamesUserInfoUseCase(accountRepository);
+    return AddCoinsStreamUseCase(accountRepository);
   }
 
   @Singleton()

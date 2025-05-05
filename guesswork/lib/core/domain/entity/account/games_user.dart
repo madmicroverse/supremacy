@@ -9,7 +9,7 @@ abstract class GamesUser with _$GamesUser {
     @JsonKey(includeToJson: false) required String id,
     required bool isAnonymous,
     required List<GamesUserInfo> gamesUserInfoList,
-    @Default(0) int points,
+    required GamesUserProgress progress,
     required GamesSettings gamesSettings,
   }) = _GamesUser;
 
@@ -21,7 +21,8 @@ extension GamesUserMutations on GamesUser {
   GamesUser withSettings(GamesSettings gamesSettings) =>
       copyWith(gamesSettings: gamesSettings);
 
-  GamesUser withPoints(int points) => copyWith(points: points);
+  GamesUser addPoints(int points) =>
+      copyWith(progress: progress.copyWith(points: progress.points + points));
 }
 
 @freezed
@@ -60,4 +61,13 @@ extension GamesSettingsQueries on GamesSettings? {
   bool get isMusicEnabled => this?.sound ?? false;
 
   bool get isHapticEnabled => this?.sound ?? false;
+}
+
+@freezed
+abstract class GamesUserProgress with _$GamesUserProgress {
+  const factory GamesUserProgress({@Default(0) int points}) =
+      _GamesUserProgress;
+
+  factory GamesUserProgress.fromJson(Map<String, dynamic> json) =>
+      _$GamesUserProgressFromJson(json);
 }

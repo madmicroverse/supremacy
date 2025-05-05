@@ -15,7 +15,7 @@ class SetGamesSettingsUseCase {
       case Success():
         final gamesUser = result.data;
         final newGamesUser = gamesUser.withSettings(gamesSettings);
-        return _accountRepository.setGamesUser(newGamesUser);
+        return _accountRepository.upsertGamesUser(newGamesUser);
       case Error():
         return result;
     }

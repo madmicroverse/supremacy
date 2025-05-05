@@ -8,6 +8,7 @@ import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
+import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
 import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/di/modules/router_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/create_sag_game_use_case.dart';
@@ -20,6 +21,7 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
   final IRouter _router;
   final GetSAGGameUseCase _getSAGGameUseCase;
   final UpsertUserSAGGameUseCase _upsertUserSAGGameUseCase;
+  final AddCoinsStreamUseCase _addCoinsStreamUseCase;
   final CreateSAGGameUseCase _createSAGGameUseCase;
 
   AudioPlayer? gameCompletedBackgroundMusicPlayer;
@@ -28,12 +30,13 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
     this._router,
     this._getSAGGameUseCase,
     this._upsertUserSAGGameUseCase,
+    this._addCoinsStreamUseCase,
     this._createSAGGameUseCase,
   ) : super(SAGGameBSC()) {
     on<PopSAGGameBE>(_popBlocEvent);
     on<InitSAGGameBE>(_initGameSetBlocEvent);
     on<InitSAGGameItemLoopBE>(_initSAGGameItemLoopBE);
-    on<IncreasePointsSAGGameBE>(_showNewUserPointsBlocEvent);
+    on<AddPointsSAGGameBE>(_addPointsSAGGameBE);
     on<InitAudioPlayersBE>(_initAudioPlayersBE);
   }
 
@@ -108,10 +111,10 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
     _router.pop();
   }
 
-  FutureOr<void> _showNewUserPointsBlocEvent(
-    IncreasePointsSAGGameBE event,
+  FutureOr<void> _addPointsSAGGameBE(
+    AddPointsSAGGameBE event,
     Emitter<SAGGameBSC> emit,
   ) async {
-    // emit(state.copyWith(userPoints: state.userPoints + state.totalPoints));
+    _addCoinsStreamUseCase(state.sagGame.pointsGained);
   }
 }

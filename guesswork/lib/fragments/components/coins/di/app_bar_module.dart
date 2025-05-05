@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
-import 'package:guesswork/core/domain/use_case/get_game_user_info_use_case.dart';
+import 'package:guesswork/core/domain/repository/account_repository.dart';
+import 'package:guesswork/fragments/components/coins/domain/use_case/get_coins_stream_use_case.dart';
 import 'package:injectable/injectable.dart';
 
 import '../presentation/bloc/coins_be.dart';
@@ -13,11 +14,18 @@ const coinsWidget = "coinsWidget";
 @module
 abstract class CoinsModule {
   @Injectable()
+  GetCoinsStreamUseCase getCoinsStreamUseCaseFactory(
+    AccountRepository accountRepository,
+  ) {
+    return GetCoinsStreamUseCase(accountRepository);
+  }
+
+  @Injectable()
   CoinsBloc appBarBlocFactory(
     IRouter router,
-    GetGamesUserInfoUseCase getGamesUserInfoUseCase,
+    GetCoinsStreamUseCase getCoinsStreamUseCase,
   ) {
-    return CoinsBloc(router, getGamesUserInfoUseCase);
+    return CoinsBloc(router, getCoinsStreamUseCase);
   }
 
   @Named(coinsWidget)

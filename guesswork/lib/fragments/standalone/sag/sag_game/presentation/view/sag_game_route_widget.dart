@@ -86,7 +86,7 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
                             ),
                           );
                           if (bloc.isClosed) return;
-                          bloc.add(IncreasePointsSAGGameBE());
+                          bloc.add(AddPointsSAGGameBE());
                           setState(() {
                             arePointsClaimed = true;
                           });

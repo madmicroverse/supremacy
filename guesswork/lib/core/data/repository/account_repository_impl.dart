@@ -2,10 +2,8 @@ import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/data/framework/firebase/user_framework.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
-import 'package:guesswork/core/domain/entity/account/games_user_progress.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
@@ -16,7 +14,6 @@ class AccountRepositoryImpl extends AccountRepository {
   final GetGamesUserStreamOperation _getGamesUserStreamOperation;
   final SetGamesUserOperation _setGamesUserOperation;
   final UpsertUserSAGGameOperation _upsertUserSAGGameOperation;
-  final FirestoreFramework _firestoreFramework;
 
   AccountRepositoryImpl(
     this._getAuthGamesUserOperation,
@@ -24,7 +21,6 @@ class AccountRepositoryImpl extends AccountRepository {
     this._getGamesUserStreamOperation,
     this._setGamesUserOperation,
     this._upsertUserSAGGameOperation,
-    this._firestoreFramework,
   );
 
   @override
@@ -39,6 +35,10 @@ class AccountRepositoryImpl extends AccountRepository {
   }
 
   @override
+  Future<Result<void, BaseError>> upsertGamesUser(GamesUser gamesUser) =>
+      _setGamesUserOperation(gamesUser);
+
+  @override
   Future<Result<Stream<GamesUser>, BaseError>> getGamesUserStream() async {
     final result = await _getAuthGamesUserOperation();
     switch (result) {
@@ -48,14 +48,6 @@ class AccountRepositoryImpl extends AccountRepository {
         return Error(result.error);
     }
   }
-
-  @override
-  Future<Result<void, BaseError>> setGamesUser(GamesUser gamesUser) =>
-      _setGamesUserOperation(gamesUser);
-
-  @override
-  Future<Result<GamesUserProgress, BaseError>> getGameUserInfo() =>
-      _firestoreFramework.getGamesUserInfo();
 
   @override
   Future<Result<String, BaseError>> upsertUserSAGGameInfo(
