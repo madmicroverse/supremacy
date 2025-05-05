@@ -1,11 +1,14 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/constants/resources.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
-import 'package:guesswork/core/domain/extension/basic.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
+import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
+import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/di/modules/router_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/create_sag_game_use_case.dart';
 
@@ -16,57 +19,85 @@ import 'sag_game_bsc.dart';
 class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
   final IRouter _router;
   final GetSAGGameUseCase _getSAGGameUseCase;
+  final UpsertUserSAGGameUseCase _upsertUserSAGGameUseCase;
   final CreateSAGGameUseCase _createSAGGameUseCase;
 
-  SAGGameBloc(this._router, this._getSAGGameUseCase, this._createSAGGameUseCase)
-    : super(SAGGameBSC()) {
+  AudioPlayer? gameCompletedBackgroundMusicPlayer;
+
+  SAGGameBloc(
+    this._router,
+    this._getSAGGameUseCase,
+    this._upsertUserSAGGameUseCase,
+    this._createSAGGameUseCase,
+  ) : super(SAGGameBSC()) {
     on<PopSAGGameBE>(_popBlocEvent);
     on<InitSAGGameBE>(_initGameSetBlocEvent);
     on<InitSAGGameItemLoopBE>(_initSAGGameItemLoopBE);
     on<IncreasePointsSAGGameBE>(_showNewUserPointsBlocEvent);
+    on<InitAudioPlayersBE>(_initAudioPlayersBE);
   }
 
   FutureOr<void> _initGameSetBlocEvent(
     InitSAGGameBE event,
     Emitter<SAGGameBSC> emit,
   ) async {
+    add(InitAudioPlayersBE());
     final result = await _getSAGGameUseCase(event.sagGameId);
     switch (result) {
       case Success():
         emit(state.withSAGGameBSC(result.data));
         add(InitSAGGameItemLoopBE(result.data));
       case Error():
+        // final result = await _createSAGGameUseCase();
         throw UnimplementedError();
     }
+  }
+
+  FutureOr<void> _initAudioPlayersBE(
+    InitAudioPlayersBE event,
+    Emitter<SAGGameBSC> emit,
+  ) {
+    gameCompletedBackgroundMusicPlayer = AudioPlayer();
+    gameCompletedBackgroundMusicPlayer?.setVolume(0.25);
+    gameCompletedBackgroundMusicPlayer?.setReleaseMode(ReleaseMode.loop);
+    gameCompletedBackgroundMusicPlayer?.setSource(
+      AudioAsset.gameCompleteMusic.source,
+    );
   }
 
   FutureOr<void> _initSAGGameItemLoopBE(
     InitSAGGameItemLoopBE event,
     Emitter<SAGGameBSC> emit,
   ) async {
-    for (var guessGame in event.sagGame.guessGameList) {
-      SAGGameItemAnswer? result;
-      result = await _router.pushNamed<SAGGameItemAnswer>(
+    for (var sagGameItem in event.sagGame.sageGameItemList) {
+      SAGGameItem? result = await _router.pushNamed<SAGGameItem>(
         sagGameItemRouteName,
-        extra: guessGame.copyWith(setName: event.sagGame.title),
+        extra: sagGameItem.copyWith(setName: event.sagGame.title),
       );
 
       if (result.isNotNull) {
-        final guessGameAnswerList = [...state.guessGameAnswerList, result!];
-        final totalPoints = guessGameAnswerList.fold(0, (prevVal, ans) {
-          return prevVal +
-              (ans.points * ans.revealedRatio.oneMinus * ans.isCorrect.intValue)
-                  .toInt();
-        });
-        emit(
-          state.copyWith(
-            guessGameAnswerList: guessGameAnswerList,
-            isGameSetCompleted:
-                event.sagGame.guessGameList.length ==
-                guessGameAnswerList.length,
-            totalPoints: totalPoints,
-          ),
+        final newSAGGame =
+            state.sagGame!.withSAGGameItem(result!).withCompletedStatus;
+        final upsertResult = await _upsertUserSAGGameUseCase(
+          state.userSAGGameId,
+          newSAGGame,
         );
+
+        switch (upsertResult) {
+          case Success():
+            emit(
+              state
+                  .withSAGGameBSC(newSAGGame)
+                  .withUserSAGGameId(upsertResult.data),
+            );
+
+            if (newSAGGame.isCompleted) {
+              gameCompletedBackgroundMusicPlayer?.resume();
+            }
+
+          case Error():
+            throw UnimplementedError();
+        }
       } else {
         return _router.pop();
       }
@@ -81,6 +112,6 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
     IncreasePointsSAGGameBE event,
     Emitter<SAGGameBSC> emit,
   ) async {
-    emit(state.copyWith(userPoints: state.userPoints + state.totalPoints));
+    // emit(state.copyWith(userPoints: state.userPoints + state.totalPoints));
   }
 }

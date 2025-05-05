@@ -4,8 +4,10 @@ import 'package:guesswork/core/domain/entity/account/games_user_progress.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 
+const userPath = "user";
+const sagGameCollectionPath = "sag_game";
+
 const gamesUserIdPlaceholder = "{gamesUserIdPlaceholder}";
-const userPath = "/users/$gamesUserIdPlaceholder";
 
 extension GamesSettingsData on GamesSettings {
   Map<String, dynamic> get snapshotData => toJson()..remove('id');
@@ -25,12 +27,14 @@ class FirestoreFramework {
   FirestoreFramework(this._db);
 
   Future<Result<GamesUserProgress, BaseError>> getGamesUserInfo() async {
+    throw "";
     return Success(GamesUserProgress(points: 10000));
   }
 
   Future<Result<Stream<GamesSettings>, BaseError>> getSettings(
     String userId,
   ) async {
+    throw "";
     try {
       final docPath = userPath.replaceAll(gamesUserIdPlaceholder, userId);
       final docRef = _db.doc(docPath);
@@ -49,6 +53,7 @@ class FirestoreFramework {
   Future<Result<bool, BaseError>> setSettings(
     GamesSettings gamesSettings,
   ) async {
+    throw "";
     try {
       final docPath = userPath.replaceAll(
         gamesUserIdPlaceholder,

@@ -25,6 +25,7 @@ class CoinsBloc extends Bloc<CoinsBE, BlocState<CoinsBSC>> {
     InitCoinsBE event,
     Emitter<BlocState<CoinsBSC>> emit,
   ) async {
+    return;
     final result = await _getGamesUserInfoUseCase();
     await Future.delayed(3000.ms);
     switch (result) {

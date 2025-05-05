@@ -20,6 +20,8 @@ abstract class GamesUser with _$GamesUser {
 extension GamesUserMutations on GamesUser {
   GamesUser withSettings(GamesSettings gamesSettings) =>
       copyWith(gamesSettings: gamesSettings);
+
+  GamesUser withPoints(int points) => copyWith(points: points);
 }
 
 @freezed

@@ -7,5 +7,5 @@ extension FirebaseAuthUtils on FirebaseAuth {
 }
 
 extension DocumentSnapshotUtils on DocumentSnapshot<Map<String, dynamic>> {
-  Map<String, dynamic>? dataWithId() => data()?.withId(id);
+  Map<String, dynamic>? get dataWithId => data()?.withId(id);
 }

@@ -26,10 +26,7 @@ class CompleteEffects extends StatelessWidget {
           return Container();
         } else {
           if (state.isCorrectAnswer) {
-            final numberOfParticles = state.revealedRatio.inverse.remapped(
-              1,
-              20,
-            );
+            final numberOfParticles = state.concealedRatio.remapped(1, 20);
             return Align(
               alignment: Alignment.topCenter,
               child: ConfettiWidget(

@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/image/games_image.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
+import 'package:guesswork/core/domain/extension/sag_game.dart';
 
 part 'sag_game_item_bs.freezed.dart';
 
@@ -13,8 +14,7 @@ abstract class SAGGameItemBS with _$SAGGameItemBS {
     GamesImage? gamesImage,
     GamesSettings? gamesSettings,
     Path? revealedPath,
-    @Default(0) double revealedRatio,
-    SAGGameItemAnswer? sagGameItemAnswer,
+    @Default(1) double concealedRatio,
   }) = _SAGGameItemBS;
 }
 
@@ -26,7 +26,7 @@ extension SAGGameItemBSCMutations on SAGGameItemBS {
       copyWith(gamesImage: gamesImage);
 
   SAGGameItemBS withSAGGameItemAnswer(SAGGameItemAnswer sagGameItemAnswer) =>
-      copyWith(sagGameItemAnswer: sagGameItemAnswer);
+      copyWith(sagGameItem: sagGameItem?.copyWith(answer: sagGameItemAnswer));
 
   SAGGameItemBS withGamesSettings(GamesSettings gamesSettings) =>
       copyWith(gamesSettings: gamesSettings);
@@ -34,8 +34,8 @@ extension SAGGameItemBSCMutations on SAGGameItemBS {
   SAGGameItemBS withRevealedPath(Path revealedPath) =>
       copyWith(revealedPath: revealedPath);
 
-  SAGGameItemBS withRevealedRatio(double revealedRatio) =>
-      copyWith(revealedRatio: revealedRatio);
+  SAGGameItemBS withConcealedRatio(double concealedRatio) =>
+      copyWith(concealedRatio: concealedRatio);
 }
 
 extension SAGGameItemBSCQueries on SAGGameItemBS {
@@ -46,26 +46,25 @@ extension SAGGameItemBSCQueries on SAGGameItemBS {
       gamesSettings != nextState.gamesSettings;
 
   bool doesGamesItemBecameCompleted(SAGGameItemBS nextState) =>
-      sagGameItemAnswer?.isCompleted !=
-      nextState.sagGameItemAnswer?.isCompleted;
+      sagGameItem?.answer != nextState.sagGameItem?.answer;
 
   bool get isGamesImageAvailable => gamesImage != null;
 
   bool get isRevealedPathAvailable => revealedPath != null;
 
-  bool get isGameComplete => sagGameItemAnswer?.isCompleted ?? false;
+  bool get isGameItemComplete => sagGameItem?.answer != null;
 
-  bool get isGameIncomplete => !isGameComplete;
+  bool get isGameIncomplete => !isGameItemComplete;
 
-  bool get isCorrectAnswer => sagGameItemAnswer?.isCorrect ?? false;
+  bool get isCorrectAnswer => sagGameItem.isCorrectAnswer;
 
   bool isSelectedOption(Option option) =>
-      sagGameItemAnswer?.answerOptionId == option.id;
+      sagGameItem?.answer?.answerOptionId == option.id;
 
   bool isCorrectOption(Option option) {
     return sagGameItem?.answer == option.id;
   }
 
   bool doesRevealedRatioChange(SAGGameItemBS nextState) =>
-      revealedRatio != nextState.revealedRatio;
+      concealedRatio != nextState.concealedRatio;
 }

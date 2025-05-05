@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
-const sagGameCollectionPath = "sag_game";
+
 
 class UnableToCreateSAGGameError extends BaseError {}
 

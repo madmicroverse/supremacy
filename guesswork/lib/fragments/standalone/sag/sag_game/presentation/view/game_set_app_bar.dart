@@ -27,10 +27,10 @@ class GameSetBlocAppBar extends StatelessWidget implements PreferredSizeWidget {
           return Container();
         }
 
-        final gameSet = state.gameSet!;
+        final sagGame = state.sagGame!;
 
         return AppBar(
-          title: Text(gameSet.title),
+          title: Text(sagGame.title),
           automaticallyImplyLeading: true,
           centerTitle: true,
           actions: [
@@ -46,7 +46,7 @@ class GameSetBlocAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                     SizedBox(width: 10),
                     AnimatedFlipCounter(
-                      value: state.userPoints,
+                      value: 100,
                       duration: Duration(seconds: 3),
                       wholeDigits: 8,
                       hideLeadingZeroes: true,

@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
+import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/components/app_bar/di/app_bar_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/create_sag_game_use_case.dart';
 import 'package:injectable/injectable.dart';
@@ -57,6 +59,13 @@ abstract class SAGGameModule {
     return SetGamesUserOperation(firebaseFirestore);
   }
 
+  @Singleton()
+  UpsertUserSAGGameOperation upsertUserSAGGameOperationFactory(
+    FirebaseFirestore firebaseFirestore,
+  ) {
+    return UpsertUserSAGGameOperation(firebaseFirestore);
+  }
+
   @Injectable()
   SAGGameRepository sagGameRepositoryFactory(
     CreateSagGameOperation createSagGameOperation,
@@ -83,9 +92,15 @@ abstract class SAGGameModule {
   SAGGameBloc gameSetBlocFactory(
     IRouter router,
     GetSAGGameUseCase getSAGGameUseCase,
+    UpsertUserSAGGameUseCase createGamesUserPointsUseCase,
     CreateSAGGameUseCase createSAGGameUseCase,
   ) {
-    return SAGGameBloc(router, getSAGGameUseCase, createSAGGameUseCase);
+    return SAGGameBloc(
+      router,
+      getSAGGameUseCase,
+      createGamesUserPointsUseCase,
+      createSAGGameUseCase,
+    );
   }
 
   @Named(sagGameRouteWidget)

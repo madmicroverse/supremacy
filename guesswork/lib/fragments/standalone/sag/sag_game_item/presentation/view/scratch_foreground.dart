@@ -39,7 +39,7 @@ class ScratchForeground extends StatelessWidget {
           color: Colors.white,
         );
 
-        if (state.isGameComplete) {
+        if (state.isGameItemComplete) {
           foreground = foreground.animate().fadeOut(duration: 250.ms);
         }
 

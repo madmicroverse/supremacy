@@ -34,7 +34,7 @@ class GuessOptions extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, BoxConstraints constraints) {
               final guessGame = state.sagGameItem!;
-              final isGameComplete = state.isGameComplete;
+              final isGameComplete = state.isGameItemComplete;
               double completedRatio = 0.25;
               int rows =
                   guessGame.optionList.length.rows(columns) +
@@ -126,7 +126,7 @@ class GuessOptions extends StatelessWidget {
   }
 
   Color _getButtonColor(SAGGameItemBS state, Option option, bool isCompleted) {
-    if (state.isGameComplete &&
+    if (state.isGameItemComplete &&
         (state.isSelectedOption(option) || state.isCorrectOption(option))) {
       if (state.isCorrectOption(option)) {
         return Colors.green.withValues(alpha: isCompleted ? 0.5 : 1);

@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/presentation/view/points_widget.dart';
 
 import '../bloc/sag_game_be.dart';
@@ -24,8 +24,6 @@ class SAGGameRouteWidget extends StatefulWidget {
 class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
   final GlobalKey<PointsWidgetState> pointsKey = GlobalKey<PointsWidgetState>();
 
-  late AudioPlayer partyPopperPlayer;
-
   bool arePointsClaimed = false;
 
   Duration claimDuration = Duration(seconds: 1);
@@ -33,15 +31,6 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
   @override
   void initState() {
     super.initState();
-    partyPopperPlayer = AudioPlayer();
-    partyPopperPlayer.setVolume(0.25);
-    partyPopperPlayer.setReleaseMode(ReleaseMode.loop);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await partyPopperPlayer.setSource(
-        AssetSource('sounds/set_completed_background_music.mp3'),
-      );
-      // await player.resume();
-    });
   }
 
   @override
@@ -50,11 +39,9 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
       appBar: widget.appBarWidget,
       body: BlocBuilder<SAGGameBloc, SAGGameBSC>(
         builder: (context, state) {
-          if (!state.isGameSetCompleted) {
+          if (!state.isSAGGameCompleted) {
             return Container();
           }
-
-          partyPopperPlayer.resume();
 
           return LayoutBuilder(
             builder: (context, constraints) {
@@ -108,7 +95,10 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
                       ),
                     ),
 
-                  PointsWidget(key: pointsKey, points: state.totalPoints),
+                  PointsWidget(
+                    key: pointsKey,
+                    points: state.sagGame.pointsGained,
+                  ),
                 ],
               );
             },
@@ -117,14 +107,6 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    partyPopperPlayer.stop();
-    partyPopperPlayer.dispose();
   }
 }
 

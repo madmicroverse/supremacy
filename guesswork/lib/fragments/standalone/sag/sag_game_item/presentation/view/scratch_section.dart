@@ -17,7 +17,7 @@ class ScratchSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final gamesImage = sagGameItemBS.gamesImage!;
     return AbsorbPointer(
-      absorbing: sagGameItemBS.isGameComplete,
+      absorbing: sagGameItemBS.isGameItemComplete,
       child: LayoutBuilder(
         builder: (context, BoxConstraints constraints) {
           double questionBarHeight = 40;

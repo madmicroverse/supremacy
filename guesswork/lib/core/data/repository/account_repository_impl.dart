@@ -1,11 +1,13 @@
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/data/framework/firebase/user_framework.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/account/games_user_progress.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
 
 class AccountRepositoryImpl extends AccountRepository {
@@ -13,6 +15,7 @@ class AccountRepositoryImpl extends AccountRepository {
   final GetGamesUserOperation _getGamesUserOperation;
   final GetGamesUserStreamOperation _getGamesUserStreamOperation;
   final SetGamesUserOperation _setGamesUserOperation;
+  final UpsertUserSAGGameOperation _upsertUserSAGGameOperation;
   final FirestoreFramework _firestoreFramework;
 
   AccountRepositoryImpl(
@@ -20,6 +23,7 @@ class AccountRepositoryImpl extends AccountRepository {
     this._getGamesUserOperation,
     this._getGamesUserStreamOperation,
     this._setGamesUserOperation,
+    this._upsertUserSAGGameOperation,
     this._firestoreFramework,
   );
 
@@ -52,4 +56,11 @@ class AccountRepositoryImpl extends AccountRepository {
   @override
   Future<Result<GamesUserProgress, BaseError>> getGameUserInfo() =>
       _firestoreFramework.getGamesUserInfo();
+
+  @override
+  Future<Result<String, BaseError>> upsertUserSAGGameInfo(
+    String gamesUserId,
+    String? userSAGGameId,
+    SAGGame sagGame,
+  ) => _upsertUserSAGGameOperation(gamesUserId, userSAGGameId, sagGame);
 }

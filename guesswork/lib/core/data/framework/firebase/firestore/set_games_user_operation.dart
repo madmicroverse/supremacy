@@ -1,12 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
-
-const userPath = "user";
-
-class UnableToGetGamesUserError extends BaseError {}
-
-class EmptyGameSettingsError extends BaseError {}
 
 class SetGamesUserOperation {
   final FirebaseFirestore _db;
@@ -20,7 +15,7 @@ class SetGamesUserOperation {
     try {
       final gamesUserDocRef = gamesUserCollection(gamesUser.id);
       await gamesUserDocRef.set(gamesUser.toJson());
-      return Success(gamesUser);
+      return Success(null);
     } catch (error) {
       return Error(UnexpectedErrorError(error.toString()));
     }

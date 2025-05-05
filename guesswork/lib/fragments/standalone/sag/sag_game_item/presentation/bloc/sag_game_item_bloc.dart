@@ -12,6 +12,7 @@ import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/extension/audio_player.dart';
 import 'package:guesswork/core/domain/extension/offset.dart';
+import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/get_network_image_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
@@ -129,7 +130,7 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
   }
 
   FutureOr<void> _addPathPointBE(event, emit) async {
-    if (state.isGameComplete) return;
+    if (state.isGameItemComplete) return;
 
     if (state.gamesSettings.isSoundEnabled) {
       scratchSoundPlayer.safeResume;
@@ -155,11 +156,13 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     concealedPoints.removeWhere(
       (checkpoint) => _inCircle(checkpoint, event.point, brushRadius),
     );
-    final newRevealedRatio = concealedPoints.length / concealablePointsNum;
+    final newConcealedRatio = concealedPoints.length / concealablePointsNum;
+    final dnewConcealedRatio =
+        concealedPoints.length / concealablePointsNum.toDouble();
     emit(
       state
           .withRevealedPath(updatedRevealedPath)
-          .withRevealedRatio(newRevealedRatio),
+          .withConcealedRatio(newConcealedRatio),
     );
   }
 
@@ -175,20 +178,14 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
   }
 
   FutureOr<void> _guessBlocEvent(event, emit) async {
-    final guessGame = state.sagGameItem!;
-    final guessGameAnswer = SAGGameItemAnswer(
-      guessGameId: guessGame.id,
-      guessGameVersion: guessGame.version,
+    final answer = SAGGameItemAnswer(
       answerOptionId: event.guess.id,
-      isCorrect: guessGame.answer == event.guess.id,
-      points: guessGame.points,
-      isCompleted: true,
-      revealedRatio: state.revealedRatio,
+      concealedRatio: state.concealedRatio,
       pathPoints: pathPoints.toPathPointList,
     );
-    emit(state.withSAGGameItemAnswer(guessGameAnswer));
+    emit(state.withSAGGameItemAnswer(answer));
 
-    if (guessGameAnswer.isCorrect) {
+    if (state.sagGameItem.isCorrectAnswer) {
       if (state.gamesSettings.isSoundEnabled) {
         partyPopperPlayer.safeResume;
         crowdCheeringPlayer.safeResume;
@@ -204,7 +201,7 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
   FutureOr<void> _stopScratchPlayerBE(_, _) => scratchSoundPlayer.safeStop;
 
   FutureOr<void> _continueBlocEvent(_, _) async =>
-      _router.pop(state.sagGameItemAnswer);
+      _router.pop(state.sagGameItem);
 
   /*
   Events ↑ Methods ↓

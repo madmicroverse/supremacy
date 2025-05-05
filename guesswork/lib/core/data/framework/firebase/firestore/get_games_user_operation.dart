@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
-
-const userPath = "user";
 
 class UnableToGetGamesUserError extends BaseError {}
 
@@ -28,7 +27,7 @@ class GetGamesUserOperation {
         return Success(gamesUser);
       }
 
-      final data = gamesUserDoc.dataWithId();
+      final data = gamesUserDoc.dataWithId;
       if (data.isNotNull) {
         return Success(GamesUser.fromJson(data!));
       } else {

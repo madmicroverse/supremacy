@@ -21,8 +21,7 @@ class Question extends StatelessWidget {
               size: 40,
               borderRadius: BorderRadius.zero,
               backgroundColor: Colors.black12,
-              currentValue:
-                  guessGame.points * (1 - sagGameItemBS.revealedRatio),
+              currentValue: guessGame.points * sagGameItemBS.concealedRatio,
               maxValue: guessGame.points.toDouble(),
               displayText: '',
               formatValue: (double value, int? fixed) {
@@ -30,7 +29,7 @@ class Question extends StatelessWidget {
               },
               displayTextStyle: TextStyle(fontSize: 20),
               progressColor:
-                  sagGameItemBS.isGameComplete
+                  sagGameItemBS.isGameItemComplete
                       ? sagGameItemBS.isCorrectAnswer
                           ? Colors.green
                           : Colors.black54

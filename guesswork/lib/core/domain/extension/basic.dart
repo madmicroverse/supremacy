@@ -8,12 +8,16 @@ extension BoolUtils on bool {
   int get invIntValue => this ? 0 : 1;
 }
 
-extension RatioUtils on double {
-  double get oneMinus => 1 - this;
+extension RatioUtils on double? {
+  double get oneMinus => 1 - orZero;
 
-  double get inverse => this == 0 ? 0 : 1 / this;
+  double get inverse => this == 0 ? 0 : 1 / orOne;
 
-  int remapped(int min, int max) => ((max - min) * this + min).toInt();
+  double get orOne => this ?? 1;
+
+  double get orZero => this ?? 0;
+
+  int remapped(int min, int max) => ((max - min) * orOne + min).toInt();
 }
 
 extension SetUtils<T> on Set<T> {

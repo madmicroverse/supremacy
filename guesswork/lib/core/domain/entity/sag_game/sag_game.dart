@@ -13,13 +13,14 @@ abstract class Option with _$Option {
 @freezed
 abstract class SAGGameItem with _$SAGGameItem {
   const factory SAGGameItem({
-    required int id,
+    required String id,
     required int version,
     required int points,
     required String guessImageUrl,
     required String question,
     required List<Option> optionList,
-    required int answer,
+    required SAGGameItemAnswer? answer,
+    required int answerOptionId,
     String? setName,
   }) = _SAGGameItem;
 
@@ -38,13 +39,8 @@ abstract class PathPoint with _$PathPoint {
 @freezed
 abstract class SAGGameItemAnswer with _$SAGGameItemAnswer {
   const factory SAGGameItemAnswer({
-    @Default(false) bool isCompleted,
-    required int guessGameId,
-    required int guessGameVersion,
     required int answerOptionId,
-    required bool isCorrect,
-    required int points,
-    @Default(0.0) double revealedRatio,
+    @Default(0.0) double concealedRatio,
     @Default([]) List<PathPoint> pathPoints,
   }) = _SAGGameItemAnswer;
 
@@ -68,10 +64,11 @@ abstract class SAGGamePreview with _$SAGGamePreview {
 abstract class SAGGame with _$SAGGame {
   const factory SAGGame({
     @JsonKey(includeToJson: false) required String id,
+    @Default(false) bool isCompleted,
     required String title,
     required String previewImage,
     required String description,
-    required List<SAGGameItem> guessGameList,
+    required List<SAGGameItem> sageGameItemList,
   }) = _SAGGame;
 
   factory SAGGame.fromJson(Map<String, dynamic> json) =>

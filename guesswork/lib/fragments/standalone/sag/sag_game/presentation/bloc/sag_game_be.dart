@@ -8,6 +8,8 @@ class InitSAGGameBE extends SAGGameBE {
   InitSAGGameBE(this.sagGameId);
 }
 
+class InitAudioPlayersBE extends SAGGameBE {}
+
 class InitSAGGameItemLoopBE extends SAGGameBE {
   final SAGGame sagGame;
 

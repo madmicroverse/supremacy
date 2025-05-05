@@ -21,6 +21,8 @@ import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_
     as _i30;
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart'
     as _i160;
+import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart'
+    as _i181;
 import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart'
     as _i520;
 import 'package:guesswork/core/data/framework/firebase/sign_in_anonymously.dart'
@@ -44,6 +46,8 @@ import 'package:guesswork/core/domain/use_case/get_game_user_info_use_case.dart'
 import 'package:guesswork/core/domain/use_case/get_network_image_use_case.dart'
     as _i861;
 import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart' as _i599;
+import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart'
+    as _i652;
 import 'package:guesswork/di/modules/account_module.dart' as _i550;
 import 'package:guesswork/di/modules/app_module.dart' as _i1048;
 import 'package:guesswork/di/modules/firebase_module.dart' as _i932;
@@ -211,21 +215,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i974.FirebaseFirestore>(),
       ),
     );
+    gh.singleton<_i181.UpsertUserSAGGameOperation>(
+      () => sAGGameModule.upsertUserSAGGameOperationFactory(
+        gh<_i974.FirebaseFirestore>(),
+      ),
+    );
     gh.factory<_i440.AuthRepository>(
       () => accountModule.authRepositoryFactory(
         gh<_i187.SignInWithGoogle>(),
         gh<_i479.SignInAnonymous>(),
         gh<_i963.SignOut>(),
         gh<_i901.SignedStatus>(),
-      ),
-    );
-    gh.factory<_i128.AccountRepository>(
-      () => accountModule.accountRepositoryFactory(
-        gh<_i529.GetAuthGamesUserOperation>(),
-        gh<_i462.GetGamesUserOperation>(),
-        gh<_i30.GetGamesUserStreamOperation>(),
-        gh<_i160.SetGamesUserOperation>(),
-        gh<_i520.FirestoreFramework>(),
       ),
     );
     gh.factory<_i583.GoRoute>(
@@ -265,8 +265,23 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i583.GoRouter>(),
       ),
     );
+    gh.factory<_i128.AccountRepository>(
+      () => accountModule.accountRepositoryFactory(
+        gh<_i529.GetAuthGamesUserOperation>(),
+        gh<_i462.GetGamesUserOperation>(),
+        gh<_i30.GetGamesUserStreamOperation>(),
+        gh<_i160.SetGamesUserOperation>(),
+        gh<_i181.UpsertUserSAGGameOperation>(),
+        gh<_i520.FirestoreFramework>(),
+      ),
+    );
     gh.factory<_i878.GetGamesSettingsStreamUseCase>(
       () => accountModule.getGamesSettingsUseCaseFactory(
+        gh<_i128.AccountRepository>(),
+      ),
+    );
+    gh.factory<_i652.UpsertUserSAGGameUseCase>(
+      () => accountModule.upsertUserSAGGameUseCaseFactory(
         gh<_i128.AccountRepository>(),
       ),
     );
@@ -329,13 +344,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => noAdsButtonModule.appBarWidgetFactory(gh<_i366.NoAdsButtonBloc>()),
       instanceName: 'noAdsButtonWidget',
     );
-    gh.factory<_i544.SAGGameBloc>(
-      () => sAGGameModule.gameSetBlocFactory(
-        gh<_i5.IRouter>(),
-        gh<_i484.GetSAGGameUseCase>(),
-        gh<_i668.CreateSAGGameUseCase>(),
-      ),
-    );
     gh.factory<_i24.SAGGamesBloc>(
       () => sAGGamesModule.sagGamesBlocFactory(
         gh<_i5.IRouter>(),
@@ -375,6 +383,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i409.Widget>(instanceName: 'noAdsButtonWidget'),
       ),
       instanceName: 'appBarWidget',
+    );
+    gh.factory<_i544.SAGGameBloc>(
+      () => sAGGameModule.gameSetBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i484.GetSAGGameUseCase>(),
+        gh<_i652.UpsertUserSAGGameUseCase>(),
+        gh<_i668.CreateSAGGameUseCase>(),
+      ),
     );
     gh.factoryParam<_i409.Widget, String, dynamic>(
       (sagGameId, _) => sAGGameModule.gameSetRouteWidgetFactory(
