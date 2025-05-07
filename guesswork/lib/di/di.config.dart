@@ -73,6 +73,8 @@ import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/fires
     as _i1029;
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGameOperation.dart'
     as _i938;
+import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart'
+    as _i207;
 import 'package:guesswork/fragments/standalone/sag/sag_game/di/sag_game_module.dart'
     as _i239;
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/repository/sag_game_repository.dart'
@@ -131,9 +133,9 @@ extension GetItInjectableX on _i174.GetIt {
     final coinsModule = _$CoinsModule();
     final settingsButtonModule = _$SettingsButtonModule();
     final noAdsButtonModule = _$NoAdsButtonModule();
-    final sAGGamesModule = _$SAGGamesModule();
     final settingsModule = _$SettingsModule();
     final scratchAndGuessModule = _$ScratchAndGuessModule();
+    final sAGGamesModule = _$SAGGamesModule();
     gh.factory<_i780.ImageRepository>(() => global.imageRepositoryFactory());
     await gh.factoryAsync<_i409.ThemeData>(
       () => appModule.themeDataFactory(),
@@ -197,6 +199,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i974.FirebaseFirestore>(),
       ),
     );
+    gh.singleton<_i207.GetSagGamesOperation>(
+      () => sAGGameModule.getSagGamesOperationFactory(
+        gh<_i974.FirebaseFirestore>(),
+      ),
+    );
     gh.singleton<_i462.GetGamesUserOperation>(
       () => sAGGameModule.getGamesUserOperationFactory(
         gh<_i974.FirebaseFirestore>(),
@@ -228,12 +235,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i583.GoRoute>(
       () => navModule.settingsRouteFactory(),
       instanceName: 'settingsRouteName',
-    );
-    gh.factory<_i664.SAGGameRepository>(
-      () => sAGGameModule.sagGameRepositoryFactory(
-        gh<_i1029.CreateSagGameOperation>(),
-        gh<_i938.GetSagGameOperation>(),
-      ),
     );
     gh.factory<_i599.SignOutUseCase>(
       () => accountModule.signOutUseCaseFactory(gh<_i440.AuthRepository>()),
@@ -303,16 +304,18 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i878.GetGamesSettingsStreamUseCase>(),
       ),
     );
+    gh.factory<_i664.SAGGameRepository>(
+      () => sAGGameModule.sagGameRepositoryFactory(
+        gh<_i1029.CreateSagGameOperation>(),
+        gh<_i938.GetSagGameOperation>(),
+        gh<_i207.GetSagGamesOperation>(),
+      ),
+    );
     gh.factory<_i581.SettingsButtonBloc>(
       () => settingsButtonModule.appBarBlocFactory(gh<_i5.IRouter>()),
     );
     gh.factory<_i366.NoAdsButtonBloc>(
       () => noAdsButtonModule.appBarBlocFactory(gh<_i5.IRouter>()),
-    );
-    gh.factory<_i430.GetSAGGamesUseCase>(
-      () => sAGGamesModule.getSAGGamesUseCaseFactory(
-        gh<_i664.SAGGameRepository>(),
-      ),
     );
     gh.factory<_i409.Widget>(
       () => coinsModule.appBarWidgetFactory(gh<_i355.CoinsBloc>()),
@@ -329,6 +332,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i484.GetSAGGameUseCase>(
       () =>
           sAGGameModule.getSAGGameUseCaseFactory(gh<_i664.SAGGameRepository>()),
+    );
+    gh.factory<_i430.GetSAGGamesUseCase>(
+      () => sAGGameModule.getSAGGamesUseCaseFactory(
+        gh<_i664.SAGGameRepository>(),
+      ),
     );
     gh.factory<_i668.CreateSAGGameUseCase>(
       () => sAGGameModule.createSAGGameUseCaseFactory(
@@ -446,8 +454,8 @@ class _$SettingsButtonModule extends _i659.SettingsButtonModule {}
 
 class _$NoAdsButtonModule extends _i496.NoAdsButtonModule {}
 
-class _$SAGGamesModule extends _i78.SAGGamesModule {}
-
 class _$SettingsModule extends _i52.SettingsModule {}
 
 class _$ScratchAndGuessModule extends _i404.ScratchAndGuessModule {}
+
+class _$SAGGamesModule extends _i78.SAGGamesModule {}

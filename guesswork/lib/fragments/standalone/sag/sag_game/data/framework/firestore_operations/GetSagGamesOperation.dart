@@ -3,9 +3,10 @@ import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
-import 'package:guesswork/core/domain/extension/object_utils.dart';
 
 class EmptySAGGameError extends BaseError {}
+
+class EmptySAGGamesError extends BaseError {}
 
 class GetSagGamesOperation {
   final FirebaseFirestore _db;
@@ -15,19 +16,116 @@ class GetSagGamesOperation {
   CollectionReference<Map<String, dynamic>> get sagGameCollection =>
       _db.collection(sagGameCollectionPath);
 
-  Future<Result<SAGGame, BaseError>> call(String sagGameId) async {
+  /// Fetches multiple SAG games with pagination
+  ///
+  /// [limit] - Number of documents to fetch per page
+  /// [startAfterDocument] - The document to start after for pagination (null for first page)
+  /// [filters] - Optional query filters to apply
+  Future<Result<PaginatedSagGames, BaseError>> call({
+    required int limit,
+    DocumentSnapshot? startAfterDocument,
+    List<QueryFilter>? filters,
+  }) async {
     try {
-      final sagGameDocRef = sagGameCollection.doc(sagGameId);
-      final documentSnapshot = await sagGameDocRef.get();
-      var data = documentSnapshot.dataWithId;
+      Query<Map<String, dynamic>> query = sagGameCollection;
 
-      if (data.isNotNull) {
-        return Success(SAGGame.fromJson(data!));
-      } else {
-        return Error(EmptySAGGameError());
+      // Apply any filters if provided
+      if (filters != null && filters.isNotEmpty) {
+        for (final filter in filters) {
+          query = query.where(
+            filter.field,
+            isEqualTo: filter.isEqualTo,
+            isGreaterThan: filter.isGreaterThan,
+            isGreaterThanOrEqualTo: filter.isGreaterThanOrEqualTo,
+            isLessThan: filter.isLessThan,
+            isLessThanOrEqualTo: filter.isLessThanOrEqualTo,
+            arrayContains: filter.arrayContains,
+            arrayContainsAny: filter.arrayContainsAny,
+            whereIn: filter.whereIn,
+            whereNotIn: filter.whereNotIn,
+            isNull: filter.isNull,
+          );
+        }
       }
+
+      // Apply pagination
+      query = query.limit(limit);
+
+      // If we have a start document, use it for pagination
+      if (startAfterDocument != null) {
+        query = query.startAfterDocument(startAfterDocument);
+      }
+
+      // Execute the query
+      final querySnapshot = await query.get();
+      final documents = querySnapshot.docs;
+
+      if (documents.isEmpty) {
+        return Error(EmptySAGGamesError());
+      }
+
+      // Convert documents to SAGGame objects
+      final games =
+          documents.map((doc) {
+            final data = doc.dataWithId;
+            return SAGGame.fromJson(data!);
+          }).toList();
+
+      // Create pagination result
+      final hasMore = documents.length >= limit;
+      final lastDocument = documents.isNotEmpty ? documents.last : null;
+
+      return Success(
+        PaginatedSagGames(
+          games: games,
+          hasMore: hasMore,
+          lastDocument: lastDocument,
+        ),
+      );
     } catch (error) {
       return Error(UnexpectedErrorError(error.toString()));
     }
   }
+}
+
+/// Class to represent query filters
+class QueryFilter {
+  final String field;
+  final dynamic isEqualTo;
+  final dynamic isGreaterThan;
+  final dynamic isGreaterThanOrEqualTo;
+  final dynamic isLessThan;
+  final dynamic isLessThanOrEqualTo;
+  final dynamic arrayContains;
+  final List<dynamic>? arrayContainsAny;
+  final List<dynamic>? whereIn;
+  final List<dynamic>? whereNotIn;
+  final bool? isNull;
+
+  QueryFilter({
+    required this.field,
+    this.isEqualTo,
+    this.isGreaterThan,
+    this.isGreaterThanOrEqualTo,
+    this.isLessThan,
+    this.isLessThanOrEqualTo,
+    this.arrayContains,
+    this.arrayContainsAny,
+    this.whereIn,
+    this.whereNotIn,
+    this.isNull,
+  });
+}
+
+/// Class to hold paginated results
+class PaginatedSagGames {
+  final List<SAGGame> games;
+  final bool hasMore;
+  final DocumentSnapshot? lastDocument;
+
+  PaginatedSagGames({
+    required this.games,
+    required this.hasMore,
+    this.lastDocument,
+  });
 }

@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
+import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart';
 import 'package:guesswork/di/modules/router_module.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
 
 import '../../domain/use_case/get_sag_games_use_case.dart';
 import 'sag_games_be.dart';
@@ -26,16 +27,20 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
     InitSAGGamesBlocEvent event,
     Emitter<SAGGamesBSC> emit,
   ) async {
-    List<SAGGamePreview> sagGamePreviewList = await _getSAGGamesUseCase();
-
-    emit(state.copyWith(sagGamePreviewList: sagGamePreviewList));
+    final result = await _getSAGGamesUseCase(10);
+    switch (result) {
+      case Success():
+        PaginatedSagGames paginatedSagGames = result.data;
+        emit(state.withPaginatedSagGames(paginatedSagGames));
+      case Error():
+    }
   }
 
   FutureOr<void> _selectGameBlocEvent(
     SelectGameBlocEvent event,
     Emitter<SAGGamesBSC> emit,
   ) {
-    _router.pushNamed(sagGameRouteName, extra: event.sagGamePreview.id);
+    _router.pushNamed(sagGameRouteName, extra: event.sagGame.id);
   }
 
   FutureOr<void> _signOutBlocEvent(

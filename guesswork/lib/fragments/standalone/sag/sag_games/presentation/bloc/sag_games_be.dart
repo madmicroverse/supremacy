@@ -7,9 +7,9 @@ class InitSAGGamesBlocEvent extends SAGGamesBE {
 }
 
 class SelectGameBlocEvent extends SAGGamesBE {
-  final SAGGamePreview sagGamePreview;
+  final SAGGame sagGame;
 
-  SelectGameBlocEvent(this.sagGamePreview);
+  SelectGameBlocEvent(this.sagGame);
 }
 
 class SignOutBlocEvent extends SAGGamesBE {

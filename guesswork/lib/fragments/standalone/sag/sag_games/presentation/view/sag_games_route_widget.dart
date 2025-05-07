@@ -22,9 +22,9 @@ class SAGGamesRouteWidget extends StatelessWidget {
         child: BlocBuilder<SAGGamesBloc, SAGGamesBSC>(
           buildWhen:
               (state, nextState) =>
-                  state.doesSAGGamePreviewListBecameAvailable(nextState),
+                  state.doesPaginatedSagGamesListBecameAvailable(nextState),
           builder: (context, state) {
-            if (state.isSAGGamePreviewListLoading) {
+            if (state.isPaginatedSagGamesListLoading) {
               return const Center(
                 child: CircularProgressIndicator(
                   color: Colors.white,
@@ -32,22 +32,22 @@ class SAGGamesRouteWidget extends StatelessWidget {
                 ),
               );
             }
-            final sagGamePreviewList = state.sagGamePreviewList!;
+            final sagGameList = state.sagGamesBSCList;
             return GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.8,
+                childAspectRatio: 0.65,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
               ),
-              itemCount: sagGamePreviewList.length,
+              itemCount: sagGameList.length,
               itemBuilder: (context, index) {
-                final sagGamePreview = sagGamePreviewList[index];
+                final sagGame = sagGameList[index];
                 return GameCard(
-                  gamePreview: sagGamePreview,
+                  sagGame: sagGame,
                   onTap: () {
-                    _bloc(context).add(SelectGameBlocEvent(sagGamePreview));
+                    _bloc(context).add(SelectGameBlocEvent(sagGame));
                   },
                 );
               },

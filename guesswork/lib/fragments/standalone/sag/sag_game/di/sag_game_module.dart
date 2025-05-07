@@ -9,7 +9,9 @@ import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
 import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/components/app_bar/di/app_bar_module.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/create_sag_game_use_case.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_games/domain/use_case/get_sag_games_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 import 'package:injectable/injectable.dart';
 
@@ -38,6 +40,13 @@ abstract class SAGGameModule {
     FirebaseFirestore firebaseFirestore,
   ) {
     return GetSagGameOperation(firebaseFirestore);
+  }
+
+  @Singleton()
+  GetSagGamesOperation getSagGamesOperationFactory(
+    FirebaseFirestore firebaseFirestore,
+  ) {
+    return GetSagGamesOperation(firebaseFirestore);
   }
 
   @Singleton()
@@ -72,8 +81,13 @@ abstract class SAGGameModule {
   SAGGameRepository sagGameRepositoryFactory(
     CreateSagGameOperation createSagGameOperation,
     GetSagGameOperation getSagGameOperation,
+    GetSagGamesOperation getSagGamesOperation,
   ) {
-    return SAGGameRepositoryImpl(createSagGameOperation, getSagGameOperation);
+    return SAGGameRepositoryImpl(
+      createSagGameOperation,
+      getSagGameOperation,
+      getSagGamesOperation,
+    );
   }
 
   @Injectable()
@@ -81,6 +95,13 @@ abstract class SAGGameModule {
     SAGGameRepository gameSetRepository,
   ) {
     return GetSAGGameUseCase(gameSetRepository);
+  }
+
+  @Injectable()
+  GetSAGGamesUseCase getSAGGamesUseCaseFactory(
+    SAGGameRepository gameSetRepository,
+  ) {
+    return GetSAGGamesUseCase(gameSetRepository);
   }
 
   @Injectable()
