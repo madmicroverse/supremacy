@@ -7,6 +7,7 @@ const partyPopperSoundResourcePath = 'sounds/party_popper.mp3';
 const wrongAnswerSoundResourcePath = 'sounds/wrong_answer.mp3';
 const gameCompletedMusicPath = 'sounds/set_completed_background_music.mp3';
 const coinsIncreasingSoundResourcePath = 'sounds/coins_dropping.mp3';
+const inflatingSoundResourcePath = 'sounds/inflating.mp3';
 
 /// Enum representing audio assets with their corresponding paths
 enum AudioAsset {
@@ -15,7 +16,8 @@ enum AudioAsset {
   partyPopper(partyPopperSoundResourcePath),
   wrongAnswer(wrongAnswerSoundResourcePath),
   gameCompleteMusic(gameCompletedMusicPath),
-  coinsIncreasing(coinsIncreasingSoundResourcePath);
+  coinsIncreasing(coinsIncreasingSoundResourcePath),
+  inflating(inflatingSoundResourcePath);
 
   final String path;
 

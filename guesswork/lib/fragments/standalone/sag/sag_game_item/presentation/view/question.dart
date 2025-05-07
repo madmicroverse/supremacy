@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 
 import '../bloc/sag_game_item_bloc.dart';
 import '../bloc/sag_game_item_bs.dart';
 
 class Question extends StatelessWidget {
-  final SAGGameItemBS sagGameItemBS;
-
-  const Question({super.key, required this.sagGameItemBS});
+  const Question({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SAGGameItemBloc, SAGGameItemBS>(
+      buildWhen:
+          (state, nextState) =>
+              state.doesGamesItemBecameCompleted(nextState) ||
+              state.doesRevealedRatioChange(nextState),
       builder: (context, state) {
-        final guessGame = sagGameItemBS.sagGameItem!;
+        final guessGame = state.sagGameItem!;
         return Stack(
           children: [
             FAProgressBar(
               size: 40,
               borderRadius: BorderRadius.zero,
-              backgroundColor: Colors.black12,
-              currentValue: guessGame.points * sagGameItemBS.concealedRatio,
+              backgroundColor: context.colorScheme.surfaceContainer,
+              currentValue: guessGame.points * state.concealedRatio,
               maxValue: guessGame.points.toDouble(),
               displayText: '',
               formatValue: (double value, int? fixed) {
@@ -29,18 +32,21 @@ class Question extends StatelessWidget {
               },
               displayTextStyle: TextStyle(fontSize: 20),
               progressColor:
-                  sagGameItemBS.isGameItemComplete
-                      ? sagGameItemBS.isCorrectAnswer
-                          ? Colors.green
-                          : Colors.black54
-                      : Colors.green,
+                  state.isGameItemComplete
+                      ? state.isCorrectAnswer
+                          ? context.gamesColors.correct
+                          : context.gamesColors.incorrect
+                      : context.gamesColors.correct,
             ),
             SizedBox(
               height: 40,
               child: Center(
                 child: Text(
-                  sagGameItemBS.sagGameItem!.question,
-                  style: TextStyle(fontSize: 25, color: Colors.white),
+                  state.sagGameItem!.question,
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: context.colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),

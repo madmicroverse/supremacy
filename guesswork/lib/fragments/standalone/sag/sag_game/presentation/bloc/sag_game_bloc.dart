@@ -3,17 +3,19 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/constants/resources.dart';
+import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
+import 'package:guesswork/core/domain/extension/audio_player.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
 import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/di/modules/router_module.dart';
-import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/create_sag_game_use_case.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/get_sag_game_use_case.dart';
+import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 
-import '../../domain/use_case/get_sag_game_use_case.dart';
 import 'sag_game_be.dart';
 import 'sag_game_bsc.dart';
 
@@ -22,34 +24,55 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
   final GetSAGGameUseCase _getSAGGameUseCase;
   final UpsertUserSAGGameUseCase _upsertUserSAGGameUseCase;
   final AddCoinsStreamUseCase _addCoinsStreamUseCase;
-  final CreateSAGGameUseCase _createSAGGameUseCase;
+  final GetGamesSettingsStreamUseCase _getGamesSettingsUseCase;
 
-  AudioPlayer? gameCompletedBackgroundMusicPlayer;
+  StreamSubscription<GamesSettings>? _gamesSettingsSubscription;
+
+  AudioPlayer? gameCompletedBGAudioPlayer;
+  AudioPlayer? inflatingPlayer;
+  AudioPlayer? partyPopperPlayer;
 
   SAGGameBloc(
     this._router,
     this._getSAGGameUseCase,
     this._upsertUserSAGGameUseCase,
     this._addCoinsStreamUseCase,
-    this._createSAGGameUseCase,
+    this._getGamesSettingsUseCase,
   ) : super(SAGGameBSC()) {
     on<PopSAGGameBE>(_popBlocEvent);
     on<InitSAGGameBE>(_initGameSetBlocEvent);
     on<InitSAGGameItemLoopBE>(_initSAGGameItemLoopBE);
+    on<GamesSettingsUpdateBE>(_gamesSettingsUpdateBE);
     on<AddPointsSAGGameBE>(_addPointsSAGGameBE);
     on<InitAudioPlayersBE>(_initAudioPlayersBE);
+    on<CompleteSAGGameBE>(_completeSAGGameBE);
+  }
+
+  FutureOr<void> _initGameSettingsBE() async {
+    final result = await _getGamesSettingsUseCase();
+    switch (result) {
+      case Success():
+        _gamesSettingsSubscription = result.data.listen((gamesSettings) {
+          add(GamesSettingsUpdateBE(gamesSettings));
+        });
+      case Error():
+        switch (result.error) {
+          default:
+          // return emit(state.errorState(result.error.toString()));
+        }
+    }
   }
 
   FutureOr<void> _initGameSetBlocEvent(
     InitSAGGameBE event,
     Emitter<SAGGameBSC> emit,
   ) async {
+    _initGameSettingsBE();
     add(InitAudioPlayersBE());
     final result = await _getSAGGameUseCase(event.sagGameId);
     switch (result) {
       case Success():
         emit(state.withSAGGameBSC(result.data));
-        add(InitSAGGameItemLoopBE(result.data));
       case Error():
         // final result = await _createSAGGameUseCase();
         throw UnimplementedError();
@@ -60,27 +83,49 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
     InitAudioPlayersBE event,
     Emitter<SAGGameBSC> emit,
   ) {
-    gameCompletedBackgroundMusicPlayer = AudioPlayer();
-    gameCompletedBackgroundMusicPlayer?.setVolume(0.25);
-    gameCompletedBackgroundMusicPlayer?.setReleaseMode(ReleaseMode.loop);
-    gameCompletedBackgroundMusicPlayer?.setSource(
-      AudioAsset.gameCompleteMusic.source,
-    );
+    gameCompletedBGAudioPlayer = AudioPlayer();
+    gameCompletedBGAudioPlayer?.setVolume(0.25);
+    gameCompletedBGAudioPlayer?.setReleaseMode(ReleaseMode.loop);
+    gameCompletedBGAudioPlayer?.setSource(AudioAsset.gameCompleteMusic.source);
+
+    inflatingPlayer = AudioPlayer();
+    inflatingPlayer?.setVolume(0.25);
+    inflatingPlayer?.setReleaseMode(ReleaseMode.release);
+    inflatingPlayer?.setSource(AudioAsset.inflating.source);
+
+    partyPopperPlayer = AudioPlayer();
+    partyPopperPlayer?.setVolume(0.25);
+    partyPopperPlayer?.setReleaseMode(ReleaseMode.release);
+    partyPopperPlayer?.setSource(AudioAsset.partyPopper.source);
+  }
+
+  FutureOr<void> _gamesSettingsUpdateBE(GamesSettingsUpdateBE event, emit) {
+    emit(state.withGamesSettings(event.gamesSettings));
+    if (event.gamesSettings.isMusicEnabled &&
+        !gameCompletedBGAudioPlayer.isPlaying &&
+        !state.isClaimingPoints &&
+        state.isSAGGameCompleted) {
+      gameCompletedBGAudioPlayer?.resume();
+    } else if (!event.gamesSettings.isMusicEnabled &&
+        gameCompletedBGAudioPlayer.isPlaying) {
+      gameCompletedBGAudioPlayer?.stop();
+    }
   }
 
   FutureOr<void> _initSAGGameItemLoopBE(
     InitSAGGameItemLoopBE event,
     Emitter<SAGGameBSC> emit,
   ) async {
-    for (var sagGameItem in event.sagGame.sageGameItemList) {
+    emit(state.initializedGameItemLoop);
+    final sagGame = state.sagGame!;
+    for (var sagGameItem in sagGame.sageGameItemList) {
       SAGGameItem? result = await _router.pushNamed<SAGGameItem>(
         sagGameItemRouteName,
-        extra: sagGameItem.copyWith(setName: event.sagGame.title),
+        extra: sagGameItem.copyWith(setName: sagGame.title),
       );
 
       if (result.isNotNull) {
-        final newSAGGame =
-            state.sagGame!.withSAGGameItem(result!).withCompletedStatus;
+        final newSAGGame = state.sagGame!.withSAGGameItem(result!).completed;
         final upsertResult = await _upsertUserSAGGameUseCase(
           state.userSAGGameId,
           newSAGGame,
@@ -94,8 +139,8 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
                   .withUserSAGGameId(upsertResult.data),
             );
 
-            if (newSAGGame.isCompleted) {
-              gameCompletedBackgroundMusicPlayer?.resume();
+            if (newSAGGame.isCompleted && state.isMusicEnabled) {
+              gameCompletedBGAudioPlayer?.resume();
             }
 
           case Error():
@@ -111,10 +156,35 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
     _router.pop();
   }
 
-  FutureOr<void> _addPointsSAGGameBE(
-    AddPointsSAGGameBE event,
-    Emitter<SAGGameBSC> emit,
-  ) async {
-    _addCoinsStreamUseCase(state.sagGame.pointsGained);
+  FutureOr<void> _addPointsSAGGameBE(event, emit) async {
+    if (state.isSoundEnabled) inflatingPlayer?.resume();
+    emit(state.claimingPoints);
+    await Future.delayed(event.duration);
+    if (state.isSoundEnabled) {
+      inflatingPlayer?.stop();
+      partyPopperPlayer?.resume();
+    }
+    final result = await _addCoinsStreamUseCase(state.sagGame.pointsGained);
+    switch (result) {
+      case Success():
+        emit(state.withSAGGameBSC(state.sagGame!.claimed));
+      case Error():
+    }
+  }
+
+  FutureOr<void> _completeSAGGameBE(_, _) {
+    _router.pop();
+  }
+
+  @override
+  Future<void> close() {
+    _gamesSettingsSubscription?.cancel();
+    gameCompletedBGAudioPlayer?.stop();
+    gameCompletedBGAudioPlayer?.dispose();
+    inflatingPlayer?.stop();
+    inflatingPlayer?.dispose();
+    partyPopperPlayer?.stop();
+    partyPopperPlayer?.dispose();
+    return super.close();
   }
 }

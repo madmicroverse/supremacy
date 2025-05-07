@@ -29,14 +29,14 @@ extension SAGGameMutation on SAGGame {
     return copyWith(sageGameItemList: newSAGeGameItemList);
   }
 
-  SAGGame get withCompletedStatus {
-    return copyWith(
-      isCompleted: sageGameItemList.all((sagGameItem) {
-        final result = sagGameItem.answer.isNotNull;
-        return result;
-      }),
-    );
-  }
+  SAGGame get completed => copyWith(
+    isCompleted: sageGameItemList.all((sagGameItem) {
+      final result = sagGameItem.answer.isNotNull;
+      return result;
+    }),
+  );
+
+  SAGGame get claimed => copyWith(isClaimed: true);
 }
 
 extension SAGGameQueries on SAGGame? {

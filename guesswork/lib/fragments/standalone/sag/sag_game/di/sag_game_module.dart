@@ -10,6 +10,7 @@ import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
 import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/components/app_bar/di/app_bar_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/create_sag_game_use_case.dart';
+import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 import 'package:injectable/injectable.dart';
 
 import '../data/framework/firestore_operations/CreateSagGameOperation.dart';
@@ -95,14 +96,14 @@ abstract class SAGGameModule {
     GetSAGGameUseCase getSAGGameUseCase,
     UpsertUserSAGGameUseCase createGamesUserPointsUseCase,
     AddCoinsStreamUseCase addCoinsStreamUseCase,
-    CreateSAGGameUseCase createSAGGameUseCase,
+    GetGamesSettingsStreamUseCase getGamesSettingsUseCase,
   ) {
     return SAGGameBloc(
       router,
       getSAGGameUseCase,
       createGamesUserPointsUseCase,
       addCoinsStreamUseCase,
-      createSAGGameUseCase,
+      getGamesSettingsUseCase,
     );
   }
 

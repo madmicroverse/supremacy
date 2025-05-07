@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/core/presentation/widgets/space.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/view/bloc_utils.dart';
 
@@ -56,7 +57,7 @@ class SAGGameItemRouteWidget extends StatelessWidget {
                       },
                       child: Container(
                         height: 40,
-                        color: Colors.grey,
+                        color: context.colorScheme.surfaceContainerHighest,
                         child: Center(child: Text("ad space")),
                       ),
                     ),

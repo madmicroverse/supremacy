@@ -43,11 +43,9 @@ abstract class GamesUserInfo with _$GamesUserInfo {
 @freezed
 abstract class GamesSettings with _$GamesSettings {
   const factory GamesSettings({
-    @Default("") String id,
     @Default(true) bool sound,
     @Default(true) bool music,
     @Default(true) bool haptic,
-    int? points,
   }) = _GamesSettings;
 
   factory GamesSettings.fromJson(Map<String, dynamic> json) =>
@@ -58,9 +56,9 @@ abstract class GamesSettings with _$GamesSettings {
 extension GamesSettingsQueries on GamesSettings? {
   bool get isSoundEnabled => this?.sound ?? false;
 
-  bool get isMusicEnabled => this?.sound ?? false;
+  bool get isMusicEnabled => this?.music ?? false;
 
-  bool get isHapticEnabled => this?.sound ?? false;
+  bool get isHapticEnabled => this?.haptic ?? false;
 }
 
 @freezed

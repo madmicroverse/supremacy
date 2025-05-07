@@ -4,51 +4,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/extension/sag_game.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
+import 'package:guesswork/core/presentation/widgets/play_progress_button.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/presentation/view/points_widget.dart';
 
 import '../bloc/sag_game_be.dart';
 import '../bloc/sag_game_bloc.dart';
 import '../bloc/sag_game_bsc.dart';
 
-SAGGameBloc _bloc(BuildContext context) => context.read<SAGGameBloc>();
+extension ContextBloc on BuildContext {
+  SAGGameBloc get bloc => read<SAGGameBloc>();
 
-class SAGGameRouteWidget extends StatefulWidget {
-  final PreferredSizeWidget appBarWidget;
-
-  const SAGGameRouteWidget({super.key, required this.appBarWidget});
-
-  @override
-  State<SAGGameRouteWidget> createState() => _SAGGameRouteWidgetState();
+  addEvent(SAGGameBE coinsBE) => bloc.add(coinsBE);
 }
 
-class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
-  final GlobalKey<PointsWidgetState> pointsKey = GlobalKey<PointsWidgetState>();
+class SAGGameRouteWidget extends StatelessWidget {
+  final PreferredSizeWidget appBarWidget;
+  final blowPopDuration = 3000.ms;
+  final delayedContinueDuration = 6000.ms;
+  final autoStartDuration = 60000.ms;
 
-  bool arePointsClaimed = false;
+  SAGGameRouteWidget({super.key, required this.appBarWidget});
+
+  final GlobalKey<PointsWidgetState> pointsKey = GlobalKey<PointsWidgetState>();
 
   Duration claimDuration = Duration(seconds: 1);
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.appBarWidget,
+      appBar: appBarWidget,
       body: BlocBuilder<SAGGameBloc, SAGGameBSC>(
         builder: (context, state) {
-          if (!state.isSAGGameCompleted) {
-            return Container();
-          }
+          // if (!state.isSAGGameCompleted) {
+          //   return Container();
+          // }
 
           return LayoutBuilder(
             builder: (context, constraints) {
               return Stack(
                 children: [
                   // GameSetBlocAppBar(),
-                  CustomPaint(painter: RotaryPainter(), size: Size.infinite)
+                  CustomPaint(
+                        painter: RotaryPainter(
+                          context.colorScheme.primary,
+                          context.colorScheme.surfaceContainerHigh,
+                        ),
+                        size: Size.infinite,
+                      )
                       .animate(onPlay: (controller) => controller.repeat())
                       .scaleXY(begin: 4, end: 4)
                       .rotate(
@@ -57,48 +60,52 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
                         end: 20 * pi,
                       ),
 
-                  if (arePointsClaimed)
+                  if (state.isSAGGameClaimed)
                     Align(
                       alignment: Alignment.center,
-                      child: FilledButton(
-                        onPressed: () {
-                          _bloc(context).add(PopSAGGameBE());
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            Colors.amber,
-                          ),
-                        ),
-                        child: Text("More games"),
+                      child: PlayProgressButton(
+                        duration: delayedContinueDuration,
+                        onPressed: () => context.addEvent(CompleteSAGGameBE()),
+                        child: Text("MORE"),
                       ),
                     ).animate().fadeIn(duration: 1500.ms, begin: 0),
 
-                  if (!arePointsClaimed)
+                  if (state.isSAGGameAvailable &&
+                      !state.isGameItemLoopInitialized)
+                    Align(
+                      alignment: Alignment.center,
+                      child: PlayProgressButton(
+                        duration: autoStartDuration,
+                        onPressed:
+                            () => context.addEvent(InitSAGGameItemLoopBE()),
+                        child: Text("START"),
+                      ),
+                    ),
+
+                  if (state.isSAGGameCompleted && !state.isClaimingPoints)
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: FilledButton(
                         onPressed: () async {
-                          final bloc = _bloc(context);
+                          context.addEvent(AddPointsSAGGameBE(blowPopDuration));
                           await pointsKey.currentState?.addFireworkBomb(
+                            context,
                             Offset(
                               constraints.maxWidth / 2,
                               constraints.maxHeight / 2,
                             ),
                           );
-                          if (bloc.isClosed) return;
-                          bloc.add(AddPointsSAGGameBE());
-                          setState(() {
-                            arePointsClaimed = true;
-                          });
                         },
                         child: Text("Claim points"),
                       ),
                     ),
 
-                  PointsWidget(
-                    key: pointsKey,
-                    points: state.sagGame.pointsGained,
-                  ),
+                  if (state.isSAGGameCompleted)
+                    PointsWidget(
+                      key: pointsKey,
+                      points: state.sagGame.pointsGained,
+                      duration: blowPopDuration,
+                    ),
                 ],
               );
             },
@@ -111,6 +118,11 @@ class _SAGGameRouteWidgetState extends State<SAGGameRouteWidget> {
 }
 
 class RotaryPainter extends CustomPainter {
+  final Color colorAlpha;
+  final Color colorBeta;
+
+  RotaryPainter(this.colorAlpha, this.colorBeta);
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
@@ -143,15 +155,10 @@ class RotaryPainter extends CustomPainter {
       final Paint gradientPaint =
           Paint()
             ..shader = RadialGradient(
-              colors: [
-                i % 2 == 0
-                    ? Colors.yellow.withValues(alpha: 0.5)
-                    : Colors.deepPurpleAccent.withValues(alpha: 0.5),
-                Colors.transparent,
-              ],
+              colors: [i % 2 == 0 ? colorAlpha : colorBeta, Colors.transparent],
               stops: const [0.0, 1.0],
               center: Alignment.center,
-              radius: 0.25,
+              radius: 0.3,
             ).createShader(Rect.fromCircle(center: center, radius: radius));
 
       // Draw the filled triangle with gradient

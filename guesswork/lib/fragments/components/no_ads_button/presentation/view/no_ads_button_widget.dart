@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/core/presentation/widgets/no_ad_icon_widget.dart';
 
 import '../bloc/no_ads_button_be.dart';
@@ -21,7 +22,10 @@ class NoAdsButton extends StatelessWidget {
       builder: (context, state) {
         return IconButton(
           onPressed: () => context.addEvent(ShowNoAdsBE()),
-          icon: const NoAdIconWidget(size: 28),
+          icon: NoAdIconWidget(
+            size: 28,
+            iconColor: context.colorScheme.onPrimary,
+          ),
         );
       },
     );

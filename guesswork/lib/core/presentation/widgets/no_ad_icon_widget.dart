@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 
 /// A widget that displays a "No Ads" icon with customizable styling.
-/// 
+///
 /// This widget creates a circular badge with a crossed-out ad symbol,
 /// indicating that the app or a specific feature is ad-free.
 class NoAdIconWidget extends StatelessWidget {
   /// The size of the icon widget.
   final double size;
-  
+
   /// The background color of the icon.
   final Color backgroundColor;
-  
+
   /// The color of the icon and text.
   final Color iconColor;
-  
+
   /// Whether to show the text "AD FREE" below the icon.
   final bool showText;
-  
+
   /// Creates a [NoAdIconWidget].
   ///
   /// The [size] parameter defaults to 40.0.
@@ -40,11 +41,11 @@ class NoAdIconWidget extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: backgroundColor,
+            color: context.gamesColors.correct,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: context.colorScheme.scrim,
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -62,7 +63,7 @@ class NoAdIconWidget extends StatelessWidget {
                   fontSize: size * 0.4,
                 ),
               ),
-              
+
               // Diagonal line (slash)
               CustomPaint(
                 size: Size(size * 0.8, size * 0.8),
@@ -74,7 +75,7 @@ class NoAdIconWidget extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Optional "AD FREE" text
         if (showText)
           Padding(
@@ -99,18 +100,16 @@ class _SlashPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
 
-  _SlashPainter({
-    required this.color,
-    required this.strokeWidth,
-  });
+  _SlashPainter({required this.color, required this.strokeWidth});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = color
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.round
+          ..style = PaintingStyle.stroke;
 
     canvas.drawLine(
       Offset(size.width * 0.2, size.height * 0.2),

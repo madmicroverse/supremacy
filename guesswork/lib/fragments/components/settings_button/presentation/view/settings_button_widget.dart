@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 
 import '../bloc/settings_button_be.dart';
 import '../bloc/settings_button_bloc.dart';
@@ -20,7 +21,11 @@ class SettingsButton extends StatelessWidget {
       builder: (context, state) {
         return IconButton(
           onPressed: () => context.addEvent(ShowSettingsBE()),
-          icon: const Icon(Icons.settings, size: 28, color: Colors.blueGrey),
+          icon: Icon(
+            Icons.settings,
+            size: 28,
+            color: context.colorScheme.primary,
+          ),
         );
       },
     );

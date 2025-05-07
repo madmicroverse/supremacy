@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
+import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart';
+import 'package:guesswork/di/modules/router_module.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/set_game_settings_use_case.dart';
 
@@ -14,6 +16,7 @@ class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
   final IRouter _router;
   final GetGamesSettingsStreamUseCase _getGamesSettingsUseCase;
   final SetGamesSettingsUseCase _setGamesSettingsUseCase;
+  final SignOutUseCase _signOutUseCase;
 
   StreamSubscription<GamesSettings>? _gamesSettingsSubscription;
 
@@ -21,10 +24,12 @@ class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
     this._router,
     this._getGamesSettingsUseCase,
     this._setGamesSettingsUseCase,
+    this._signOutUseCase,
   ) : super(SettingsBSC()) {
     on<InitSettingsBE>(_initSettingsBE);
     on<UpdateSettingsBE>(_updateSettingsBE);
     on<SwitchSettingsBE>(_switchSettingsBE);
+    on<SignOutBE>(_signOutBE);
   }
 
   FutureOr<void> _initSettingsBE(
@@ -69,5 +74,10 @@ class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
   Future<void> close() {
     _gamesSettingsSubscription?.cancel();
     return super.close();
+  }
+
+  FutureOr<void> _signOutBE(SignOutBE event, Emitter<SettingsBSC> emit) {
+    _signOutUseCase();
+    _router.goNamed(signInRouteName);
   }
 }

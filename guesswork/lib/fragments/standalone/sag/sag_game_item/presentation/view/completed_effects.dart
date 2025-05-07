@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/extension/basic.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/view/bloc_utils.dart';
 
 import '../bloc/sag_game_item_bloc.dart';
@@ -11,9 +12,6 @@ import '../bloc/sag_game_item_bs.dart';
 class CompleteEffects extends StatelessWidget {
   const CompleteEffects({super.key});
 
-  // late ConfettiController _confettiController;
-
-  // @override
   bool _reconstructionCondition(SAGGameItemBS state, SAGGameItemBS nextState) =>
       state.doesGamesItemBecameCompleted(nextState);
 
@@ -43,7 +41,7 @@ class CompleteEffects extends StatelessWidget {
                     "X",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                      color: context.gamesColors.incorrect,
                     ),
                   )
                   .animate(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 
 import '../bloc/sign_in_bloc.dart';
 import '../bloc/sign_in_bloc_events.dart';
@@ -62,7 +63,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.errorMessage!),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: context.gamesColors.incorrect,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -73,7 +74,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Welcome, ${state.displayName ?? 'Player'}!'),
-              backgroundColor: Colors.green,
+              backgroundColor: context.gamesColors.correct,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -88,7 +89,10 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Colors.teal.shade900, Colors.teal.shade300],
+                colors: [
+                  context.colorScheme.primary.withAlpha(230),
+                  context.colorScheme.primary.withAlpha(150),
+                ],
               ),
             ),
             child: Stack(
@@ -104,7 +108,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              _buildLogo(),
+                              _buildLogo(context),
                               const SizedBox(height: 60),
                               _buildSignInOptions(state),
                             ],
@@ -123,25 +127,29 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     );
   }
 
-  Widget _buildLogo() {
+  Widget _buildLogo(BuildContext context) {
     return Column(
       children: [
         Container(
           height: 140,
           width: 140,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: context.colorScheme.onPrimary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.white.withValues(alpha: 0.3),
+                color: context.colorScheme.onPrimary.withValues(alpha: 0.3),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),
             ],
           ),
           child: Center(
-            child: Icon(Icons.psychology, size: 90, color: Colors.white),
+            child: Icon(
+              Icons.psychology,
+              size: 90,
+              color: context.colorScheme.onPrimary,
+            ),
           ),
         ),
         const SizedBox(height: 30),
@@ -150,29 +158,29 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
           style: TextStyle(
             fontSize: 38,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: context.colorScheme.onPrimary,
             letterSpacing: 3,
-            shadows: [
-              Shadow(
-                color: Colors.purpleAccent.withOpacity(0.5),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
+            // shadows: [
+            //   Shadow(
+            //     color: context.colorScheme.onPrimary.withOpacity(0.5),
+            //     blurRadius: 7,
+            //     offset: const Offset(0, 15),
+            //   ),
+            // ],
           ),
         ),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: context.colorScheme.onPrimary.withAlpha(25),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             'Better than chance',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white70,
+              color: context.colorScheme.onPrimary,
               letterSpacing: 1.5,
             ),
           ),
@@ -185,13 +193,13 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: context.colorScheme.onPrimary.withAlpha(25),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 5,
+            color: context.colorScheme.onPrimary.withAlpha(50),
+            blurRadius: 0,
+            spreadRadius: 0,
           ),
         ],
       ),
@@ -204,7 +212,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: context.colorScheme.onPrimary,
               letterSpacing: 2,
             ),
           ),
@@ -212,7 +220,10 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
           Text(
             'Choose your preferred sign-in method',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.white70),
+            style: TextStyle(
+              fontSize: 14,
+              color: context.colorScheme.onPrimary,
+            ),
           ),
           const SizedBox(height: 30),
           _buildGoogleSignInButton(),
@@ -231,8 +242,8 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     return ElevatedButton(
       onPressed: () => _bloc(context).add(GoogleSignInBlocEvent()),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        backgroundColor: context.colorScheme.onPrimary,
+        foregroundColor: context.colorScheme.scrim,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         elevation: 5,
@@ -259,8 +270,8 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     return ElevatedButton(
       onPressed: () => _bloc(context).add(AppleSignInBlocEvent()),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: context.colorScheme.scrim,
+        foregroundColor: context.colorScheme.onPrimary,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         elevation: 5,
@@ -282,19 +293,23 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
   Widget _buildDivider() {
     return Row(
       children: [
-        Expanded(child: Divider(color: Colors.white30, thickness: 1)),
+        Expanded(
+          child: Divider(color: context.colorScheme.onPrimary, thickness: 1),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'OR',
             style: TextStyle(
-              color: Colors.white60,
+              color: context.colorScheme.onPrimary,
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        Expanded(child: Divider(color: Colors.white30, thickness: 1)),
+        Expanded(
+          child: Divider(color: context.colorScheme.onPrimary, thickness: 1),
+        ),
       ],
     );
   }
@@ -303,11 +318,11 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     return TextButton(
       onPressed: () => _bloc(context).add(AnonymousSignInBlocEvent()),
       style: TextButton.styleFrom(
-        foregroundColor: Colors.white70,
+        foregroundColor: context.colorScheme.onPrimary,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
-          side: BorderSide(color: Colors.white30),
+          side: BorderSide(color: context.colorScheme.onPrimary.withAlpha(50)),
         ),
       ),
       child: const Text(
@@ -319,16 +334,16 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
 
   Widget _buildLoadingOverlay() {
     return Container(
-      color: Colors.black54,
+      color: context.colorScheme.scrim,
       child: Center(
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: context.colorScheme.onPrimary.withAlpha(25),
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: context.colorScheme.scrim.withAlpha(50),
                 blurRadius: 10,
                 spreadRadius: 2,
               ),
@@ -338,12 +353,17 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
             mainAxisSize: MainAxisSize.min,
             children: [
               CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.purpleAccent),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  context.colorScheme.primary,
+                ),
               ),
               const SizedBox(height: 20),
               Text(
                 'Signing in...',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(
+                  color: context.colorScheme.onPrimary,
+                  fontSize: 16,
+                ),
               ),
             ],
           ),

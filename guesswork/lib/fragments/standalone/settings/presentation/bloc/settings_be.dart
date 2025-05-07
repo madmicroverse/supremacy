@@ -1,4 +1,3 @@
-
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 
 sealed class SettingsBE {}
@@ -16,3 +15,5 @@ class SwitchSettingsBE extends SettingsBE {
 
   SwitchSettingsBE(this.gameSettings);
 }
+
+class SignOutBE extends SettingsBE {}

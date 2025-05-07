@@ -5,8 +5,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/extension/basic.dart';
-import 'package:guesswork/core/presentation/color_extra.dart';
 import 'package:guesswork/core/presentation/extension/animation_utils.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/view/bloc_utils.dart';
 
 import '../bloc/sag_game_item_be.dart';
@@ -128,15 +128,13 @@ class GuessOptions extends StatelessWidget {
   ) {
     if (state.isGameItemComplete &&
         (state.isSelectedOption(option) || state.isCorrectOption(option))) {
-      final gamesColors = Theme.of(context).extension<GamesColors>();
-
       if (state.isCorrectOption(option)) {
-        return gamesColors!.correct;
+        return context.gamesColors.correct;
       } else {
-        return gamesColors!.incorrect;
+        return context.gamesColors.incorrect;
       }
     }
 
-    return Theme.of(context).buttonTheme.colorScheme!.onPrimary;
+    return context.colorScheme.onPrimary;
   }
 }

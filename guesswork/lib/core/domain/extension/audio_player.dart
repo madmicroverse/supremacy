@@ -17,4 +17,6 @@ extension AudioPlayerUtils on AudioPlayer? {
     }
     return false;
   }
+
+  bool get isPlaying => this?.state == PlayerState.playing;
 }

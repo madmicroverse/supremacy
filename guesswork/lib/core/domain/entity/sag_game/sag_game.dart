@@ -64,6 +64,7 @@ abstract class SAGGamePreview with _$SAGGamePreview {
 abstract class SAGGame with _$SAGGame {
   const factory SAGGame({
     @JsonKey(includeToJson: false) required String id,
+    @Default(false) bool isClaimed,
     @Default(false) bool isCompleted,
     required String title,
     required String previewImage,

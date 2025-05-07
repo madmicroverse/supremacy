@@ -34,4 +34,11 @@ extension WidgetAnimations on Widget {
         .animate(onPlay: (controller) => controller.repeat())
         .shimmer(duration: durationInMillis.ms, curve: Curves.easeInCubic);
   }
+
+  Widget get shimmer {
+    final durationInMillis = 1500;
+    return animate(
+      onPlay: (controller) => controller.repeat(),
+    ).shimmer(duration: durationInMillis.ms, curve: Curves.easeInCubic);
+  }
 }

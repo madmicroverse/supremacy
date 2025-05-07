@@ -18,33 +18,6 @@ class SAGGamesRouteWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar,
-      // extendBodyBehindAppBar: true,
-      // appBar: AppBar(
-      //   title: const Text(
-      //     'Scratch & Guess Games',
-      //     style: TextStyle(
-      //       fontWeight: FontWeight.bold,
-      //       fontSize: 24,
-      //       color: Colors.white,
-      //     ),
-      //   ),
-      //   backgroundColor: Colors.transparent,
-      //   elevation: 0,
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.settings, size: 28),
-      //       onPressed: () {},
-      //       tooltip: 'Logout',
-      //     ),
-      //     IconButton(
-      //       icon: const NoAdIconWidget(size: 28),
-      //       onPressed: () {
-      //         _bloc(context).add(SignOutBlocEvent());
-      //       },
-      //       tooltip: 'Logout',
-      //     ),
-      //   ],
-      // ),
       body: BackgroundWidget(
         child: BlocBuilder<SAGGamesBloc, SAGGamesBSC>(
           buildWhen:

@@ -76,6 +76,13 @@ class Settings extends StatelessWidget {
               ),
               vsMax,
               ListTile(
+                onTap: () => context.addEvent(SignOutBE()),
+                leading: Icon(Icons.logout),
+                title: Text('Sign Out'),
+                trailing: Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              vsMax,
+              ListTile(
                 title: Text(
                   'Informacion',
                   style: Theme.of(context).textTheme.headlineSmall,

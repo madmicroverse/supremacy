@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/core/presentation/extension/animation_utils.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 
 import '../bloc/coins_be.dart';
 import '../bloc/coins_bloc.dart';
@@ -23,7 +24,7 @@ class Coins extends StatelessWidget {
     return BlocBuilder<CoinsBloc, CoinsBSC>(
       builder: (context, state) {
         return InkWell(
-          onTap: () => context.addEvent(ShowUserDetailCoinsBE()),
+          onTap: () {},
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
@@ -42,11 +43,11 @@ class Coins extends StatelessWidget {
                   if (state.amount.isNotNull)
                     AnimatedFlipCounter(
                       value: state.amount!,
-                      duration: 1500.ms,
+                      duration: 3000.ms,
                       wholeDigits: 8,
                       hideLeadingZeroes: true,
                       textStyle: TextStyle(
-                        color: Colors.amber,
+                        color: context.gamesColors.golden,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),

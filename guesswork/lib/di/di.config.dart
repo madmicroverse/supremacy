@@ -132,8 +132,8 @@ extension GetItInjectableX on _i174.GetIt {
     final settingsButtonModule = _$SettingsButtonModule();
     final noAdsButtonModule = _$NoAdsButtonModule();
     final sAGGamesModule = _$SAGGamesModule();
-    final scratchAndGuessModule = _$ScratchAndGuessModule();
     final settingsModule = _$SettingsModule();
+    final scratchAndGuessModule = _$ScratchAndGuessModule();
     gh.factory<_i780.ImageRepository>(() => global.imageRepositoryFactory());
     await gh.factoryAsync<_i409.ThemeData>(
       () => appModule.themeDataFactory(),
@@ -296,6 +296,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i128.AccountRepository>(),
       ),
     );
+    gh.factory<_i355.CoinsBloc>(
+      () => coinsModule.coinsBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i840.GetCoinsStreamUseCase>(),
+        gh<_i878.GetGamesSettingsStreamUseCase>(),
+      ),
+    );
     gh.factory<_i581.SettingsButtonBloc>(
       () => settingsButtonModule.appBarBlocFactory(gh<_i5.IRouter>()),
     );
@@ -307,10 +314,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i664.SAGGameRepository>(),
       ),
     );
-    gh.factory<_i355.CoinsBloc>(
-      () => coinsModule.appBarBlocFactory(
+    gh.factory<_i409.Widget>(
+      () => coinsModule.appBarWidgetFactory(gh<_i355.CoinsBloc>()),
+      instanceName: 'coinsWidget',
+    );
+    gh.factory<_i1011.SettingsBloc>(
+      () => settingsModule.appBarBlocFactory(
         gh<_i5.IRouter>(),
-        gh<_i840.GetCoinsStreamUseCase>(),
+        gh<_i878.GetGamesSettingsStreamUseCase>(),
+        gh<_i244.SetGamesSettingsUseCase>(),
+        gh<_i599.SignOutUseCase>(),
       ),
     );
     gh.factory<_i484.GetSAGGameUseCase>(
@@ -320,15 +333,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i668.CreateSAGGameUseCase>(
       () => sAGGameModule.createSAGGameUseCaseFactory(
         gh<_i664.SAGGameRepository>(),
-      ),
-    );
-    gh.factory<_i544.SAGGameBloc>(
-      () => sAGGameModule.gameSetBlocFactory(
-        gh<_i5.IRouter>(),
-        gh<_i484.GetSAGGameUseCase>(),
-        gh<_i652.UpsertUserSAGGameUseCase>(),
-        gh<_i659.AddCoinsStreamUseCase>(),
-        gh<_i668.CreateSAGGameUseCase>(),
       ),
     );
     gh.factory<_i374.SAGGameItemBloc>(
@@ -357,11 +361,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i599.SignOutUseCase>(),
       ),
     );
-    gh.factory<_i1011.SettingsBloc>(
-      () => settingsModule.appBarBlocFactory(
+    gh.factory<_i544.SAGGameBloc>(
+      () => sAGGameModule.gameSetBlocFactory(
         gh<_i5.IRouter>(),
+        gh<_i484.GetSAGGameUseCase>(),
+        gh<_i652.UpsertUserSAGGameUseCase>(),
+        gh<_i659.AddCoinsStreamUseCase>(),
         gh<_i878.GetGamesSettingsStreamUseCase>(),
-        gh<_i244.SetGamesSettingsUseCase>(),
       ),
     );
     gh.factory<_i409.Widget>(
@@ -373,10 +379,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i581.SettingsButtonBloc>(),
       ),
       instanceName: 'settingsButtonWidget',
-    );
-    gh.factory<_i409.Widget>(
-      () => coinsModule.appBarWidgetFactory(gh<_i355.CoinsBloc>()),
-      instanceName: 'coinsWidget',
     );
     gh.factory<_i409.Widget>(
       () => settingsModule.appBarWidgetFactory(
@@ -446,6 +448,6 @@ class _$NoAdsButtonModule extends _i496.NoAdsButtonModule {}
 
 class _$SAGGamesModule extends _i78.SAGGamesModule {}
 
-class _$ScratchAndGuessModule extends _i404.ScratchAndGuessModule {}
-
 class _$SettingsModule extends _i52.SettingsModule {}
+
+class _$ScratchAndGuessModule extends _i404.ScratchAndGuessModule {}

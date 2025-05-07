@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/core/presentation/widgets/scratchable/foregrounds/letter_burst.dart';
 
 import '../bloc/sag_game_item_bloc.dart';
@@ -18,9 +19,6 @@ class ScratchForeground extends StatelessWidget {
     required this.height,
   });
 
-  SAGGameItemBloc _bloc(BuildContext context) =>
-      context.read<SAGGameItemBloc>();
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SAGGameItemBloc, SAGGameItemBS>(
@@ -34,9 +32,9 @@ class ScratchForeground extends StatelessWidget {
           background: Container(
             width: double.maxFinite,
             height: double.maxFinite,
-            color: Colors.blueGrey,
+            color: context.colorScheme.primary,
           ),
-          color: Colors.white,
+          color: context.colorScheme.onPrimary,
         );
 
         if (state.isGameItemComplete) {

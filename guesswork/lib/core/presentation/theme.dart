@@ -364,8 +364,9 @@ class MaterialTheme {
     useMaterial3: true,
     extensions: <ThemeExtension<dynamic>>[
       GamesColors(
-        correct: Color(0xFF86AB89),
+        correct: Color.fromARGB(255, 134, 171, 137),
         incorrect: Color.fromARGB(255, 231, 155, 152),
+        golden: Color.fromARGB(255, 181, 148, 16),
       ),
     ],
     brightness: colorScheme.brightness,

@@ -43,7 +43,7 @@ class ScratchSection extends StatelessWidget {
                   SizedBox(
                     width: bestFitSize.width,
                     height: questionBarHeight,
-                    child: Question(sagGameItemBS: sagGameItemBS),
+                    child: Question(),
                   ),
                   SizedBox(
                     width: bestFitSize.width,
