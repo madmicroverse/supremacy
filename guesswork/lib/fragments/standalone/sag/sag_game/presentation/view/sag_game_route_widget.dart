@@ -36,15 +36,10 @@ class SAGGameRouteWidget extends StatelessWidget {
       appBar: appBarWidget,
       body: BlocBuilder<SAGGameBloc, SAGGameBSC>(
         builder: (context, state) {
-          // if (!state.isSAGGameCompleted) {
-          //   return Container();
-          // }
-
           return LayoutBuilder(
             builder: (context, constraints) {
               return Stack(
                 children: [
-                  // GameSetBlocAppBar(),
                   CustomPaint(
                         painter: RotaryPainter(
                           context.colorScheme.primary,

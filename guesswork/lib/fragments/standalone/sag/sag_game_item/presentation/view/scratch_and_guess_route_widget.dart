@@ -27,45 +27,46 @@ class SAGGameItemRouteWidget extends StatelessWidget {
       buildWhen:
           (state, nextState) => state.doesGamesImageBecameAvailable(nextState),
       builder: (context, state) {
-        // return ConfettiSample();
-
-        if (!state.isGamesImageAvailable) {
-          return Center(child: CircularProgressIndicator());
-        }
-
         return Scaffold(
           appBar: ScratchAndGuessAppBar(
             sagGameItemBS: state,
             settingsButton: settingsButton,
             noAdsButton: noAdsButton,
           ),
-          body: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Flexible(
-                      flex: 1,
-                      child: ScratchSection(sagGameItemBS: state),
+          body: Builder(
+            builder: (context) {
+              if (!state.isGamesImageAvailable) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: ScratchSection(sagGameItemBS: state),
+                        ),
+                        GuessOptions(),
+                        vsMid,
+                        InkWell(
+                          onTap: () {
+                            context.confettiController.play();
+                          },
+                          child: Container(
+                            height: 40,
+                            color: context.colorScheme.surfaceContainerHighest,
+                            child: Center(child: Text("ad space")),
+                          ),
+                        ),
+                      ],
                     ),
-                    GuessOptions(),
-                    vsMid,
-                    InkWell(
-                      onTap: () {
-                        context.confettiController.play();
-                      },
-                      child: Container(
-                        height: 40,
-                        color: context.colorScheme.surfaceContainerHighest,
-                        child: Center(child: Text("ad space")),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              CompleteEffects(),
-            ],
+                  ),
+                  CompleteEffects(),
+                ],
+              );
+            },
           ),
         );
       },

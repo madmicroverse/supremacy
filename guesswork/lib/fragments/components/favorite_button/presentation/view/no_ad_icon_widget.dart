@@ -112,8 +112,8 @@ class _SlashPainter extends CustomPainter {
           ..style = PaintingStyle.stroke;
 
     canvas.drawLine(
-      Offset(size.width * 0.2, size.height * 0.2),
       Offset(size.width * 0.8, size.height * 0.8),
+      Offset(size.width * 0.2, size.height * 0.2),
       paint,
     );
   }
