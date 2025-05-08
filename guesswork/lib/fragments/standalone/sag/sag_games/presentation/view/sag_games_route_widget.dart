@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/presentation/widgets/backgound_widget.dart';
 
 import '../bloc/sag_games_be.dart';
@@ -9,8 +10,13 @@ import 'game_card.dart';
 
 class SAGGamesRouteWidget extends StatelessWidget {
   final PreferredSizeWidget appBar;
+  final Widget Function(SAGGame sagGame) sagGameFavoriteButtonProvider;
 
-  const SAGGamesRouteWidget({super.key, required this.appBar});
+  const SAGGamesRouteWidget({
+    super.key,
+    required this.appBar,
+    required this.sagGameFavoriteButtonProvider,
+  });
 
   SAGGamesBloc _bloc(BuildContext context) => context.read<SAGGamesBloc>();
 
@@ -46,6 +52,7 @@ class SAGGamesRouteWidget extends StatelessWidget {
                 final sagGame = sagGameList[index];
                 return GameCard(
                   sagGame: sagGame,
+                  favoriteButton: sagGameFavoriteButtonProvider(sagGame),
                   onTap: () {
                     _bloc(context).add(SelectGameBlocEvent(sagGame));
                   },

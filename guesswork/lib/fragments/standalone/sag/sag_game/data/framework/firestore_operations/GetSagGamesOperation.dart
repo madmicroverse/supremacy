@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/query_filter.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
@@ -86,35 +87,6 @@ class GetSagGamesOperation {
       return Error(UnexpectedErrorError(error.toString()));
     }
   }
-}
-
-/// Class to represent query filters
-class QueryFilter {
-  final String field;
-  final dynamic isEqualTo;
-  final dynamic isGreaterThan;
-  final dynamic isGreaterThanOrEqualTo;
-  final dynamic isLessThan;
-  final dynamic isLessThanOrEqualTo;
-  final dynamic arrayContains;
-  final List<dynamic>? arrayContainsAny;
-  final List<dynamic>? whereIn;
-  final List<dynamic>? whereNotIn;
-  final bool? isNull;
-
-  QueryFilter({
-    required this.field,
-    this.isEqualTo,
-    this.isGreaterThan,
-    this.isGreaterThanOrEqualTo,
-    this.isLessThan,
-    this.isLessThanOrEqualTo,
-    this.arrayContains,
-    this.arrayContainsAny,
-    this.whereIn,
-    this.whereNotIn,
-    this.isNull,
-  });
 }
 
 /// Class to hold paginated results

@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
 
-/// A card widget that displays a game preview with image and title below.
 class GameCard extends StatelessWidget {
-  /// The game preview data to display.
   final SAGGame sagGame;
-
+  final Widget favoriteButton;
   final VoidCallback onTap;
 
-  const GameCard({super.key, required this.sagGame, required this.onTap});
+  const GameCard({
+    super.key,
+    required this.sagGame,
+    required this.favoriteButton,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -59,17 +62,7 @@ class GameCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.favorite_border,
-                    size: 38,
-                    color: context.colorScheme.onPrimary,
-                  ),
-                ),
-              ),
+              Align(alignment: Alignment.topRight, child: favoriteButton),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(

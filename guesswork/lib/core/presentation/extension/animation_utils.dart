@@ -23,6 +23,15 @@ extension WidgetAnimations on Widget {
         );
   }
 
+  Widget greyscale(bool isLoading) {
+    var result = this;
+
+    if (isLoading) {
+      result = Greyscale(child: this);
+    }
+    return result.animate(onPlay: (controller) => controller.repeat());
+  }
+
   Widget greyscaleShimmer(bool isLoading) {
     var result = this;
 

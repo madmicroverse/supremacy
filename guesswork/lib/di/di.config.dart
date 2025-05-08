@@ -21,6 +21,8 @@ import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_
     as _i30;
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart'
     as _i160;
+import 'package:guesswork/core/data/framework/firebase/firestore/upsert_games_favorite_operation.dart'
+    as _i924;
 import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart'
     as _i181;
 import 'package:guesswork/core/data/framework/firebase/sign_in_anonymously.dart'
@@ -61,6 +63,14 @@ import 'package:guesswork/fragments/components/coins/domain/use_case/get_coins_s
     as _i840;
 import 'package:guesswork/fragments/components/coins/presentation/bloc/coins_bloc.dart'
     as _i355;
+import 'package:guesswork/fragments/components/favorite_button/di/favorite_button_module.dart'
+    as _i343;
+import 'package:guesswork/fragments/components/favorite_button/domain/repository/games_favorite_repository.dart'
+    as _i572;
+import 'package:guesswork/fragments/components/favorite_button/domain/use_case/upsert_favorite_use_case.dart'
+    as _i441;
+import 'package:guesswork/fragments/components/favorite_button/presentation/bloc/favorite_button_bloc.dart'
+    as _i188;
 import 'package:guesswork/fragments/components/no_ads_button/di/no_ads_button_module.dart'
     as _i496;
 import 'package:guesswork/fragments/components/no_ads_button/presentation/bloc/no_ads_button_bloc.dart'
@@ -130,6 +140,7 @@ extension GetItInjectableX on _i174.GetIt {
     final navModule = _$NavModule();
     final accountModule = _$AccountModule();
     final sAGGameModule = _$SAGGameModule();
+    final favoriteButtonModule = _$FavoriteButtonModule();
     final coinsModule = _$CoinsModule();
     final settingsButtonModule = _$SettingsButtonModule();
     final noAdsButtonModule = _$NoAdsButtonModule();
@@ -224,6 +235,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i974.FirebaseFirestore>(),
       ),
     );
+    gh.factory<_i924.UpsertFavoriteOperation>(
+      () => favoriteButtonModule.upsertFavoriteOperationFactory(
+        gh<_i974.FirebaseFirestore>(),
+      ),
+    );
     gh.factory<_i440.AuthRepository>(
       () => accountModule.authRepositoryFactory(
         gh<_i187.SignInWithGoogle>(),
@@ -241,6 +257,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i315.AnonymousSignInUseCase>(
       () => signInModule.anonymousSignInUseCase(gh<_i440.AuthRepository>()),
+    );
+    gh.factory<_i572.GamesFavoriteRepository>(
+      () => favoriteButtonModule.gamesFavoriteRepositoryFactory(
+        gh<_i924.UpsertFavoriteOperation>(),
+      ),
     );
     gh.factory<_i128.AccountRepository>(
       () => accountModule.accountRepositoryFactory(
@@ -311,6 +332,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i207.GetSagGamesOperation>(),
       ),
     );
+    gh.factory<_i441.UpsertGamesFavoriteUseCase>(
+      () => favoriteButtonModule.upsertGamesFavoriteUseCaseFactory(
+        gh<_i128.AccountRepository>(),
+        gh<_i572.GamesFavoriteRepository>(),
+      ),
+    );
     gh.factory<_i581.SettingsButtonBloc>(
       () => settingsButtonModule.appBarBlocFactory(gh<_i5.IRouter>()),
     );
@@ -361,6 +388,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i409.Widget>(
       () => noAdsButtonModule.appBarWidgetFactory(gh<_i366.NoAdsButtonBloc>()),
       instanceName: 'noAdsButtonWidget',
+    );
+    gh.factory<_i188.FavoriteButtonBloc>(
+      () => favoriteButtonModule.appBarBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i441.UpsertGamesFavoriteUseCase>(),
+      ),
     );
     gh.factory<_i24.SAGGamesBloc>(
       () => sAGGamesModule.sagGamesBlocFactory(
@@ -421,6 +454,14 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       instanceName: 'sagGameItemRouteWidget',
     );
+    gh.factoryParam<_i409.Widget, _i815.SAGGame, dynamic>(
+      (sagGame, _) =>
+          favoriteButtonModule.sagGameFavoriteButtonComponentFactory(
+            gh<_i188.FavoriteButtonBloc>(),
+            sagGame,
+          ),
+      instanceName: 'sagGameFavoriteButtonWidget',
+    );
     gh.factory<_i409.Widget>(
       () => sAGGamesModule.sagGamesRouteWidgetFactory(
         gh<_i24.SAGGamesBloc>(),
@@ -447,6 +488,8 @@ class _$NavModule extends _i750.NavModule {}
 class _$AccountModule extends _i550.AccountModule {}
 
 class _$SAGGameModule extends _i239.SAGGameModule {}
+
+class _$FavoriteButtonModule extends _i343.FavoriteButtonModule {}
 
 class _$CoinsModule extends _i233.CoinsModule {}
 

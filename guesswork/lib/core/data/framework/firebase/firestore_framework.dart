@@ -1,7 +1,6 @@
-
-
 const userPath = "user";
 const sagGameCollectionPath = "sag_game";
+const favoriteCollectionPath = "favorite";
 
 const gamesUserIdPlaceholder = "{gamesUserIdPlaceholder}";
 //
