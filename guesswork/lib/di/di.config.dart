@@ -267,7 +267,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i315.AnonymousSignInUseCase>(
       () => signInModule.anonymousSignInUseCase(gh<_i440.AuthRepository>()),
     );
-    gh.factory<_i128.AccountRepository>(
+    gh.singleton<_i128.AccountRepository>(
       () => accountModule.accountRepositoryFactory(
         gh<_i529.GetAuthGamesUserOperation>(),
         gh<_i462.GetGamesUserOperation>(),
@@ -336,7 +336,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i207.GetSagGamesOperation>(),
       ),
     );
-    gh.factory<_i572.GamesFavoriteRepository>(
+    gh.singleton<_i572.GamesFavoriteRepository>(
       () => favoriteButtonModule.gamesFavoriteRepositoryFactory(
         gh<_i336.UpsertFavoriteOperation>(),
         gh<_i49.GetGamesFavoritesStreamOperation>(),

@@ -34,7 +34,7 @@ abstract class FavoriteButtonModule {
     return GetGamesFavoritesStreamOperation(firebaseFirestore);
   }
 
-  @Injectable()
+  @Singleton()
   GamesFavoriteRepository gamesFavoriteRepositoryFactory(
     UpsertFavoriteOperation upsertFavoriteOperation,
     GetGamesFavoritesStreamOperation getGamesFavoritesStreamOperation,

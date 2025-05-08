@@ -28,7 +28,7 @@ abstract class AccountModule {
     return GetAuthGamesUserOperation(firebaseAuth);
   }
 
-  @Injectable()
+  @Singleton()
   AccountRepository accountRepositoryFactory(
     GetAuthGamesUserOperation getAuthGamesUserOperation,
     GetGamesUserOperation getGamesUserOperation,
