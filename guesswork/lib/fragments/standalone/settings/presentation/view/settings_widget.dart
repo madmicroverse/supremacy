@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/extension/object_utils.dart';
+import 'package:guesswork/core/presentation/extension/localozations.dart';
 import 'package:guesswork/core/presentation/widgets/space.dart';
 
 import '../bloc/settings_be.dart';
@@ -22,7 +24,7 @@ class Settings extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Settings"),
+        title: Text(context.loc.setting_title),
         actions: [noAdsButton],
       ),
       body: BlocBuilder<SettingsBloc, SettingsBSC>(
@@ -37,13 +39,13 @@ class Settings extends StatelessWidget {
             children: [
               ListTile(
                 title: Text(
-                  'Preferences',
+                  context.loc.setting_games_preferences,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
               ListTile(
                 leading: Icon(Icons.volume_down_alt),
-                title: Text('Sound'),
+                title: Text(context.loc.setting_games_preferences_sound),
                 trailing: Switch(
                   value: gameSettings.sound,
                   onChanged:
@@ -54,7 +56,7 @@ class Settings extends StatelessWidget {
               ),
               ListTile(
                 leading: Icon(Icons.music_note),
-                title: Text('Music'),
+                title: Text(context.loc.setting_games_preferences_music),
                 trailing: Switch(
                   value: gameSettings.music,
                   onChanged:
@@ -65,7 +67,7 @@ class Settings extends StatelessWidget {
               ),
               ListTile(
                 leading: Icon(Icons.vibration),
-                title: Text('haptic'),
+                title: Text(context.loc.setting_games_preferences_haptic),
                 trailing: Switch(
                   value: gameSettings.haptic,
                   onChanged:
@@ -78,32 +80,33 @@ class Settings extends StatelessWidget {
               ListTile(
                 onTap: () => context.addEvent(SignOutBE()),
                 leading: Icon(Icons.logout),
-                title: Text('Sign Out'),
+                title: Text(context.loc.setting_sign_out),
                 trailing: Icon(Icons.arrow_forward_ios_rounded),
               ),
               vsMax,
               ListTile(
                 title: Text(
-                  'Informacion',
+                  context.loc.setting_information,
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
               ListTile(
                 onTap: () {},
                 leading: Icon(Icons.mail),
-                title: Text('Contactanos'),
+                title: Text(context.loc.setting_contact_us),
                 trailing: Icon(Icons.arrow_forward_ios_rounded),
               ),
               vsMax,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(
-                    'Version: 1020.3023.00',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
+              if (state.version.isNotNull)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      context.loc.settings_app_version(state.version!),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
               vsMin,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -111,14 +114,14 @@ class Settings extends StatelessWidget {
                   TextButton(
                     onPressed: () {},
                     child: Text(
-                      'Politicas de privacidad',
+                      context.loc.setting_privacy_policies,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                   TextButton(
                     onPressed: () {},
                     child: Text(
-                      'Terminos de servicio',
+                      context.loc.setting_terms_of_service,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),

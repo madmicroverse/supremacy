@@ -9,6 +9,7 @@ import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AccountRepositoryImpl extends AccountRepository {
   final GetAuthGamesUserOperation _getAuthGamesUserOperation;
@@ -19,7 +20,7 @@ class AccountRepositoryImpl extends AccountRepository {
 
   Stream<GamesUser>? _gamesUserStream;
 
-  final _gamesUserStreamController = StreamController<GamesUser>.broadcast();
+  final _gamesUserBehaviorSubject = BehaviorSubject<GamesUser>();
 
   StreamSubscription? _gamesUserStreamSubscription;
 
@@ -58,10 +59,10 @@ class AccountRepositoryImpl extends AccountRepository {
               _gamesUserStream = streamResult.data;
               _gamesUserStreamSubscription = _gamesUserStream!.listen(
                 (favorites) {
-                  _gamesUserStreamController.add(favorites);
+                  _gamesUserBehaviorSubject.add(favorites);
                 },
                 onError: (error) {
-                  _gamesUserStreamController.addError(error);
+                  _gamesUserBehaviorSubject.addError(error);
                 },
               );
             case Error():
@@ -71,7 +72,8 @@ class AccountRepositoryImpl extends AccountRepository {
           return Error(result.error);
       }
     }
-    return Success(_gamesUserStreamController.stream);
+
+    return Success(_gamesUserBehaviorSubject.stream);
   }
 
   @override

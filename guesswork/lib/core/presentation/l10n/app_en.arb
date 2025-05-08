@@ -1,3 +1,29 @@
 {
-  "someText": "Ya cambio esto luego!"
+  "app_name": "Guesswork",
+  "app_slogan": "Better than chance",
+  "sign_in_cta": "SIGN IN TO PLAY",
+  "sign_in_cta_method": "Choose your preferred sign-in method",
+  "sign_in_google_cta": "Continue with Google",
+  "sign_in_apple_cta": "Continue with Apple",
+  "sign_in_or": "OR",
+  "sign_in_anonymous_cta": "Play as Guest",
+  "setting_title": "Settings",
+  "setting_games_preferences": "Preferences",
+  "setting_games_preferences_sound": "Sound",
+  "setting_games_preferences_music": "Music",
+  "setting_games_preferences_haptic": "Vibration",
+  "setting_sign_out": "Sign Out",
+  "setting_information": "Information",
+  "setting_contact_us": "Contact Us",
+  "settings_app_version": "Version {version}",
+    "@app_version": {
+      "description": "App current version.",
+      "placeholders": {
+        "version": {
+          "type": "String"
+        }
+      }
+    },
+  "setting_privacy_policies": "Privacy Policies",
+  "setting_terms_of_service": "Terms of Service"
 }

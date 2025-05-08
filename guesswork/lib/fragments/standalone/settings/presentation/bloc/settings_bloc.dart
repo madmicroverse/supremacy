@@ -8,6 +8,7 @@ import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart';
 import 'package:guesswork/di/modules/router_module.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/set_game_settings_use_case.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'settings_be.dart';
 import 'settings_bsc.dart';
@@ -36,6 +37,8 @@ class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
     InitSettingsBE event,
     Emitter<SettingsBSC> emit,
   ) async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    emit(state.withVersion(packageInfo.version));
     final result = await _getGamesSettingsUseCase();
     switch (result) {
       case Success():

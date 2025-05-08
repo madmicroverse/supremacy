@@ -5,6 +5,7 @@ import 'package:guesswork/fragments/components/favorite_button/data/firebase/fir
 import 'package:guesswork/fragments/components/favorite_button/data/firebase/firestore/upsert_games_favorite_operation.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/repository/games_favorite_repository.dart';
+import 'package:rxdart/rxdart.dart';
 
 class GamesFavoriteRepositoryImpl extends GamesFavoriteRepository {
   final UpsertFavoriteOperation _upsertFavoriteOperation;
@@ -12,11 +13,7 @@ class GamesFavoriteRepositoryImpl extends GamesFavoriteRepository {
 
   Stream<List<GamesFavorite>>? _gamesFavoritesStream;
 
-  final _gamesFavoritesController =
-      StreamController<List<GamesFavorite>>.broadcast();
-
-  StreamSubscription? _streamSubscription;
-  int _subscriberCount = 0;
+  final _gamesFavoritesBehaviorSubject = BehaviorSubject<List<GamesFavorite>>();
 
   GamesFavoriteRepositoryImpl(
     this._upsertFavoriteOperation,
@@ -33,19 +30,19 @@ class GamesFavoriteRepositoryImpl extends GamesFavoriteRepository {
       switch (streamResult) {
         case Success():
           _gamesFavoritesStream = streamResult.data;
-          _streamSubscription = _gamesFavoritesStream!.listen(
+          _gamesFavoritesStream!.listen(
             (favorites) {
-              _gamesFavoritesController.add(favorites);
+              _gamesFavoritesBehaviorSubject.add(favorites);
             },
             onError: (error) {
-              _gamesFavoritesController.addError(error);
+              _gamesFavoritesBehaviorSubject.addError(error);
             },
           );
         case Error():
           return Error(streamResult.error);
       }
     }
-    return Success(_gamesFavoritesController.stream);
+    return Success(_gamesFavoritesBehaviorSubject.stream);
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
+import 'package:guesswork/core/presentation/extension/localozations.dart';
 
 import '../bloc/sign_in_bloc.dart';
 import '../bloc/sign_in_bloc_events.dart';
@@ -67,19 +68,6 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
               behavior: SnackBarBehavior.floating,
             ),
           );
-        }
-
-        if (state.isAuthenticated) {
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Welcome, ${state.displayName ?? 'Player'}!'),
-              backgroundColor: context.gamesColors.correct,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-
-          // TODO: Navigate to game screen when ready
         }
       },
       builder: (context, state) {
@@ -154,7 +142,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
         ),
         const SizedBox(height: 30),
         Text(
-          'GUESSWORK',
+          context.loc.app_name,
           style: TextStyle(
             fontSize: 38,
             fontWeight: FontWeight.bold,
@@ -177,7 +165,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            'Better than chance',
+            context.loc.app_slogan,
             style: TextStyle(
               fontSize: 16,
               color: context.colorScheme.onPrimary,
@@ -207,7 +195,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'SIGN IN TO PLAY',
+            context.loc.sign_in_cta,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 20,
@@ -218,7 +206,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
           ),
           const SizedBox(height: 8),
           Text(
-            'Choose your preferred sign-in method',
+            context.loc.sign_in_cta_method,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -251,14 +239,14 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.network(
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/640px-Google_%22G%22_logo.svg.png',
-            height: 24,
-            width: 24,
+          Image.asset(
+            'assets/images/google_sign_in.png',
+            height: 20,
+            width: 20,
           ),
           const SizedBox(width: 12),
-          const Text(
-            'Continue with Google',
+          Text(
+            context.loc.sign_in_google_cta,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ],
@@ -281,8 +269,8 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
         children: [
           Icon(Icons.apple, size: 24),
           const SizedBox(width: 12),
-          const Text(
-            'Continue with Apple',
+          Text(
+            context.loc.sign_in_apple_cta,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ],
@@ -299,7 +287,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'OR',
+            context.loc.sign_in_or,
             style: TextStyle(
               color: context.colorScheme.onPrimary,
               fontSize: 14,
@@ -325,8 +313,8 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
           side: BorderSide(color: context.colorScheme.onPrimary.withAlpha(50)),
         ),
       ),
-      child: const Text(
-        'Play as Guest',
+      child: Text(
+        context.loc.sign_in_anonymous_cta,
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     );
@@ -334,7 +322,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
 
   Widget _buildLoadingOverlay() {
     return Container(
-      color: context.colorScheme.scrim,
+      color: context.colorScheme.scrim.withAlpha(100),
       child: Center(
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -355,14 +343,6 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
               CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
                   context.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Signing in...',
-                style: TextStyle(
-                  color: context.colorScheme.onPrimary,
-                  fontSize: 16,
                 ),
               ),
             ],

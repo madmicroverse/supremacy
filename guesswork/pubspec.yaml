@@ -63,6 +63,7 @@ dependencies:
   image_firework: ^1.0.2
   animated_flip_counter: ^0.3.4
   rxdart: ^0.28.0
+  package_info_plus: ^8.3.0
 
 dev_dependencies:
   flutter_test:

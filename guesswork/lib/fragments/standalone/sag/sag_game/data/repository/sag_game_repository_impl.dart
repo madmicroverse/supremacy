@@ -28,15 +28,6 @@ class SAGGameRepositoryImpl extends SAGGameRepository {
       getSagGameOperation(sagGameId);
 
   @override
-  Future<List<SAGGamePreview>> getSAGGamePreviewList() async {
-    return [
-      SAGGamePreview.fromJson(sagGame.toJson().withId("KhQCf3SfkGln8FjizD8i")),
-      SAGGamePreview.fromJson(sagGame.toJson().withId("KhQCf3SfkGln8FjizD8i")),
-      SAGGamePreview.fromJson(sagGame.toJson().withId("KhQCf3SfkGln8FjizD8i")),
-    ];
-  }
-
-  @override
   Future<Result<PaginatedSagGames, BaseError>> getSAGGames(int limit) =>
       getSagGamesOperation(limit: limit);
 }
