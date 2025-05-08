@@ -56,7 +56,7 @@ class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
     final result = await _googleSignInUseCase();
     switch (result) {
       case Success():
-        _router.goNamed(sagGamesRouteName);
+        _router.goNamed(sagGamesMainRouteName);
       case Error():
         emit(state.idleState.errorState(result.error.runtimeType.toString()));
     }
@@ -70,7 +70,7 @@ class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
     final result = await _appleSignInUseCase();
     switch (result) {
       case Success():
-        _router.goNamed(sagGamesRouteName);
+        _router.goNamed(sagGamesMainRouteName);
       case Error():
         emit(state.idleState.errorState(result.error.runtimeType.toString()));
     }
@@ -84,7 +84,7 @@ class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
     final result = await _anonymousSignInUseCase();
     switch (result) {
       case Success():
-        _router.goNamed(sagGamesRouteName);
+        _router.goNamed(sagGamesMainRouteName);
       case Error():
         emit(state.idleState.errorState(result.error.runtimeType.toString()));
     }

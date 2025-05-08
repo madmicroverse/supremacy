@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/query_filter.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore_paths.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/fragments/standalone/sag/data/framework/firebase/firestore/firestore_framework.dart';
@@ -8,6 +9,8 @@ import 'package:guesswork/fragments/standalone/sag/data/framework/firebase/fires
 class EmptySAGGameError extends BaseError {}
 
 class EmptySAGGamesError extends BaseError {}
+
+enum SAGGameSource { main, top, replay, favorite }
 
 class GetSagGamesOperation {
   final FirebaseFirestore _db;
@@ -20,13 +23,17 @@ class GetSagGamesOperation {
   /// [startAfterDocument] - The document to start after for pagination (null for first page)
   /// [filters] - Optional query filters to apply
   Future<Result<PaginatedSagGames, BaseError>> call({
+    String? gamesUserId,
+    required SAGGameSource sagGameSource,
     required int limit,
     DocumentSnapshot? startAfterDocument,
     List<QueryFilter>? filters,
   }) async {
     try {
-      Query<Map<String, dynamic>> query = _db.collection(fsSAGGamePath);
-
+      late Query<Map<String, dynamic>> query = getQuery(
+        sagGameSource,
+        gamesUserId,
+      );
       // Apply any filters if provided
       if (filters != null && filters.isNotEmpty) {
         for (final filter in filters) {
@@ -82,6 +89,24 @@ class GetSagGamesOperation {
       );
     } catch (error) {
       return Error(UnexpectedErrorError(error.toString()));
+    }
+  }
+
+  getQuery(SAGGameSource sagGameSource, String? gameUserId) {
+    switch (sagGameSource) {
+      case SAGGameSource.main:
+        return _db.collection(fsSAGGamePath);
+      case SAGGameSource.top:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case SAGGameSource.replay:
+        return _db
+            .collection(fsUserPath)
+            .doc(gameUserId)
+            .collection(fsSAGGamePath);
+      case SAGGameSource.favorite:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 }

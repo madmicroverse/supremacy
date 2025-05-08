@@ -6,6 +6,7 @@ import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart';
 import 'package:guesswork/fragments/components/app_bar/di/app_bar_module.dart';
 import 'package:guesswork/fragments/components/favorite_button/di/favorite_button_module.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
 import 'package:injectable/injectable.dart';
 
 import '../domain/use_case/get_sag_games_use_case.dart';
@@ -31,10 +32,11 @@ abstract class SAGGamesModule {
   Widget sagGamesRouteWidgetFactory(
     SAGGamesBloc bloc,
     @Named(appBarWidget) PreferredSizeWidget appBarWidget,
+    @factoryParam SAGGameSource sagGameSource,
   ) {
     return BlocProvider(
       lazy: false,
-      create: (_) => bloc..add(InitSAGGamesBlocEvent()),
+      create: (_) => bloc..add(InitSAGGamesBlocEvent(sagGameSource)),
       child: SAGGamesRouteWidget(
         appBar: appBarWidget,
         sagGameFavoriteButtonProvider:

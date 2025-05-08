@@ -7,7 +7,9 @@ import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/extension/route_name_extension.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/repository/auth_repository.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/di/sag_game_module.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game_home/di/sag_game_home_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_item/di/sag_game_item_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_games/di/sag_games_module.dart';
 import 'package:guesswork/fragments/standalone/settings/di/settings_module.dart';
@@ -15,7 +17,10 @@ import 'package:guesswork/fragments/standalone/sign_in/di/sign_in_module.dart';
 import 'package:injectable/injectable.dart';
 
 const signInRouteName = "signInRouteName";
-const sagGamesRouteName = "sagGamesRouteName";
+const sagGamesHomeRouteName = "sagGamesHomeRouteName";
+
+const sagGamesMainRouteName = "sagGamesMainRouteName";
+const sagGamesReplyRouteName = "sagGamesReplyRouteName";
 const sagGameItemRouteName = "sagGameItemRouteName";
 const sagGameRouteName = "sagGameRouteName";
 const settingsRouteName = "settingsRouteName";
@@ -29,18 +34,19 @@ abstract class NavModule {
   Future<GoRouter> goRouterFactory(
     AuthRepository authRepository,
     @Named(signInRouteName) GoRoute signInRoute,
-    @Named(sagGamesRouteName) GoRoute sagGamesRoute,
+    @Named(sagGamesHomeRouteName) ShellRoute sagGamesHomeRoute,
     @Named(sagGameRouteName) GoRoute sagGameRoute,
     @Named(sagGameItemRouteName) GoRoute sagGameItemRoute,
     @Named(settingsRouteName) GoRoute settingsRoute,
   ) async {
     late String initialLocation;
+    dynamic initialExtra;
     final result = authRepository.getAuthStatus();
     switch (result) {
       case Success():
         switch (result.data) {
           case Authenticated():
-            initialLocation = sagGamesRoute.path;
+            initialLocation = sagGamesMainRouteName.rootPath;
           case Unauthenticated():
             initialLocation = signInRoute.path;
         }
@@ -51,8 +57,9 @@ abstract class NavModule {
     return GoRouter(
       navigatorKey: _rootNavigatorKey,
       initialLocation: initialLocation,
+      initialExtra: initialExtra,
       routes: [
-        sagGamesRoute,
+        sagGamesHomeRoute,
         sagGameRoute,
         sagGameItemRoute,
         signInRoute,
@@ -77,13 +84,69 @@ abstract class NavModule {
   }
 
   @Injectable()
-  @Named(sagGamesRouteName)
-  GoRoute sagGamesRouteFactory() {
+  @Named(sagGamesHomeRouteName)
+  ShellRoute sagGamesHomeRouteFactory(
+    @Named(sagGamesMainRouteName) GoRoute sagGamesMainRoute,
+    @Named(sagGamesReplyRouteName) GoRoute sagGamesReplyRoute,
+  ) {
+    return ShellRoute(
+      pageBuilder: (context, state, child) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: GetIt.instance.get<Widget>(
+            instanceName: sagGameHomeRoutWidget,
+            param1: child,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Create your custom transition here
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      },
+      routes: [sagGamesReplyRoute, sagGamesMainRoute],
+    );
+  }
+
+  @Injectable()
+  @Named(sagGamesReplyRouteName)
+  GoRoute sagGamesReplyRouteFactory() {
     return GoRoute(
-      path: sagGamesRouteName.rootPath,
-      name: sagGamesRouteName,
-      builder: (context, state) {
-        return GetIt.instance.get<Widget>(instanceName: sagGamesRouteWidget);
+      path: sagGamesReplyRouteName.rootPath,
+      name: sagGamesReplyRouteName,
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: GetIt.instance.get<Widget>(
+            instanceName: sagGamesRouteWidget,
+            param1: SAGGameSource.replay,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Create your custom transition here
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      },
+    );
+  }
+
+  @Injectable()
+  @Named(sagGamesMainRouteName)
+  GoRoute sagGamesMainRouteFactory() {
+    return GoRoute(
+      path: sagGamesMainRouteName.rootPath,
+      name: sagGamesMainRouteName,
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: GetIt.instance.get<Widget>(
+            instanceName: sagGamesRouteWidget,
+            param1: SAGGameSource.main,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Create your custom transition here
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
       },
     );
   }
@@ -94,10 +157,17 @@ abstract class NavModule {
     return GoRoute(
       path: sagGameRouteName.rootPath,
       name: sagGameRouteName,
-      builder: (context, state) {
-        return GetIt.instance.get<Widget>(
-          instanceName: sagGameRouteWidget,
-          param1: state.extra,
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: GetIt.instance.get<Widget>(
+            instanceName: sagGameRouteWidget,
+            param1: state.extra,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Create your custom transition here
+            return FadeTransition(opacity: animation, child: child);
+          },
         );
       },
     );

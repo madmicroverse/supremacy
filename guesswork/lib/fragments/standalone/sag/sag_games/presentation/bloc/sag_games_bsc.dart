@@ -5,6 +5,7 @@ import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/fires
 
 part 'sag_games_bsc.freezed.dart';
 
+
 @freezed
 abstract class SAGGamesBSC with _$SAGGamesBSC {
   const factory SAGGamesBSC({List<PaginatedSagGames>? paginatedSagGamesList}) =

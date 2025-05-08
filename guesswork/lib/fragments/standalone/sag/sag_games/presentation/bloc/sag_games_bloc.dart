@@ -20,19 +20,30 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
     : super(SAGGamesBSC()) {
     on<InitSAGGamesBlocEvent>(_initSAGGamesBlocEvent);
     on<SelectGameBlocEvent>(_selectGameBlocEvent);
-    on<SignOutBlocEvent>(_signOutBlocEvent);
   }
 
   FutureOr<void> _initSAGGamesBlocEvent(
     InitSAGGamesBlocEvent event,
     Emitter<SAGGamesBSC> emit,
   ) async {
-    final result = await _getSAGGamesUseCase(10);
-    switch (result) {
-      case Success():
-        PaginatedSagGames paginatedSagGames = result.data;
-        emit(state.withPaginatedSagGames(paginatedSagGames));
-      case Error():
+
+    switch (event.sagGameSource) {
+      case SAGGameSource.main:
+      case SAGGameSource.top:
+      case SAGGameSource.replay:
+        final result = await _getSAGGamesUseCase(
+          sagGameSource: event.sagGameSource,
+          limit: 10,
+        );
+        switch (result) {
+          case Success():
+            PaginatedSagGames paginatedSagGames = result.data;
+            emit(state.withPaginatedSagGames(paginatedSagGames));
+          case Error():
+            print('');
+        }
+      case SAGGameSource.favorite:
+        throw UnimplementedError();
     }
   }
 
@@ -41,14 +52,5 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
     Emitter<SAGGamesBSC> emit,
   ) {
     _router.pushNamed(sagGameRouteName, extra: event.sagGame.id);
-  }
-
-  FutureOr<void> _signOutBlocEvent(
-    SignOutBlocEvent event,
-    Emitter<SAGGamesBSC> emit,
-  ) async {
-    emit(state);
-    await _signOutUseCase();
-    _router.replaceNamed(signInRouteName);
   }
 }

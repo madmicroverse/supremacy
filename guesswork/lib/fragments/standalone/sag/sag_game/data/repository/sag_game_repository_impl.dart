@@ -29,8 +29,15 @@ class SAGGameRepositoryImpl extends SAGGameRepository {
       getSagGameOperation(sagGameId);
 
   @override
-  Future<Result<PaginatedSagGames, BaseError>> getSAGGames(int limit) =>
-      getSagGamesOperation(limit: limit);
+  Future<Result<PaginatedSagGames, BaseError>> getSAGGames({
+    String? gamesUserId,
+    required SAGGameSource sagGameSource,
+    required int limit,
+  }) => getSagGamesOperation(
+    gamesUserId: gamesUserId,
+    sagGameSource: sagGameSource,
+    limit: limit,
+  );
 
   @override
   Future<Result<String, BaseError>> upsertUserSAGGameInfo(

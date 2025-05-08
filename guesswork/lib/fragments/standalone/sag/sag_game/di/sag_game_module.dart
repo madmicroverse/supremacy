@@ -110,9 +110,10 @@ abstract class SAGGameModule {
 
   @Injectable()
   GetSAGGamesUseCase getSAGGamesUseCaseFactory(
+    AccountRepository accountRepository,
     SAGGameRepository gameSetRepository,
   ) {
-    return GetSAGGamesUseCase(gameSetRepository);
+    return GetSAGGamesUseCase(accountRepository, gameSetRepository);
   }
 
   @Injectable()
