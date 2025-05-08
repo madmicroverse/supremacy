@@ -14,9 +14,6 @@ class GetSagGamesOperation {
 
   GetSagGamesOperation(this._db);
 
-  CollectionReference<Map<String, dynamic>> get sagGameCollection =>
-      _db.collection(sagGameCollectionPath);
-
   /// Fetches multiple SAG games with pagination
   ///
   /// [limit] - Number of documents to fetch per page
@@ -28,7 +25,7 @@ class GetSagGamesOperation {
     List<QueryFilter>? filters,
   }) async {
     try {
-      Query<Map<String, dynamic>> query = sagGameCollection;
+      Query<Map<String, dynamic>> query = _db.collection(sagGameCollectionPath);
 
       // Apply any filters if provided
       if (filters != null && filters.isNotEmpty) {

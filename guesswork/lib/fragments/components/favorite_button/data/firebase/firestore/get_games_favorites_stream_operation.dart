@@ -5,20 +5,19 @@ import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart'
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
 
-class GetSagGamesStreamOperation {
+class GetGamesFavoritesStreamOperation {
   final FirebaseFirestore _db;
 
-  GetSagGamesStreamOperation(this._db);
-
-  Query<Map<String, dynamic>> gamesFavoriteCollection(String gamesUserId) =>
-      _db.doc(gamesUserId).collection(favoriteCollectionPath);
+  GetGamesFavoritesStreamOperation(this._db);
 
   Future<Result<Stream<List<GamesFavorite>>, BaseError>> call({
     required String gamesUserId,
     List<QueryFilter>? filters,
   }) async {
     try {
-      Query<Map<String, dynamic>> query = gamesFavoriteCollection(gamesUserId);
+      Query<Map<String, dynamic>> query = _db
+          .doc(gamesUserId)
+          .collection(favoriteCollectionPath);
 
       if (filters != null && filters.isNotEmpty) {
         for (final filter in filters) {

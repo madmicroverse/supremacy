@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore/upsert_games_favorite_operation.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
+import 'package:guesswork/fragments/components/favorite_button/data/firebase/firestore/get_games_favorites_stream_operation.dart';
+import 'package:guesswork/fragments/components/favorite_button/data/firebase/firestore/upsert_games_favorite_operation.dart';
 import 'package:guesswork/fragments/components/favorite_button/data/repository/games_favorite_repository_impl.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/repository/games_favorite_repository.dart';
+import 'package:guesswork/fragments/components/favorite_button/domain/use_case/get_games_favorites_stream_use_case.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/use_case/upsert_favorite_use_case.dart';
 import 'package:guesswork/fragments/components/favorite_button/presentation/bloc/favorite_button_be.dart';
 import 'package:injectable/injectable.dart';
@@ -26,10 +28,21 @@ abstract class FavoriteButtonModule {
   }
 
   @Injectable()
+  GetGamesFavoritesStreamOperation getGamesFavoritesStreamOperationFactory(
+    FirebaseFirestore firebaseFirestore,
+  ) {
+    return GetGamesFavoritesStreamOperation(firebaseFirestore);
+  }
+
+  @Injectable()
   GamesFavoriteRepository gamesFavoriteRepositoryFactory(
     UpsertFavoriteOperation upsertFavoriteOperation,
+    GetGamesFavoritesStreamOperation getGamesFavoritesStreamOperation,
   ) {
-    return GamesFavoriteRepositoryImpl(upsertFavoriteOperation);
+    return GamesFavoriteRepositoryImpl(
+      upsertFavoriteOperation,
+      getGamesFavoritesStreamOperation,
+    );
   }
 
   @Injectable()
@@ -44,11 +57,27 @@ abstract class FavoriteButtonModule {
   }
 
   @Injectable()
+  GetGamesFavoritesStreamUseCase getGamesFavoritesStreamUseCaseFactory(
+    AccountRepository accountRepository,
+    GamesFavoriteRepository gamesFavoriteRepository,
+  ) {
+    return GetGamesFavoritesStreamUseCase(
+      accountRepository,
+      gamesFavoriteRepository,
+    );
+  }
+
+  @Injectable()
   FavoriteButtonBloc appBarBlocFactory(
     IRouter router,
     UpsertGamesFavoriteUseCase upsertGamesFavoriteUseCase,
+    GetGamesFavoritesStreamUseCase getGamesFavoritesStreamUseCase,
   ) {
-    return FavoriteButtonBloc(router, upsertGamesFavoriteUseCase);
+    return FavoriteButtonBloc(
+      router,
+      upsertGamesFavoriteUseCase,
+      getGamesFavoritesStreamUseCase,
+    );
   }
 
   @Named(sagGameFavoriteButtonWidget)
@@ -59,10 +88,8 @@ abstract class FavoriteButtonModule {
   ) {
     return BlocProvider(
       lazy: false,
-      create: (_) => bloc..add(InitSAGGameFavoriteBE(sagGame)),
-      child: FavoriteButton(
-        opTap: () => bloc.add(SelectSAGGameFavoriteBE(sagGame)),
-      ),
+      create: (_) => bloc..add(InitSAGGameFavoriteBE(sagGame.id)),
+      child: FavoriteButton(),
     );
   }
 }
