@@ -10,9 +10,10 @@ abstract class GamesFavorite with _$GamesFavorite {
     @JsonKey(includeToJson: false) String? id,
     required String gameId,
     required GameType gameType,
-    @Default(false) bool isUndo,
+    @Default(false) bool isFavorite,
   }) = _GamesFavorite;
 
   factory GamesFavorite.fromJson(Map<String, dynamic> json) =>
       _$GamesFavoriteFromJson(json);
 }
+

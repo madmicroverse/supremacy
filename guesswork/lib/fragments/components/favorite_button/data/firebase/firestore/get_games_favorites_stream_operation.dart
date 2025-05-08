@@ -16,6 +16,7 @@ class GetGamesFavoritesStreamOperation {
   }) async {
     try {
       Query<Map<String, dynamic>> query = _db
+          .collection(userPath)
           .doc(gamesUserId)
           .collection(favoriteCollectionPath);
 

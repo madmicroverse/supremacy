@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:collection/src/iterable_extensions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/games.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
+import 'package:guesswork/fragments/components/favorite_button/domain/extension/games_favorite.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/use_case/get_games_favorites_stream_use_case.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/use_case/upsert_favorite_use_case.dart';
 
@@ -31,15 +31,20 @@ class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
     UpdateGameFavoritesBE event,
     Emitter<FavoriteButtonBS> emit,
   ) {
-    final gamesFavorite = event.gamesFavoriteList.firstWhereOrNull(
-      (gamesFavorite) => gamesFavorite.id == event.gameId,
+    final gamesFavorite = event.gamesFavoriteList.firstWhere(
+      (gamesFavorite) {
+        return gamesFavorite.gameId == event.gameId;
+      },
+      orElse:
+          () => GamesFavorite(gameId: event.gameId, gameType: event.gameType),
     );
-    favoriteEvent() =>
-        add(FavoriteGameBE(event.gameId, event.gameType, gamesFavorite));
+
+    favoriteEvent() => add(FavoriteGameBE(gamesFavorite));
+
     emit(
       state
           .withOnPressed(favoriteEvent)
-          .withIsFavorite(!(gamesFavorite?.isUndo ?? true)),
+          .withIsFavorite(gamesFavorite.isFavorite),
     );
   }
 
@@ -69,11 +74,7 @@ class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
     Emitter<FavoriteButtonBS> emit,
   ) async {
     final result = await _upsertGamesFavoriteUseCase(
-      GamesFavorite(
-        gameId: event.gameId,
-        gameType: GameType.sagGame,
-        isUndo: !(event.gamesFavorite?.isUndo ?? true),
-      ),
+      event.gamesFavorite.toggle,
     );
     switch (result) {
       case Success():

@@ -18,9 +18,7 @@ class InitSAGGameFavoriteBE extends FavoriteButtonBE {
 }
 
 class FavoriteGameBE extends FavoriteButtonBE {
-  String gameId;
-  GameType gameType;
-  GamesFavorite? gamesFavorite;
+  GamesFavorite gamesFavorite;
 
-  FavoriteGameBE(this.gameId, this.gameType, this.gamesFavorite);
+  FavoriteGameBE(this.gamesFavorite);
 }
