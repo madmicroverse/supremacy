@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
@@ -14,6 +16,12 @@ class AccountRepositoryImpl extends AccountRepository {
   final GetGamesUserStreamOperation _getGamesUserStreamOperation;
   final SetGamesUserOperation _setGamesUserOperation;
   final UpsertUserSAGGameOperation _upsertUserSAGGameOperation;
+
+  Stream<GamesUser>? _gamesUserStream;
+
+  final _gamesUserStreamController = StreamController<GamesUser>.broadcast();
+
+  StreamSubscription? _gamesUserStreamSubscription;
 
   AccountRepositoryImpl(
     this._getAuthGamesUserOperation,
@@ -40,13 +48,30 @@ class AccountRepositoryImpl extends AccountRepository {
 
   @override
   Future<Result<Stream<GamesUser>, BaseError>> getGamesUserStream() async {
-    final result = await _getAuthGamesUserOperation();
-    switch (result) {
-      case Success():
-        return _getGamesUserStreamOperation(result.data);
-      case Error():
-        return Error(result.error);
+    if (_gamesUserStream == null) {
+      final result = await _getAuthGamesUserOperation();
+      switch (result) {
+        case Success():
+          final streamResult = await _getGamesUserStreamOperation(result.data);
+          switch (streamResult) {
+            case Success():
+              _gamesUserStream = streamResult.data;
+              _gamesUserStreamSubscription = _gamesUserStream!.listen(
+                (favorites) {
+                  _gamesUserStreamController.add(favorites);
+                },
+                onError: (error) {
+                  _gamesUserStreamController.addError(error);
+                },
+              );
+            case Error():
+              return Error(streamResult.error);
+          }
+        case Error():
+          return Error(result.error);
+      }
     }
+    return Success(_gamesUserStreamController.stream);
   }
 
   @override

@@ -53,21 +53,4 @@ class GamesFavoriteRepositoryImpl extends GamesFavoriteRepository {
     String gamesUserId,
     GamesFavorite gamesFavorite,
   ) => _upsertFavoriteOperation(gamesUserId, gamesFavorite);
-
-  // Method to dispose of resources when no subscribers remain
-  void _disposeStreamIfNoSubscribers() {
-    _subscriberCount--;
-    if (_subscriberCount <= 0) {
-      _streamSubscription?.cancel();
-      _streamSubscription = null;
-      _gamesFavoritesStream = null;
-      _subscriberCount = 0;
-    }
-  }
-
-  // Dispose method to clean up resources
-  void dispose() {
-    _streamSubscription?.cancel();
-    _gamesFavoritesController.close();
-  }
 }
