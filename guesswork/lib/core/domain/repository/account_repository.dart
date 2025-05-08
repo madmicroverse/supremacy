@@ -9,12 +9,6 @@ abstract class AccountRepository {
   Future<Result<Stream<GamesUser>, BaseError>> getGamesUserStream();
 
   Future<Result<void, BaseError>> upsertGamesUser(GamesUser gamesUser);
-
-  Future<Result<String, BaseError>> upsertUserSAGGameInfo(
-    String gamesUserId,
-    String? userSAGGameId,
-    SAGGame sagGame,
-  );
 }
 
 extension AccountRepositoryUtils on AccountRepository {

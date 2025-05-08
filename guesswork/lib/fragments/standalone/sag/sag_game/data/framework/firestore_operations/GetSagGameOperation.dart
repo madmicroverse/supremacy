@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
-
-import 'CreateSagGameOperation.dart';
+import 'package:guesswork/fragments/standalone/sag/data/framework/firebase/firestore/firestore_framework.dart';
 
 class EmptySAGGameError extends BaseError {}
 
@@ -15,7 +13,7 @@ class GetSagGameOperation {
   GetSagGameOperation(this._db);
 
   CollectionReference<Map<String, dynamic>> get sagGameCollection =>
-      _db.collection(sagGameCollectionPath);
+      _db.collection(fsSAGGamePath);
 
   Future<Result<SAGGame, BaseError>> call(String sagGameId) async {
     try {

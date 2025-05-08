@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
+import 'package:guesswork/core/domain/repository/account_repository.dart';
 import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
-import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/components/app_bar/di/app_bar_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/upsert_user_sag_game_operation.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/create_sag_game_use_case.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_games/domain/use_case/get_sag_games_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 import 'package:injectable/injectable.dart';
@@ -28,6 +29,14 @@ const sagGameRouteWidget = "sagGameRouteWidget";
 
 @module
 abstract class SAGGameModule {
+  @Injectable()
+  UpsertUserSAGGameUseCase upsertUserSAGGameUseCaseFactory(
+    AccountRepository accountRepository,
+    SAGGameRepository sagGameRepository,
+  ) {
+    return UpsertUserSAGGameUseCase(accountRepository, sagGameRepository);
+  }
+
   @Singleton()
   CreateSagGameOperation createSagGameOperationFactory(
     FirebaseFirestore firebaseFirestore,
@@ -82,11 +91,13 @@ abstract class SAGGameModule {
     CreateSagGameOperation createSagGameOperation,
     GetSagGameOperation getSagGameOperation,
     GetSagGamesOperation getSagGamesOperation,
+    UpsertUserSAGGameOperation upsertUserSAGGameOperation,
   ) {
     return SAGGameRepositoryImpl(
       createSagGameOperation,
       getSagGameOperation,
       getSagGamesOperation,
+      upsertUserSAGGameOperation,
     );
   }
 

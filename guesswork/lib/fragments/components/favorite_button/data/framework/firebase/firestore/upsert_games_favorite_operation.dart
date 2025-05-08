@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore_paths.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
+
+import 'firestore_paths.dart';
 
 class UpsertFavoriteOperation {
   final FirebaseFirestore _db;
@@ -10,7 +12,7 @@ class UpsertFavoriteOperation {
   UpsertFavoriteOperation(this._db);
 
   CollectionReference<Map<String, dynamic>> gamesUserDoc(String userId) =>
-      _db.collection(userPath).doc(userId).collection(favoriteCollectionPath);
+      _db.collection(fsUserPath).doc(userId).collection(fsFavoritePath);
 
   Future<Result<String, BaseError>> call(
     String gamesUserId,

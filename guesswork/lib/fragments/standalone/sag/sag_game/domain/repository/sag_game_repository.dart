@@ -8,4 +8,10 @@ abstract class SAGGameRepository {
   Future<Result<SAGGame, BaseError>> getSAGGame(String sagGameId);
 
   Future<Result<PaginatedSagGames, BaseError>> getSAGGames(int limit);
+
+  Future<Result<String, BaseError>> upsertUserSAGGameInfo(
+      String gamesUserId,
+      String? userSAGGameId,
+      SAGGame sagGame,
+      );
 }

@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore_paths.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
+import 'package:guesswork/fragments/standalone/sag/data/framework/firebase/firestore/firestore_framework.dart';
 
 class UpsertUserSAGGameOperation {
   final FirebaseFirestore _db;
@@ -11,7 +12,7 @@ class UpsertUserSAGGameOperation {
   CollectionReference<Map<String, dynamic>> gamesUserDoc(
     String userId,
     String? userSAGGameId,
-  ) => _db.collection(userPath).doc(userId).collection(sagGameCollectionPath);
+  ) => _db.collection(fsUserPath).doc(userId).collection(fsSAGGamePath);
 
   Future<Result<String, BaseError>> call(
     String gamesUserId,

@@ -21,8 +21,6 @@ import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_
     as _i30;
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart'
     as _i160;
-import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart'
-    as _i181;
 import 'package:guesswork/core/data/framework/firebase/sign_in_anonymously.dart'
     as _i479;
 import 'package:guesswork/core/data/framework/firebase/sign_in_with_google.dart'
@@ -44,8 +42,6 @@ import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart'
 import 'package:guesswork/core/domain/use_case/get_network_image_use_case.dart'
     as _i861;
 import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart' as _i599;
-import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart'
-    as _i652;
 import 'package:guesswork/di/modules/account_module.dart' as _i550;
 import 'package:guesswork/di/modules/app_module.dart' as _i1048;
 import 'package:guesswork/di/modules/firebase_module.dart' as _i932;
@@ -61,10 +57,10 @@ import 'package:guesswork/fragments/components/coins/domain/use_case/get_coins_s
     as _i840;
 import 'package:guesswork/fragments/components/coins/presentation/bloc/coins_bloc.dart'
     as _i355;
-import 'package:guesswork/fragments/components/favorite_button/data/firebase/firestore/get_games_favorites_stream_operation.dart'
-    as _i49;
-import 'package:guesswork/fragments/components/favorite_button/data/firebase/firestore/upsert_games_favorite_operation.dart'
-    as _i336;
+import 'package:guesswork/fragments/components/favorite_button/data/framework/firebase/firestore/get_games_favorites_stream_operation.dart'
+    as _i718;
+import 'package:guesswork/fragments/components/favorite_button/data/framework/firebase/firestore/upsert_games_favorite_operation.dart'
+    as _i283;
 import 'package:guesswork/fragments/components/favorite_button/di/favorite_button_module.dart'
     as _i343;
 import 'package:guesswork/fragments/components/favorite_button/domain/repository/games_favorite_repository.dart'
@@ -89,6 +85,8 @@ import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/fires
     as _i938;
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart'
     as _i207;
+import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/upsert_user_sag_game_operation.dart'
+    as _i345;
 import 'package:guesswork/fragments/standalone/sag/sag_game/di/sag_game_module.dart'
     as _i239;
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/repository/sag_game_repository.dart'
@@ -97,6 +95,8 @@ import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/crea
     as _i668;
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/get_sag_game_use_case.dart'
     as _i484;
+import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/upsert_user_sag_game_use_case.dart'
+    as _i887;
 import 'package:guesswork/fragments/standalone/sag/sag_game/presentation/bloc/sag_game_bloc.dart'
     as _i544;
 import 'package:guesswork/fragments/standalone/sag/sag_game_item/di/sag_game_item_module.dart'
@@ -234,17 +234,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i974.FirebaseFirestore>(),
       ),
     );
-    gh.singleton<_i181.UpsertUserSAGGameOperation>(
+    gh.singleton<_i345.UpsertUserSAGGameOperation>(
       () => sAGGameModule.upsertUserSAGGameOperationFactory(
         gh<_i974.FirebaseFirestore>(),
       ),
     );
-    gh.factory<_i336.UpsertFavoriteOperation>(
+    gh.factory<_i283.UpsertFavoriteOperation>(
       () => favoriteButtonModule.upsertFavoriteOperationFactory(
         gh<_i974.FirebaseFirestore>(),
       ),
     );
-    gh.factory<_i49.GetGamesFavoritesStreamOperation>(
+    gh.factory<_i718.GetGamesFavoritesStreamOperation>(
       () => favoriteButtonModule.getGamesFavoritesStreamOperationFactory(
         gh<_i974.FirebaseFirestore>(),
       ),
@@ -261,20 +261,17 @@ extension GetItInjectableX on _i174.GetIt {
       () => navModule.settingsRouteFactory(),
       instanceName: 'settingsRouteName',
     );
+    gh.singleton<_i572.GamesFavoriteRepository>(
+      () => favoriteButtonModule.gamesFavoriteRepositoryFactory(
+        gh<_i283.UpsertFavoriteOperation>(),
+        gh<_i718.GetGamesFavoritesStreamOperation>(),
+      ),
+    );
     gh.factory<_i599.SignOutUseCase>(
       () => accountModule.signOutUseCaseFactory(gh<_i440.AuthRepository>()),
     );
     gh.factory<_i315.AnonymousSignInUseCase>(
       () => signInModule.anonymousSignInUseCase(gh<_i440.AuthRepository>()),
-    );
-    gh.singleton<_i128.AccountRepository>(
-      () => accountModule.accountRepositoryFactory(
-        gh<_i529.GetAuthGamesUserOperation>(),
-        gh<_i462.GetGamesUserOperation>(),
-        gh<_i30.GetGamesUserStreamOperation>(),
-        gh<_i160.SetGamesUserOperation>(),
-        gh<_i181.UpsertUserSAGGameOperation>(),
-      ),
     );
     gh.factory<_i861.GetNetworkImageUseCase>(
       () => global.getNetworkImageUseCaseFactory(gh<_i780.ImageRepository>()),
@@ -290,6 +287,14 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       preResolve: true,
     );
+    gh.singleton<_i128.AccountRepository>(
+      () => accountModule.accountRepositoryFactory(
+        gh<_i529.GetAuthGamesUserOperation>(),
+        gh<_i462.GetGamesUserOperation>(),
+        gh<_i30.GetGamesUserStreamOperation>(),
+        gh<_i160.SetGamesUserOperation>(),
+      ),
+    );
     gh.singleton<_i5.IRouter>(() => navModule.router(gh<_i583.GoRouter>()));
     gh.factory<_i409.MaterialApp>(
       () => appModule.crosswordBlockFactory(
@@ -297,13 +302,16 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i583.GoRouter>(),
       ),
     );
-    gh.factory<_i878.GetGamesSettingsStreamUseCase>(
-      () => accountModule.getGamesSettingsUseCaseFactory(
-        gh<_i128.AccountRepository>(),
+    gh.factory<_i664.SAGGameRepository>(
+      () => sAGGameModule.sagGameRepositoryFactory(
+        gh<_i1029.CreateSagGameOperation>(),
+        gh<_i938.GetSagGameOperation>(),
+        gh<_i207.GetSagGamesOperation>(),
+        gh<_i345.UpsertUserSAGGameOperation>(),
       ),
     );
-    gh.factory<_i652.UpsertUserSAGGameUseCase>(
-      () => accountModule.upsertUserSAGGameUseCaseFactory(
+    gh.factory<_i878.GetGamesSettingsStreamUseCase>(
+      () => accountModule.getGamesSettingsUseCaseFactory(
         gh<_i128.AccountRepository>(),
       ),
     );
@@ -327,19 +335,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i5.IRouter>(),
         gh<_i840.GetCoinsStreamUseCase>(),
         gh<_i878.GetGamesSettingsStreamUseCase>(),
-      ),
-    );
-    gh.factory<_i664.SAGGameRepository>(
-      () => sAGGameModule.sagGameRepositoryFactory(
-        gh<_i1029.CreateSagGameOperation>(),
-        gh<_i938.GetSagGameOperation>(),
-        gh<_i207.GetSagGamesOperation>(),
-      ),
-    );
-    gh.singleton<_i572.GamesFavoriteRepository>(
-      () => favoriteButtonModule.gamesFavoriteRepositoryFactory(
-        gh<_i336.UpsertFavoriteOperation>(),
-        gh<_i49.GetGamesFavoritesStreamOperation>(),
       ),
     );
     gh.factory<_i441.UpsertGamesFavoriteUseCase>(
@@ -369,6 +364,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i5.IRouter>(),
         gh<_i441.UpsertGamesFavoriteUseCase>(),
         gh<_i585.GetGamesFavoritesStreamUseCase>(),
+      ),
+    );
+    gh.factory<_i887.UpsertUserSAGGameUseCase>(
+      () => sAGGameModule.upsertUserSAGGameUseCaseFactory(
+        gh<_i128.AccountRepository>(),
+        gh<_i664.SAGGameRepository>(),
       ),
     );
     gh.factory<_i1011.SettingsBloc>(
@@ -420,20 +421,20 @@ extension GetItInjectableX on _i174.GetIt {
       () => noAdsButtonModule.appBarWidgetFactory(gh<_i366.NoAdsButtonBloc>()),
       instanceName: 'noAdsButtonWidget',
     );
+    gh.factory<_i544.SAGGameBloc>(
+      () => sAGGameModule.gameSetBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i484.GetSAGGameUseCase>(),
+        gh<_i887.UpsertUserSAGGameUseCase>(),
+        gh<_i659.AddCoinsStreamUseCase>(),
+        gh<_i878.GetGamesSettingsStreamUseCase>(),
+      ),
+    );
     gh.factory<_i24.SAGGamesBloc>(
       () => sAGGamesModule.sagGamesBlocFactory(
         gh<_i5.IRouter>(),
         gh<_i430.GetSAGGamesUseCase>(),
         gh<_i599.SignOutUseCase>(),
-      ),
-    );
-    gh.factory<_i544.SAGGameBloc>(
-      () => sAGGameModule.gameSetBlocFactory(
-        gh<_i5.IRouter>(),
-        gh<_i484.GetSAGGameUseCase>(),
-        gh<_i652.UpsertUserSAGGameUseCase>(),
-        gh<_i659.AddCoinsStreamUseCase>(),
-        gh<_i878.GetGamesSettingsStreamUseCase>(),
       ),
     );
     gh.factory<_i409.Widget>(

@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/query_filter.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
+import 'package:guesswork/fragments/standalone/sag/data/framework/firebase/firestore/firestore_framework.dart';
 
 class EmptySAGGameError extends BaseError {}
 
@@ -25,7 +25,7 @@ class GetSagGamesOperation {
     List<QueryFilter>? filters,
   }) async {
     try {
-      Query<Map<String, dynamic>> query = _db.collection(sagGameCollectionPath);
+      Query<Map<String, dynamic>> query = _db.collection(fsSAGGamePath);
 
       // Apply any filters if provided
       if (filters != null && filters.isNotEmpty) {

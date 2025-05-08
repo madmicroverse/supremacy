@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore/upsert_user_sag_game_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/sign_in_anonymously.dart';
 import 'package:guesswork/core/data/framework/firebase/sign_in_with_google.dart';
 import 'package:guesswork/core/data/framework/firebase/sign_out.dart';
@@ -14,7 +13,6 @@ import 'package:guesswork/core/domain/repository/account_repository.dart';
 import 'package:guesswork/core/domain/repository/auth_repository.dart';
 import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
 import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart';
-import 'package:guesswork/core/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/set_game_settings_use_case.dart';
 import 'package:injectable/injectable.dart';
@@ -34,14 +32,12 @@ abstract class AccountModule {
     GetGamesUserOperation getGamesUserOperation,
     GetGamesUserStreamOperation getGamesUserStreamOperation,
     SetGamesUserOperation setGamesUserOperation,
-    UpsertUserSAGGameOperation upsertUserSAGGameOperation,
   ) {
     return AccountRepositoryImpl(
       getAuthGamesUserOperation,
       getGamesUserOperation,
       getGamesUserStreamOperation,
       setGamesUserOperation,
-      upsertUserSAGGameOperation,
     );
   }
 
@@ -50,13 +46,6 @@ abstract class AccountModule {
     AccountRepository accountRepository,
   ) {
     return GetGamesSettingsStreamUseCase(accountRepository);
-  }
-
-  @Injectable()
-  UpsertUserSAGGameUseCase upsertUserSAGGameUseCaseFactory(
-    AccountRepository accountRepository,
-  ) {
-    return UpsertUserSAGGameUseCase(accountRepository);
   }
 
   @Injectable()

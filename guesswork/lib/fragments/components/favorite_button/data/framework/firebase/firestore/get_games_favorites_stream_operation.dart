@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/query_filter.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_framework.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore_paths.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
+import 'package:guesswork/fragments/components/favorite_button/data/framework/firebase/firestore/firestore_paths.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
 
 class GetGamesFavoritesStreamOperation {
@@ -16,9 +17,9 @@ class GetGamesFavoritesStreamOperation {
   }) async {
     try {
       Query<Map<String, dynamic>> query = _db
-          .collection(userPath)
+          .collection(fsUserPath)
           .doc(gamesUserId)
-          .collection(favoriteCollectionPath);
+          .collection(fsFavoritePath);
 
       if (filters != null && filters.isNotEmpty) {
         for (final filter in filters) {
