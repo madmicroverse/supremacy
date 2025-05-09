@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:guesswork/fragments/standalone/sign_in/presentation/bloc/sign_in_bloc.dart'
-    show SignInBlocError;
+import 'package:guesswork/core/domain/entity/result.dart';
 
 part 'sign_in_bloc_state.freezed.dart';
 
@@ -17,13 +16,13 @@ abstract class SignInBlocState with _$SignInBlocState {
     String? email,
     String? photoUrl,
     String? errorMessage,
-    SignInBlocError? signInBlocError,
+    SignInViewError? signInViewError,
   }) = _SignInBlocState;
 }
 
 extension SignInBlocStateMutations on SignInBlocState {
-  SignInBlocState withSignInBlocError(SignInBlocError signInBlocError) =>
-      copyWith(signInBlocError: signInBlocError);
+  SignInBlocState withSignInBlocError(SignInViewError signInViewError) =>
+      copyWith(signInViewError: signInViewError);
 
   SignInBlocState errorState(String error) => copyWith(errorMessage: error);
 
@@ -39,6 +38,12 @@ extension SignInBlocStateStateQueries on SignInBlocState {
       isLoading && !nextState.isLoading;
 
   bool isNewSignInBlocError(SignInBlocState nextState) =>
-      signInBlocError != nextState.signInBlocError &&
-      nextState.signInBlocError != null;
+      signInViewError != nextState.signInViewError &&
+      nextState.signInViewError != null;
 }
+
+sealed class SignInViewError extends BaseError {}
+
+class AnonymousSignInConnectionError extends SignInViewError {}
+
+class AnonymousSignInUnknownError extends SignInViewError {}
