@@ -1,30 +1,34 @@
 import 'dart:async';
 
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_favorite/delete_sag_game_favorite_operation.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_favorite/get_sag_games_favorites_stream_operation.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_favorite/upsert_sag_game_favorite_operation.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
-import 'package:guesswork/fragments/components/favorite_button/data/framework/firebase/firestore/get_games_favorites_stream_operation.dart';
-import 'package:guesswork/fragments/components/favorite_button/data/framework/firebase/firestore/upsert_games_favorite_operation.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/repository/games_favorite_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
-class GamesFavoriteRepositoryImpl extends GamesFavoriteRepository {
-  final UpsertFavoriteOperation _upsertFavoriteOperation;
-  final GetGamesFavoritesStreamOperation _getGamesFavoritesStreamOperation;
+class GamesFavoriteRepositoryImpl extends SAGGameFavoriteRepository {
+  final UpsertSAGGameFavoriteOperation _upsertSAGGameFavoriteOperation;
+  final GetSAGGameFavoritesStreamOperation _getSAGGameFavoritesStreamOperation;
+  final DeleteSAGGameFavoriteOperation _deleteSAGGameFavoriteOperation;
 
-  Stream<List<GamesFavorite>>? _gamesFavoritesStream;
+  Stream<List<SAGGame>>? _gamesFavoritesStream;
 
-  final _gamesFavoritesBehaviorSubject = BehaviorSubject<List<GamesFavorite>>();
+  final _gamesFavoritesBehaviorSubject = BehaviorSubject<List<SAGGame>>();
 
   GamesFavoriteRepositoryImpl(
-    this._upsertFavoriteOperation,
-    this._getGamesFavoritesStreamOperation,
+    this._upsertSAGGameFavoriteOperation,
+    this._getSAGGameFavoritesStreamOperation,
+    this._deleteSAGGameFavoriteOperation,
   );
 
   @override
-  Future<Result<Stream<List<GamesFavorite>>, BaseError>>
-  getGamesFavoritesStream(String gamesUserId) async {
+  Future<Result<Stream<List<SAGGame>>, BaseError>> getSAGGameFavoritesStream(
+    String gamesUserId,
+  ) async {
     if (_gamesFavoritesStream == null) {
-      final streamResult = await _getGamesFavoritesStreamOperation(
+      final streamResult = await _getSAGGameFavoritesStreamOperation(
         gamesUserId: gamesUserId,
       );
       switch (streamResult) {
@@ -46,8 +50,14 @@ class GamesFavoriteRepositoryImpl extends GamesFavoriteRepository {
   }
 
   @override
-  Future<Result<void, BaseError>> upsertGamesFavorite(
+  Future<Result<void, BaseError>> upsertSAGGameFavorite(
     String gamesUserId,
-    GamesFavorite gamesFavorite,
-  ) => _upsertFavoriteOperation(gamesUserId, gamesFavorite);
+    SAGGame sagGameFavorite,
+  ) => _upsertSAGGameFavoriteOperation(gamesUserId, sagGameFavorite);
+
+  @override
+  Future<Result<void, BaseError>> deleteSAGGameFavorite(
+    String gamesUserId,
+    String sagGameFavoriteId,
+  ) => _deleteSAGGameFavoriteOperation(gamesUserId, sagGameFavoriteId);
 }

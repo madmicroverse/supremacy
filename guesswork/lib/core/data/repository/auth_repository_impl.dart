@@ -22,7 +22,25 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<Result<bool, BaseError>> signInWithGoogle() => _signInWithGoogle();
 
   @override
-  Future<Result<bool, BaseError>> signInAnonymously() => _signInAnonymously();
+  Future<Result<void, SignInAnonymouslyError>> signInAnonymously() async {
+    final result = await _signInAnonymously();
+    switch (result) {
+      case Success():
+        return Success(null);
+      case Error():
+        final error = result.error;
+        switch (error) {
+          case SignInAnonymousNetworkError():
+            return Error(SignInAnonymouslyDataAccessError());
+          case SignInAnonymousRestrictedError():
+            // TODO: report here to the error
+            return Error(SignInAnonymouslyUnknownError());
+          case SignInAnonymousUnknownError():
+            // TODO: report here to the error
+            return Error(SignInAnonymouslyUnknownError());
+        }
+    }
+  }
 
   @override
   Future<void> signOut() => _signOut();

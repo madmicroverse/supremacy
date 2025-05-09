@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/firestore_paths.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/query_filter.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_paths.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_favorite/firestore_paths.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/fragments/standalone/sag/data/framework/firebase/firestore/firestore_framework.dart';
 
-class EmptySAGGameError extends BaseError {}
+sealed class GetSagGamesOperationError extends BaseError {}
 
-class EmptySAGGamesError extends BaseError {}
+class DataFetchError extends GetSagGamesOperationError {}
 
 enum SAGGameSource { main, top, replay, favorite }
 
@@ -17,12 +18,7 @@ class GetSagGamesOperation {
 
   GetSagGamesOperation(this._db);
 
-  /// Fetches multiple SAG games with pagination
-  ///
-  /// [limit] - Number of documents to fetch per page
-  /// [startAfterDocument] - The document to start after for pagination (null for first page)
-  /// [filters] - Optional query filters to apply
-  Future<Result<PaginatedSagGames, BaseError>> call({
+  Future<Result<PaginatedSagGames, GetSagGamesOperationError>> call({
     String? gamesUserId,
     required SAGGameSource sagGameSource,
     required int limit,
@@ -30,10 +26,7 @@ class GetSagGamesOperation {
     List<QueryFilter>? filters,
   }) async {
     try {
-      late Query<Map<String, dynamic>> query = getQuery(
-        sagGameSource,
-        gamesUserId,
-      );
+      Query<Map<String, dynamic>> query = getQuery(sagGameSource, gamesUserId);
       // Apply any filters if provided
       if (filters != null && filters.isNotEmpty) {
         for (final filter in filters) {
@@ -65,10 +58,6 @@ class GetSagGamesOperation {
       final querySnapshot = await query.get();
       final documents = querySnapshot.docs;
 
-      if (documents.isEmpty) {
-        return Error(EmptySAGGamesError());
-      }
-
       // Convert documents to SAGGame objects
       final games =
           documents.map((doc) {
@@ -88,25 +77,30 @@ class GetSagGamesOperation {
         ),
       );
     } catch (error) {
-      return Error(UnexpectedErrorError(error.toString()));
+      return Error(DataFetchError());
     }
   }
 
-  getQuery(SAGGameSource sagGameSource, String? gameUserId) {
+  Query<Map<String, dynamic>> getQuery(
+    SAGGameSource sagGameSource,
+    String? gameUserId,
+  ) {
     switch (sagGameSource) {
       case SAGGameSource.main:
         return _db.collection(fsSAGGamePath);
       case SAGGameSource.top:
         // TODO: Handle this case.
         throw UnimplementedError();
+      case SAGGameSource.favorite:
+        return _db
+            .collection(fsUserPath)
+            .doc(gameUserId)
+            .collection(fsSAGGameFavoritePath);
       case SAGGameSource.replay:
         return _db
             .collection(fsUserPath)
             .doc(gameUserId)
-            .collection(fsSAGGamePath);
-      case SAGGameSource.favorite:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+            .collection(fsSAGGameUniquePath);
     }
   }
 }

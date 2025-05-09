@@ -9,56 +9,13 @@ import '../bloc/sign_in_bloc_state.dart';
 
 SignInBloc _bloc(BuildContext context) => context.read<SignInBloc>();
 
-class SignInRouteWidget extends StatefulWidget {
+class SignInRouteWidget extends StatelessWidget {
   const SignInRouteWidget({super.key});
-
-  @override
-  State<SignInRouteWidget> createState() => _SignInRouteWidgetState();
-}
-
-class _SignInRouteWidgetState extends State<SignInRouteWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-      ),
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.2, 1.0, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SignInBloc, SignInBlocState>(
+      listenWhen: (state, nextState) => state.isNewSignInBlocError(nextState),
       listener: (context, state) {
         if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -69,6 +26,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
             ),
           );
         }
+        _onSignInBlocError(context, state.signInBlocError);
       },
       builder: (context, state) {
         return Scaffold(
@@ -89,24 +47,18 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
-                      child: FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: SlideTransition(
-                          position: _slideAnimation,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildLogo(context),
-                              const SizedBox(height: 60),
-                              _buildSignInOptions(state),
-                            ],
-                          ),
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildLogo(context),
+                          const SizedBox(height: 60),
+                          _buildSignInOptions(context, state),
+                        ],
                       ),
                     ),
                   ),
                 ),
-                if (state.isLoading) _buildLoadingOverlay(),
+                if (state.isLoading) _buildLoadingOverlay(context),
               ],
             ),
           ),
@@ -148,13 +100,6 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
             fontWeight: FontWeight.bold,
             color: context.colorScheme.onPrimary,
             letterSpacing: 3,
-            // shadows: [
-            //   Shadow(
-            //     color: context.colorScheme.onPrimary.withOpacity(0.5),
-            //     blurRadius: 7,
-            //     offset: const Offset(0, 15),
-            //   ),
-            // ],
           ),
         ),
         const SizedBox(height: 10),
@@ -177,7 +122,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     );
   }
 
-  Widget _buildSignInOptions(SignInBlocState state) {
+  Widget _buildSignInOptions(BuildContext context, SignInBlocState state) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -214,19 +159,19 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
             ),
           ),
           const SizedBox(height: 30),
-          _buildGoogleSignInButton(),
+          _buildGoogleSignInButton(context),
           const SizedBox(height: 16),
-          _buildAppleSignInButton(),
+          _buildAppleSignInButton(context),
           const SizedBox(height: 24),
-          _buildDivider(),
+          _buildDivider(context),
           const SizedBox(height: 24),
-          _buildPlayAsGuestButton(),
+          _buildPlayAsGuestButton(context),
         ],
       ),
     );
   }
 
-  Widget _buildGoogleSignInButton() {
+  Widget _buildGoogleSignInButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () => _bloc(context).add(GoogleSignInBlocEvent()),
       style: ElevatedButton.styleFrom(
@@ -254,7 +199,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     );
   }
 
-  Widget _buildAppleSignInButton() {
+  Widget _buildAppleSignInButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () => _bloc(context).add(AppleSignInBlocEvent()),
       style: ElevatedButton.styleFrom(
@@ -278,7 +223,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     );
   }
 
-  Widget _buildDivider() {
+  Widget _buildDivider(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -302,7 +247,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     );
   }
 
-  Widget _buildPlayAsGuestButton() {
+  Widget _buildPlayAsGuestButton(BuildContext context) {
     return TextButton(
       onPressed: () => _bloc(context).add(AnonymousSignInBlocEvent()),
       style: TextButton.styleFrom(
@@ -320,7 +265,7 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
     );
   }
 
-  Widget _buildLoadingOverlay() {
+  Widget _buildLoadingOverlay(BuildContext context) {
     return Container(
       color: context.colorScheme.scrim.withAlpha(100),
       child: Center(
@@ -350,5 +295,34 @@ class _SignInRouteWidgetState extends State<SignInRouteWidget>
         ),
       ),
     );
+  }
+
+  _onSignInBlocError(BuildContext context, SignInBlocError? signInBlocError) {
+    switch (signInBlocError) {
+      case null:
+      case SignInBlocAnonymousConnectionError():
+      case SignInBlocAnonymousUnknownError():
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _signInBlocErrorToLocalization(context, signInBlocError!),
+            ),
+            backgroundColor: context.gamesColors.incorrect,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+    }
+  }
+
+  String _signInBlocErrorToLocalization(
+    BuildContext context,
+    SignInBlocError signInBlocError,
+  ) {
+    switch (signInBlocError) {
+      case SignInBlocAnonymousConnectionError():
+        return context.loc.sign_in_anonymous_con_error;
+      case SignInBlocAnonymousUnknownError():
+        return context.loc.sign_in_anonymous_unknown_error("APP_NAME");
+    }
   }
 }

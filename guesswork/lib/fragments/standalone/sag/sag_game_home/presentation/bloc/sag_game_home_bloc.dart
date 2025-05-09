@@ -26,8 +26,7 @@ class SagGameHomeBloc extends Bloc<SagGameHomeBE, SagGameHomeBS> {
   ) async {
     switch (event.tab) {
       case SAGGameHomeTab.favorite:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        _router.replaceNamed(sagGamesFavoriteRouteName);
       case SAGGameHomeTab.replay:
         _router.replaceNamed(sagGamesReplyRouteName);
       case SAGGameHomeTab.main:

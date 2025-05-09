@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
+import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/repository/sag_game_repository.dart';
 
@@ -20,9 +21,10 @@ class UpsertUserSAGGameUseCase {
       case Success():
         final gamesUser = result.data;
         return _sagGameRepository.upsertUserSAGGameInfo(
-          gamesUser.id,
-          userSAGGameId,
-          sagGame,
+          gamesUserId: gamesUser.id,
+          userSAGGameId: userSAGGameId,
+          sagGame: sagGame,
+          sagGameUnique: sagGame.isCompleted ? sagGame.withoutAnswers : null,
         );
       case Error():
         return Error(result.error);

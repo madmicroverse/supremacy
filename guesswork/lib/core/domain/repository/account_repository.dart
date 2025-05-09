@@ -1,10 +1,20 @@
-import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
-
 import '../entity/account/games_user.dart';
 import '../entity/result.dart';
 
+sealed class GetGamesUserError extends BaseError {}
+
+class GetGamesUserUnauthorizedError extends GetGamesUserError {}
+
+class GetGamesUserDataAccessError extends GetGamesUserError {}
+
+sealed class GetAuthGamesUserError extends BaseError {}
+
+class GetAuthGamesUserUnauthorizedError extends GetAuthGamesUserError {}
+
 abstract class AccountRepository {
-  Future<Result<GamesUser, BaseError>> getGamesUser();
+  Future<Result<GamesUser, GetAuthGamesUserError>> getAuthGamesUser();
+
+  Future<Result<GamesUser, GetGamesUserError>> getGamesUser();
 
   Future<Result<Stream<GamesUser>, BaseError>> getGamesUserStream();
 

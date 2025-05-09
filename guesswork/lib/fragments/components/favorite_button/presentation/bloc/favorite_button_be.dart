@@ -1,24 +1,23 @@
-import 'package:guesswork/core/domain/entity/games.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
 sealed class FavoriteButtonBE {}
 
 class UpdateGameFavoritesBE extends FavoriteButtonBE {
-  String gameId;
-  GameType gameType;
-  List<GamesFavorite> gamesFavoriteList;
+  SAGGame sagGame;
+  List<SAGGame> gamesFavoriteList;
 
-  UpdateGameFavoritesBE(this.gameId, this.gameType, this.gamesFavoriteList);
+  UpdateGameFavoritesBE(this.sagGame, this.gamesFavoriteList);
 }
 
 class InitSAGGameFavoriteBE extends FavoriteButtonBE {
-  String gameId;
+  SAGGame sagGame;
 
-  InitSAGGameFavoriteBE(this.gameId);
+  InitSAGGameFavoriteBE(this.sagGame);
 }
 
 class FavoriteGameBE extends FavoriteButtonBE {
-  GamesFavorite gamesFavorite;
+  bool isFavorite;
+  SAGGame sagGameFavorite;
 
-  FavoriteGameBE(this.gamesFavorite);
+  FavoriteGameBE(this.sagGameFavorite, this.isFavorite);
 }

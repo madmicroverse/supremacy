@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
-import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart';
+import 'package:guesswork/core/domain/use_case/get_sag_game_favorites_stream_use_case.dart';
 import 'package:guesswork/fragments/components/app_bar/di/app_bar_module.dart';
 import 'package:guesswork/fragments/components/favorite_button/di/favorite_button_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
@@ -22,9 +22,13 @@ abstract class SAGGamesModule {
   SAGGamesBloc sagGamesBlocFactory(
     IRouter router,
     GetSAGGamesUseCase getSAGGamesUseCase,
-    SignOutUseCase signOutUseCase,
+    GetSAGGameFavoritesStreamUseCase getSAGGameFavoritesStreamUseCase,
   ) {
-    return SAGGamesBloc(router, getSAGGamesUseCase, signOutUseCase);
+    return SAGGamesBloc(
+      router,
+      getSAGGamesUseCase,
+      getSAGGameFavoritesStreamUseCase,
+    );
   }
 
   @Named(sagGamesRouteWidget)

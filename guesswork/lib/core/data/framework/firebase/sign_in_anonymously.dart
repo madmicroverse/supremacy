@@ -1,33 +1,37 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
-import 'package:guesswork/core/data/framework/firebase/sign_in_with_google.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 
-class AnonymousAuthenticationDisabledError extends BaseError {}
+sealed class SignInAnonymousError extends BaseError {}
 
-const networkRequestFailedCode = "network-request-failed";
-const adminRestrictedOperationCode = "admin-restricted-operation";
+class SignInAnonymousNetworkError extends SignInAnonymousError {}
+
+class SignInAnonymousRestrictedError extends SignInAnonymousError {}
+
+class SignInAnonymousUnknownError extends SignInAnonymousError {}
+
+const _networkRequestFailedCode = "network-request-failed";
+const _adminRestrictedOperationCode = "admin-restricted-operation";
 
 class SignInAnonymous {
   final FirebaseAuth _firebaseAuth;
 
   SignInAnonymous(this._firebaseAuth);
 
-  Future<Result<bool, BaseError>> call() async {
-    if (_firebaseAuth.isAuthenticated)
-      return Error(AlreadyAuthenticatedError());
+  Future<Result<void, SignInAnonymousError>> call() async {
+    if (_firebaseAuth.isAuthenticated) return Success(null);
 
     try {
       await FirebaseAuth.instance.signInAnonymously();
-      return Success(true);
+      return Success(null);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
-        case networkRequestFailedCode:
-          return Error(NetworkRequestFailedError());
-        case adminRestrictedOperationCode:
-          return Error(AnonymousAuthenticationDisabledError());
+        case _networkRequestFailedCode:
+          return Error(SignInAnonymousNetworkError());
+        case _adminRestrictedOperationCode:
+          return Error(SignInAnonymousRestrictedError());
         default:
-          return Error(UnknownError());
+          return Error(SignInAnonymousUnknownError());
       }
     }
   }

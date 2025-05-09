@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/core/presentation/widgets/backgound_widget.dart';
 
 import '../bloc/sag_games_be.dart';
@@ -28,17 +29,18 @@ class SAGGamesRouteWidget extends StatelessWidget {
         child: BlocBuilder<SAGGamesBloc, SAGGamesBSC>(
           buildWhen:
               (state, nextState) =>
-                  state.doesPaginatedSagGamesListBecameAvailable(nextState),
+                  state.doesSAGGameListBecameAvailable(nextState) ||
+                  state.doesSAGGameListWasUpdated(nextState),
           builder: (context, state) {
-            if (state.isPaginatedSagGamesListLoading) {
-              return const Center(
+            if (state.isSAGGameListLoading) {
+              return Center(
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: context.colorScheme.primary,
                   strokeWidth: 3,
                 ),
               );
             }
-            final sagGameList = state.sagGamesBSCList;
+            final sagGameList = state.sagGameList!;
             return GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

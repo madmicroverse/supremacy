@@ -12,6 +12,12 @@ import '../../domain/use_case/google_sign_in_use_case.dart';
 import 'sign_in_bloc_events.dart';
 import 'sign_in_bloc_state.dart';
 
+sealed class SignInBlocError extends BaseError {}
+
+class SignInBlocAnonymousConnectionError extends SignInBlocError {}
+
+class SignInBlocAnonymousUnknownError extends SignInBlocError {}
+
 class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
   final IRouter _router;
 
@@ -86,7 +92,21 @@ class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
       case Success():
         _router.goNamed(sagGamesMainRouteName);
       case Error():
-        emit(state.idleState.errorState(result.error.runtimeType.toString()));
+        final error = result.error;
+        switch (error) {
+          case AnonymousSignInUseCaseConnectionError():
+            emit(
+              state.idleState.withSignInBlocError(
+                SignInBlocAnonymousUnknownError(),
+              ),
+            );
+          case AnonymousSignInUseCaseUnknownError():
+            emit(
+              state.idleState.withSignInBlocError(
+                SignInBlocAnonymousUnknownError(),
+              ),
+            );
+        }
     }
   }
 }

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_paths.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/firestore_paths.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 

@@ -4,13 +4,11 @@ class ConnectionError extends BaseError {}
 
 class Forbidden extends BaseError {}
 
-class UnauthorizedError extends BaseError {}
-
 class NotFound extends BaseError {}
 
 class TimeoutError extends BaseError {}
 
-class NetworkRequestFailedError extends BaseError {}
+// class NetworkRequestFailedError extends BaseError {}
 
 class UnknownError extends BaseError {}
 

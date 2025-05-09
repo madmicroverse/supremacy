@@ -19,8 +19,6 @@ class AccountRepositoryImpl extends AccountRepository {
 
   final _gamesUserBehaviorSubject = BehaviorSubject<GamesUser>();
 
-  StreamSubscription? _gamesUserStreamSubscription;
-
   AccountRepositoryImpl(
     this._getAuthGamesUserOperation,
     this._getGamesUserOperation,
@@ -29,13 +27,41 @@ class AccountRepositoryImpl extends AccountRepository {
   );
 
   @override
-  Future<Result<GamesUser, BaseError>> getGamesUser() async {
+  Future<Result<GamesUser, GetAuthGamesUserUnauthorizedError>>
+  getAuthGamesUser() async {
     final authResult = await _getAuthGamesUserOperation();
     switch (authResult) {
       case Success():
-        return _getGamesUserOperation(authResult.data);
+        return Success(authResult.data);
       case Error():
-        return authResult;
+        switch (authResult.error) {
+          case UnauthorizedError():
+            return Error(GetAuthGamesUserUnauthorizedError());
+        }
+    }
+  }
+
+  @override
+  Future<Result<GamesUser, GetGamesUserError>> getGamesUser() async {
+    final authResult = await getAuthGamesUser();
+    switch (authResult) {
+      case Success():
+        final result = await _getGamesUserOperation(authResult.data);
+        switch (result) {
+          case Success():
+            return Success(result.data);
+          case Error():
+            final error = result.error;
+            switch (error) {
+              case GetGamesUserOperationDataAccessError():
+                return Error(GetGamesUserDataAccessError());
+            }
+        }
+      case Error():
+        switch (authResult.error) {
+          case GetAuthGamesUserUnauthorizedError():
+            return Error(GetGamesUserUnauthorizedError());
+        }
     }
   }
 
@@ -53,7 +79,7 @@ class AccountRepositoryImpl extends AccountRepository {
           switch (streamResult) {
             case Success():
               _gamesUserStream = streamResult.data;
-              _gamesUserStreamSubscription = _gamesUserStream!.listen(
+              _gamesUserStream!.listen(
                 (favorites) {
                   _gamesUserBehaviorSubject.add(favorites);
                 },

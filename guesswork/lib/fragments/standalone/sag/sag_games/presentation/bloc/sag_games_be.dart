@@ -14,3 +14,9 @@ class SelectGameBlocEvent extends SAGGamesBE {
 
   SelectGameBlocEvent(this.sagGame);
 }
+
+class UpdateSAGGameListBlocEvent extends SAGGamesBE {
+  final List<SAGGame> sagGameList;
+
+  UpdateSAGGameListBlocEvent(this.sagGameList);
+}

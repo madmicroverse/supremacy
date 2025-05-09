@@ -29,20 +29,38 @@ class SAGGameRepositoryImpl extends SAGGameRepository {
       getSagGameOperation(sagGameId);
 
   @override
-  Future<Result<PaginatedSagGames, BaseError>> getSAGGames({
+  Future<Result<PaginatedSagGames, GetSAGGamesError>> getSAGGames({
     String? gamesUserId,
     required SAGGameSource sagGameSource,
     required int limit,
-  }) => getSagGamesOperation(
-    gamesUserId: gamesUserId,
-    sagGameSource: sagGameSource,
-    limit: limit,
-  );
+  }) async {
+    final result = await getSagGamesOperation(
+      gamesUserId: gamesUserId,
+      sagGameSource: sagGameSource,
+      limit: limit,
+    );
+    switch (result) {
+      case Success():
+        return Success(result.data);
+      case Error():
+        final error = result.error;
+        switch (error) {
+          case DataFetchError():
+            return Error(DataAccessError());
+        }
+    }
+  }
 
   @override
-  Future<Result<String, BaseError>> upsertUserSAGGameInfo(
-    String gamesUserId,
+  Future<Result<String, BaseError>> upsertUserSAGGameInfo({
+    required String gamesUserId,
     String? userSAGGameId,
-    SAGGame sagGame,
-  ) => _upsertUserSAGGameOperation(gamesUserId, userSAGGameId, sagGame);
+    required SAGGame sagGame,
+    SAGGame? sagGameUnique,
+  }) => _upsertUserSAGGameOperation(
+    gamesUserId: gamesUserId,
+    userSAGGameId: userSAGGameId,
+    sagGame: sagGame,
+    sagGameUnique: sagGameUnique,
+  );
 }

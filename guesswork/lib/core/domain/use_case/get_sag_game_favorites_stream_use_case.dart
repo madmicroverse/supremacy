@@ -1,24 +1,26 @@
 import 'package:guesswork/core/domain/entity/result.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/repository/games_favorite_repository.dart';
 
-class GetGamesFavoritesStreamUseCase {
+class GetSAGGameFavoritesStreamUseCase {
   final AccountRepository _accountRepository;
-  final GamesFavoriteRepository _gamesFavoriteRepository;
+  final SAGGameFavoriteRepository _sagGameFavoriteRepository;
   int? points;
 
-  GetGamesFavoritesStreamUseCase(
+  GetSAGGameFavoritesStreamUseCase(
     this._accountRepository,
-    this._gamesFavoriteRepository,
+    this._sagGameFavoriteRepository,
   );
 
-  Future<Result<Stream<List<GamesFavorite>>, BaseError>> call() async {
+  Future<Result<Stream<List<SAGGame>>, BaseError>> call() async {
     final result = await _accountRepository.getGamesUser();
     switch (result) {
       case Success():
         final gamesUser = result.data;
-        return _gamesFavoriteRepository.getGamesFavoritesStream(gamesUser.id);
+        return _sagGameFavoriteRepository.getSAGGameFavoritesStream(
+          gamesUser.id,
+        );
       case Error():
         return Error(result.error);
     }

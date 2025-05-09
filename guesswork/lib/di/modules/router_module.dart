@@ -21,6 +21,7 @@ const sagGamesHomeRouteName = "sagGamesHomeRouteName";
 
 const sagGamesMainRouteName = "sagGamesMainRouteName";
 const sagGamesReplyRouteName = "sagGamesReplyRouteName";
+const sagGamesFavoriteRouteName = "sagGamesFavoriteRouteName";
 const sagGameItemRouteName = "sagGameItemRouteName";
 const sagGameRouteName = "sagGameRouteName";
 const settingsRouteName = "settingsRouteName";
@@ -86,6 +87,7 @@ abstract class NavModule {
   @Injectable()
   @Named(sagGamesHomeRouteName)
   ShellRoute sagGamesHomeRouteFactory(
+    @Named(sagGamesFavoriteRouteName) GoRoute sagGamesFavoriteRoute,
     @Named(sagGamesMainRouteName) GoRoute sagGamesMainRoute,
     @Named(sagGamesReplyRouteName) GoRoute sagGamesReplyRoute,
   ) {
@@ -103,7 +105,7 @@ abstract class NavModule {
           },
         );
       },
-      routes: [sagGamesReplyRoute, sagGamesMainRoute],
+      routes: [sagGamesFavoriteRoute, sagGamesReplyRoute, sagGamesMainRoute],
     );
   }
 
@@ -119,6 +121,28 @@ abstract class NavModule {
           child: GetIt.instance.get<Widget>(
             instanceName: sagGamesRouteWidget,
             param1: SAGGameSource.replay,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Create your custom transition here
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      },
+    );
+  }
+
+  @Injectable()
+  @Named(sagGamesFavoriteRouteName)
+  GoRoute sagGamesFavoriteRouteFactory() {
+    return GoRoute(
+      path: sagGamesFavoriteRouteName.rootPath,
+      name: sagGamesFavoriteRouteName,
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: GetIt.instance.get<Widget>(
+            instanceName: sagGamesRouteWidget,
+            param1: SAGGameSource.favorite,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             // Create your custom transition here

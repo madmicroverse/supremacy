@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/firestore_paths.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/query_filter.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore_paths.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_favorite/firestore_paths.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
-import 'package:guesswork/fragments/components/favorite_button/data/framework/firebase/firestore/firestore_paths.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
-class GetGamesFavoritesStreamOperation {
+class GetSAGGameFavoritesStreamOperation {
   final FirebaseFirestore _db;
 
-  GetGamesFavoritesStreamOperation(this._db);
+  GetSAGGameFavoritesStreamOperation(this._db);
 
-  Future<Result<Stream<List<GamesFavorite>>, BaseError>> call({
+  Future<Result<Stream<List<SAGGame>>, BaseError>> call({
     required String gamesUserId,
     List<QueryFilter>? filters,
   }) async {
@@ -19,7 +19,7 @@ class GetGamesFavoritesStreamOperation {
       Query<Map<String, dynamic>> query = _db
           .collection(fsUserPath)
           .doc(gamesUserId)
-          .collection(fsFavoritePath);
+          .collection(fsSAGGameFavoritePath);
 
       if (filters != null && filters.isNotEmpty) {
         for (final filter in filters) {
@@ -42,7 +42,7 @@ class GetGamesFavoritesStreamOperation {
       return Success(
         query.snapshots().map((querySnapshot) {
           return querySnapshot.docs
-              .map((doc) => GamesFavorite.fromJson(doc.dataWithId!))
+              .map((doc) => SAGGame.fromJson(doc.dataWithId!))
               .toList();
         }),
       );

@@ -29,6 +29,14 @@ extension SAGGameMutation on SAGGame {
     return copyWith(sageGameItemList: newSAGeGameItemList);
   }
 
+  SAGGame get withoutAnswers {
+    final newSAGeGameItemList =
+        sageGameItemList
+            .map((sagGameItem) => sagGameItem.withoutAnswer)
+            .toList();
+    return copyWith(sageGameItemList: newSAGeGameItemList);
+  }
+
   SAGGame get completed => copyWith(
     isCompleted: sageGameItemList.all((sagGameItem) {
       final result = sagGameItem.answer.isNotNull;
@@ -53,6 +61,8 @@ extension SAGGameQueries on SAGGame? {
 
 extension SAGGameMutations on SAGGameItem {
   SAGGameItem withAnswer(SAGGameItemAnswer answer) => copyWith(answer: answer);
+
+  SAGGameItem get withoutAnswer => copyWith(answer: null);
 }
 
 extension SAGGameItemQueries on SAGGameItem? {

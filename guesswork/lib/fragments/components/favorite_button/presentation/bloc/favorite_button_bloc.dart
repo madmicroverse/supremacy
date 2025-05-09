@@ -1,26 +1,31 @@
 import 'dart:async';
 
+import 'package:collection/src/iterable_extensions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/core/domain/entity/games.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
+import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/extension/games_favorite.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/use_case/get_games_favorites_stream_use_case.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/use_case/upsert_favorite_use_case.dart';
+import 'package:guesswork/core/domain/use_case/get_sag_game_favorites_stream_use_case.dart';
+import 'package:guesswork/fragments/components/favorite_button/domain/use_case/delete_sag_game_favorite_use_case.dart';
+import 'package:guesswork/fragments/components/favorite_button/domain/use_case/upsert_sag_game_favorite_use_case.dart';
 
 import 'favorite_button_be.dart';
 import 'favorite_button_bsc.dart';
 
 class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
   final IRouter _router;
-  final UpsertGamesFavoriteUseCase _upsertGamesFavoriteUseCase;
-  final GetGamesFavoritesStreamUseCase _getGamesFavoritesStreamUseCase;
+  final UpsertSAGGameFavoriteUseCase _upsertGamesFavoriteUseCase;
+  final GetSAGGameFavoritesStreamUseCase _getGamesFavoritesStreamUseCase;
+  final DeleteSAGGameFavoriteUseCase _deleteSAGGameFavoriteUseCase;
+
+  StreamSubscription<List<SAGGame>>? _sagGameFavoriteListSubscription;
 
   FavoriteButtonBloc(
     this._router,
     this._upsertGamesFavoriteUseCase,
     this._getGamesFavoritesStreamUseCase,
+    this._deleteSAGGameFavoriteUseCase,
   ) : super(FavoriteButtonBS()) {
     on<UpdateGameFavoritesBE>(_updateGameFavoritesBE);
     on<FavoriteGameBE>(_favoriteGameBE);
@@ -31,21 +36,14 @@ class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
     UpdateGameFavoritesBE event,
     Emitter<FavoriteButtonBS> emit,
   ) {
-    final gamesFavorite = event.gamesFavoriteList.firstWhere(
-      (gamesFavorite) {
-        return gamesFavorite.gameId == event.gameId;
-      },
-      orElse:
-          () => GamesFavorite(gameId: event.gameId, gameType: event.gameType),
-    );
+    final isFavorite =
+        event.gamesFavoriteList.firstWhereOrNull((gamesFavorite) {
+          return gamesFavorite.id == event.sagGame.id;
+        }).isNotNull;
 
-    favoriteEvent() => add(FavoriteGameBE(gamesFavorite));
+    favoriteEvent() => add(FavoriteGameBE(event.sagGame, isFavorite));
 
-    emit(
-      state
-          .withOnPressed(favoriteEvent)
-          .withIsFavorite(gamesFavorite.isFavorite),
-    );
+    emit(state.withOnPressed(favoriteEvent).withIsFavorite(isFavorite));
   }
 
   FutureOr<void> _initSAGGameFavoriteBE(
@@ -55,14 +53,10 @@ class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
     final result = await _getGamesFavoritesStreamUseCase();
     switch (result) {
       case Success():
-        result.data.listen((gamesFavoriteList) {
-          add(
-            UpdateGameFavoritesBE(
-              event.gameId,
-              GameType.sagGame,
-              gamesFavoriteList,
-            ),
-          );
+        _sagGameFavoriteListSubscription = result.data.listen((
+          gamesFavoriteList,
+        ) {
+          add(UpdateGameFavoritesBE(event.sagGame, gamesFavoriteList));
         });
       case Error():
       // TODO ovi
@@ -73,14 +67,30 @@ class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
     FavoriteGameBE event,
     Emitter<FavoriteButtonBS> emit,
   ) async {
-    final result = await _upsertGamesFavoriteUseCase(
-      event.gamesFavorite.toggle,
-    );
-    switch (result) {
-      case Success():
-      // TODO ovi
-      case Error():
-      // TODO ovi
+    if (event.isFavorite) {
+      final result = await _deleteSAGGameFavoriteUseCase(
+        event.sagGameFavorite.id,
+      );
+      switch (result) {
+        case Success():
+        // TODO ovi
+        case Error():
+        // TODO ovi
+      }
+    } else {
+      final result = await _upsertGamesFavoriteUseCase(event.sagGameFavorite);
+      switch (result) {
+        case Success():
+        // TODO ovi
+        case Error():
+        // TODO ovi
+      }
     }
+  }
+
+  @override
+  Future<void> close() {
+    _sagGameFavoriteListSubscription?.cancel();
+    return super.close();
   }
 }

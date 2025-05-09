@@ -1,12 +1,18 @@
 import 'package:guesswork/core/domain/entity/result.dart';
-import 'package:guesswork/fragments/components/favorite_button/domain/entity/games_favorite.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
-abstract class GamesFavoriteRepository {
-  Future<Result<Stream<List<GamesFavorite>>, BaseError>>
-  getGamesFavoritesStream(String gamesUserId);
-
-  Future<Result<void, BaseError>> upsertGamesFavorite(
+abstract class SAGGameFavoriteRepository {
+  Future<Result<Stream<List<SAGGame>>, BaseError>> getSAGGameFavoritesStream(
     String gamesUserId,
-    GamesFavorite gamesFavorite,
+  );
+
+  Future<Result<void, BaseError>> upsertSAGGameFavorite(
+    String gamesUserId,
+    SAGGame sagGameFavorite,
+  );
+
+  Future<Result<void, BaseError>> deleteSAGGameFavorite(
+    String gamesUserId,
+    String sagGameFavoriteId,
   );
 }
