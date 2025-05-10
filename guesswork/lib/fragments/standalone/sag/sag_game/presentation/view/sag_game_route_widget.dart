@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
+import 'package:guesswork/core/presentation/extension/localozations.dart';
 import 'package:guesswork/core/presentation/widgets/play_progress_button.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/presentation/view/points_widget.dart';
 
@@ -34,7 +35,11 @@ class SAGGameRouteWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarWidget,
-      body: BlocBuilder<SAGGameBloc, SAGGameBSC>(
+      body: BlocConsumer<SAGGameBloc, SAGGameBSC>(
+        listenWhen:
+            (state, nextState) => state.isNewSAGGameViewError(nextState),
+        listener:
+            (context, state) => handleError(context, state.sagGameViewError),
         builder: (context, state) {
           return LayoutBuilder(
             builder: (context, constraints) {
@@ -61,22 +66,20 @@ class SAGGameRouteWidget extends StatelessWidget {
                       child: PlayProgressButton(
                         duration: delayedContinueDuration,
                         onPressed: () => context.addEvent(CompleteSAGGameBE()),
-                        child: Text("MORE"),
+                        child: Icon(
+                          Icons.keyboard_double_arrow_left,
+                          size: 24,
+                          color: context.colorScheme.primary,
+                        ),
                       ),
                     ).animate().fadeIn(duration: 1500.ms, begin: 0),
 
-                  if (state.isSAGGameAvailable &&
-                      !state.isGameItemLoopInitialized)
-                    Align(
-                      alignment: Alignment.center,
-                      child: PlayProgressButton(
-                        duration: autoStartDuration,
-                        onPressed:
-                            () => context.addEvent(InitSAGGameItemLoopBE()),
-                        child: Text("START"),
+                  if (state.isLoading)
+                    Center(
+                      child: CircularProgressIndicator(
+                        color: context.colorScheme.onPrimary,
                       ),
                     ),
-
                   if (state.isSAGGameCompleted && !state.isClaimingPoints)
                     Align(
                       alignment: Alignment.bottomCenter,
@@ -91,7 +94,7 @@ class SAGGameRouteWidget extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Text("Claim points"),
+                        child: Text(context.loc.games_claim_points),
                       ),
                     ),
 
@@ -109,6 +112,41 @@ class SAGGameRouteWidget extends StatelessWidget {
         },
       ),
     );
+  }
+
+  static void handleError(
+    BuildContext context,
+    SAGGameViewError? sagGameViewError,
+  ) {
+    switch (sagGameViewError) {
+      case null:
+      case SAGGameViewSystemError():
+        context.showErrorSnackBar(
+          context.loc.system_error,
+          duration: ContextWidgetBuilder.maxDuration,
+          snackBarAction: SnackBarAction(
+            textColor: context.colorScheme.onPrimary,
+            label: context.loc.system_error_back_cta,
+            onPressed: () => context.addEvent(PopAfterUnknownErrorBE()),
+          ),
+        );
+      case SAGGameViewConnectionError():
+        context.showErrorSnackBar(
+          context.loc.no_internet_error,
+          duration: ContextWidgetBuilder.maxDuration,
+          snackBarAction: SnackBarAction(
+            textColor: context.colorScheme.onPrimary,
+            label: context.loc.internet_error_cta,
+            onPressed:
+                () => context.addEvent(
+                  RetryUpsertSAGGameBE(
+                    sagGameViewError.sagGame,
+                    sagGameViewError.sagGameItem,
+                  ),
+                ),
+          ),
+        );
+    }
   }
 }
 

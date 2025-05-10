@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:guesswork/core/domain/constants/space.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/core/presentation/extension/localozations.dart';
-import 'package:guesswork/core/presentation/widgets/space.dart';
 import 'package:guesswork/fragments/standalone/sign_in/presentation/view/sign_in_divider.dart';
 
 import '../bloc/sign_in_bloc_state.dart';

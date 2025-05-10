@@ -1,15 +1,15 @@
 import '../entity/account/games_user.dart';
 import '../entity/result.dart';
 
+sealed class GetAuthGamesUserError extends BaseError {}
+
+class GetAuthGamesUserUnauthorizedError extends GetAuthGamesUserError {}
+
 sealed class GetGamesUserError extends BaseError {}
 
 class GetGamesUserUnauthorizedError extends GetGamesUserError {}
 
 class GetGamesUserDataAccessError extends GetGamesUserError {}
-
-sealed class GetAuthGamesUserError extends BaseError {}
-
-class GetAuthGamesUserUnauthorizedError extends GetAuthGamesUserError {}
 
 abstract class AccountRepository {
   Future<Result<GamesUser, GetAuthGamesUserError>> getAuthGamesUser();

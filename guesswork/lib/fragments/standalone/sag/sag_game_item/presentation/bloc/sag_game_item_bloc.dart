@@ -53,16 +53,17 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     on<ContinueSAGGameItemBE>(_continueBlocEvent);
     on<InitAudioPlayersBE>(_initAudioPlayersBE);
     on<StopScratchPlayerBE>(_stopScratchPlayerBE);
+    on<PopAfterUnknownErrorBE>(_popAfterUnknownErrorBE);
   }
 
-  FutureOr<void> _initSAGGameItemBE(event, emit) async {
+  FutureOr<void> _initSAGGameItemBE(InitSAGGameItemBE event, emit) async {
     emit(state.withSagGameItem(event.sagGameItem));
     add(InitAudioPlayersBE());
     add(InitGamesImageBE(event.sagGameItem.guessImageUrl));
     add(InitGameSettingsBE());
   }
 
-  FutureOr<void> _initAudioPlayersBE(event, emit) async {
+  FutureOr<void> _initAudioPlayersBE(InitAudioPlayersBE event, emit) async {
     scratchSoundPlayer = AudioPlayer();
     scratchSoundPlayer?.setReleaseMode(ReleaseMode.loop);
     await scratchSoundPlayer?.setSource(AudioAsset.scratch.source);
@@ -83,17 +84,24 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     await wrongAnswerPlayer?.setSource(AudioAsset.wrongAnswer.source);
   }
 
-  FutureOr<void> _initGamesImageBE(event, emit) async {
+  FutureOr<void> _initGamesImageBE(InitGamesImageBE event, emit) async {
+    emit(state.withoutError);
     final result = await _getNetworkImageUseCase(event.url);
     switch (result) {
       case Success():
         return emit(state.withGamesImage(result.data));
       case Error():
-        throw UnimplementedError();
+        final error = result.error;
+        switch (error) {
+          case GetNetworkImageUrlError():
+            emit(state.withError(SAGGameItemViewUrlError()));
+          case GetNetworkImageConnectionError():
+            emit(state.withError(SAGGameItemViewConnectionError()));
+        }
     }
   }
 
-  FutureOr<void> _initGameSettingsBE(event, emit) async {
+  FutureOr<void> _initGameSettingsBE(InitGameSettingsBE event, emit) async {
     final result = await _getGamesSettingsUseCase();
     switch (result) {
       case Success():
@@ -126,7 +134,7 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
     emit(state.withRevealedPath(revealedPath));
   }
 
-  FutureOr<void> _addPathPointBE(event, emit) async {
+  FutureOr<void> _addPathPointBE(AddPathPointBE event, emit) async {
     if (state.isGameItemComplete) return;
 
     if (state.gamesSettings.isSoundEnabled) {
@@ -199,6 +207,13 @@ class SAGGameItemBloc extends Bloc<SAGGameItemBE, SAGGameItemBS> {
 
   FutureOr<void> _continueBlocEvent(_, _) async =>
       _router.pop(state.sagGameItem);
+
+  FutureOr<void> _popAfterUnknownErrorBE(
+    PopAfterUnknownErrorBE event,
+    Emitter<SAGGameItemBS> emit,
+  ) {
+    _router.pop();
+  }
 
   /*
   Events ↑ Methods ↓

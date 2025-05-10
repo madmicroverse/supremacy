@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/constants/space.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/core/presentation/extension/localozations.dart';
-import 'package:guesswork/core/presentation/widgets/space.dart';
 
 import '../bloc/settings_be.dart';
 import '../bloc/settings_bloc.dart';

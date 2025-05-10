@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/constants/space.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/core/presentation/extension/localozations.dart';
-import 'package:guesswork/core/presentation/widgets/space.dart';
 
 import '../../../../../core/presentation/widgets/loading_overlay.dart';
 import '../bloc/sign_in_bloc.dart';
@@ -17,7 +17,7 @@ class SignInRouteWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SignInBloc, SignInBlocState>(
-      listenWhen: (state, nextState) => state.isNewSignInBlocError(nextState),
+      listenWhen: (state, nextState) => state.isNewSignInViewError(nextState),
       listener: (context, state) => handleError(context, state.signInViewError),
       builder: (context, state) {
         return Scaffold(
@@ -71,14 +71,8 @@ class SignInRouteWidget extends StatelessWidget {
       case null:
       case AnonymousSignInConnectionError():
       case AnonymousSignInUnknownError():
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              _signInViewErrorToLocalization(context, signInViewError!),
-            ),
-            backgroundColor: context.gamesColors.incorrect,
-            behavior: SnackBarBehavior.floating,
-          ),
+        context.showErrorSnackBar(
+          _signInViewErrorToLocalization(context, signInViewError!),
         );
     }
   }
@@ -91,9 +85,7 @@ class SignInRouteWidget extends StatelessWidget {
       case AnonymousSignInConnectionError():
         return context.loc.sign_in_anonymous_con_error;
       case AnonymousSignInUnknownError():
-        return context.loc.sign_in_anonymous_unknown_error(
-          "APP_NAME",
-        ); // TODO integrate remote configs please
+        return context.loc.system_error;
     }
   }
 }

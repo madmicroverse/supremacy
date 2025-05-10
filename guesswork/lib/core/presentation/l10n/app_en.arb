@@ -1,6 +1,9 @@
 {
   "app_name": "Guesswork",
   "app_slogan": "Better than chance",
+  "no_internet_error": "No Internet Connection",
+  "games_claim_points": "Claim Coins",
+  "internet_error_cta": "Retry",
   "sign_in_cta": "SIGN IN TO PLAY",
   "sign_in_cta_method": "Choose your preferred sign-in method",
   "sign_in_google_cta": "Continue with Google",
@@ -8,15 +11,8 @@
   "sign_in_or": "OR",
   "sign_in_anonymous_cta": "Play as Guest",
   "sign_in_anonymous_con_error": "Please check your internet connection and try again",
-  "sign_in_anonymous_unknown_error": "Oops, the {app_name} team is working to fix this issue",
-    "@sign_in_anonymous_unknown_error": {
-        "description": "App name",
-        "placeholders": {
-          "app_name": {
-            "type": "String"
-          }
-        }
-      },
+  "system_error": "Oops, our team has been notified and is working to fix this issue",
+  "system_error_back_cta": "Back",
   "setting_title": "Settings",
   "setting_games_preferences": "Preferences",
   "setting_games_preferences_sound": "Sound",

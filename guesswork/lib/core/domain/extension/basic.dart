@@ -23,3 +23,7 @@ extension RatioUtils on double? {
 extension SetUtils<T> on Set<T> {
   Set<T> get modifiable => Set<T>.from(this);
 }
+
+extension StringUtils on String?{
+  String get orEmpty => this??'';
+}

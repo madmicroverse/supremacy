@@ -29,7 +29,7 @@ class SAGGameRepositoryImpl extends SAGGameRepository {
       getSagGameOperation(sagGameId);
 
   @override
-  Future<Result<PaginatedSagGames, GetSAGGamesError>> getSAGGames({
+  Future<Result<PaginatedSagGames, GetSAGGamesGetSAGGamesError>> getSAGGames({
     String? gamesUserId,
     required SAGGameSource sagGameSource,
     required int limit,
@@ -45,22 +45,36 @@ class SAGGameRepositoryImpl extends SAGGameRepository {
       case Error():
         final error = result.error;
         switch (error) {
-          case DataFetchError():
-            return Error(DataAccessError());
+          case GetSagGamesOperationUnknownError():
+            return Error(GetSAGGamesGetSAGGamesUnknownError());
         }
     }
   }
 
   @override
-  Future<Result<String, BaseError>> upsertUserSAGGameInfo({
+  Future<Result<String, GetSAGGamesUpsertUserSAGGameError>> upsertUserSAGGame({
     required String gamesUserId,
     String? userSAGGameId,
     required SAGGame sagGame,
     SAGGame? sagGameUnique,
-  }) => _upsertUserSAGGameOperation(
-    gamesUserId: gamesUserId,
-    userSAGGameId: userSAGGameId,
-    sagGame: sagGame,
-    sagGameUnique: sagGameUnique,
-  );
+  }) async {
+    final result = await _upsertUserSAGGameOperation(
+      gamesUserId: gamesUserId,
+      userSAGGameId: userSAGGameId,
+      sagGame: sagGame,
+      sagGameUnique: sagGameUnique,
+    );
+    switch (result) {
+      case Success():
+        return Success(result.data);
+      case Error():
+        final error = result.error;
+        switch (error) {
+          case UpsertUserSAGGameOperationParsingError():
+            return Error(GetSAGGamesUpsertUserSAGGameSystemError());
+          case UpsertUserSAGGameOperationConnectionError():
+            return Error(GetSAGGamesUpsertUserSAGGameConnectionError());
+        }
+    }
+  }
 }

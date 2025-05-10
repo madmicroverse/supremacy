@@ -11,9 +11,9 @@ import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
-import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/di/modules/router_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/get_sag_game_use_case.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 
 import 'sag_game_be.dart';
@@ -41,7 +41,8 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
   ) : super(SAGGameBSC()) {
     on<PopSAGGameBE>(_popBlocEvent);
     on<InitSAGGameBE>(_initGameSetBlocEvent);
-    on<InitSAGGameItemLoopBE>(_initSAGGameItemLoopBE);
+    on<LaunchSAGGameItemBE>(_launchSAGGameItemBE);
+    on<RetryUpsertSAGGameBE>(_retryUpsertSAGGameBE);
     on<GamesSettingsUpdateBE>(_gamesSettingsUpdateBE);
     on<AddPointsSAGGameBE>(_addPointsSAGGameBE);
     on<InitAudioPlayersBE>(_initAudioPlayersBE);
@@ -69,10 +70,13 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
   ) async {
     _initGameSettingsBE();
     add(InitAudioPlayersBE());
+    emit(state.loadingState);
     final result = await _getSAGGameUseCase(event.sagGameId);
+    emit(state.idleState);
     switch (result) {
       case Success():
         emit(state.withSAGGameBSC(result.data));
+        add(LaunchSAGGameItemBE(state.nextSagGameItem()));
       case Error():
         // final result = await _createSAGGameUseCase();
         throw UnimplementedError();
@@ -112,43 +116,81 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
     }
   }
 
-  FutureOr<void> _initSAGGameItemLoopBE(
-    InitSAGGameItemLoopBE event,
+  FutureOr<void> _launchSAGGameItemBE(
+    LaunchSAGGameItemBE event,
     Emitter<SAGGameBSC> emit,
   ) async {
-    emit(state.initializedGameItemLoop);
     final sagGame = state.sagGame!;
-    for (var sagGameItem in sagGame.sageGameItemList) {
-      SAGGameItem? result = await _router.pushNamed<SAGGameItem>(
-        sagGameItemRouteName,
-        extra: sagGameItem.copyWith(setName: sagGame.title),
+    final sagGameItem = event.sagGameItem;
+
+    SAGGameItem? result = await _router.pushNamed<SAGGameItem>(
+      sagGameItemRouteName,
+      extra: sagGameItem.withSAGGameTitle(sagGame.title),
+    );
+
+    if (result.isNotNull) {
+      final newSAGGame = sagGame.withSAGGameItem(result!).completed;
+      emit(state.loadingState);
+      final upsertResult = await _upsertUserSAGGameUseCase(
+        state.userSAGGameId,
+        newSAGGame,
       );
+      _handleUpsertSAGGameResult(upsertResult, newSAGGame, sagGameItem, emit);
+    } else {
+      return _router.pop();
+    }
+  }
 
-      if (result.isNotNull) {
-        final newSAGGame = state.sagGame!.withSAGGameItem(result!).completed;
-        final upsertResult = await _upsertUserSAGGameUseCase(
-          state.userSAGGameId,
-          newSAGGame,
+  FutureOr<void> _retryUpsertSAGGameBE(
+    RetryUpsertSAGGameBE event,
+    Emitter<SAGGameBSC> emit,
+  ) async {
+    emit(state.loadingState);
+    final upsertResult = await _upsertUserSAGGameUseCase(
+      state.userSAGGameId,
+      event.sagGame,
+    );
+    _handleUpsertSAGGameResult(
+      upsertResult,
+      event.sagGame,
+      event.sagGameItem,
+      emit,
+    );
+  }
+
+  _handleUpsertSAGGameResult(
+    Result<String, UpsertUserSAGGameUseCaseError> upsertResult,
+    SAGGame sagGame,
+    SAGGameItem sagGameItem,
+    emit,
+  ) {
+    emit(state.idleState);
+    switch (upsertResult) {
+      case Success():
+        emit(
+          state.withSAGGameBSC(sagGame).withUserSAGGameId(upsertResult.data),
         );
-
-        switch (upsertResult) {
-          case Success():
-            emit(
-              state
-                  .withSAGGameBSC(newSAGGame)
-                  .withUserSAGGameId(upsertResult.data),
-            );
-
-            if (newSAGGame.isCompleted && state.isMusicEnabled) {
-              gameCompletedBGAudioPlayer?.resume();
-            }
-
-          case Error():
-            throw UnimplementedError();
+        if (sagGame.isCompleted) {
+          gameCompletedBGAudioPlayer?.resume();
+        } else {
+          add(
+            LaunchSAGGameItemBE(
+              state.nextSagGameItem(currentSAGGameItem: sagGameItem),
+            ),
+          );
         }
-      } else {
-        return _router.pop();
-      }
+      case Error():
+        final error = upsertResult.error;
+        switch (error) {
+          case UpsertUserSAGGameUseCaseSystemError():
+            emit(state.withError(SAGGameViewSystemError()));
+          case UpsertUserSAGGameUseCaseConnectionError():
+            emit(
+              state.withError(SAGGameViewConnectionError(sagGame, sagGameItem)),
+            );
+          case UpsertUserSAGGameUseCaseUnauthorizedError():
+            _router.goNamed(signInRouteName);
+        }
     }
   }
 

@@ -1,13 +1,23 @@
+import 'dart:async';
+
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
+import 'package:guesswork/core/presentation/extension/localozations.dart';
 import 'package:guesswork/core/presentation/widgets/backgound_widget.dart';
 
 import '../bloc/sag_games_be.dart';
 import '../bloc/sag_games_bloc.dart';
 import '../bloc/sag_games_bsc.dart';
 import 'game_card.dart';
+
+extension ContextBloc on BuildContext {
+  SAGGamesBloc get bloc => read<SAGGamesBloc>();
+
+  addEvent(SAGGamesBE event) => bloc.add(event);
+}
 
 class SAGGamesRouteWidget extends StatelessWidget {
   final PreferredSizeWidget appBar;
@@ -26,7 +36,11 @@ class SAGGamesRouteWidget extends StatelessWidget {
     return Scaffold(
       appBar: appBar,
       body: BackgroundWidget(
-        child: BlocBuilder<SAGGamesBloc, SAGGamesBSC>(
+        child: BlocConsumer<SAGGamesBloc, SAGGamesBSC>(
+          listenWhen:
+              (state, nextState) => state.isSAGGamesBSCViewError(nextState),
+          listener:
+              (context, state) => handleError(context, state.sagGamesBSCError),
           buildWhen:
               (state, nextState) =>
                   state.doesSAGGameListBecameAvailable(nextState) ||
@@ -41,7 +55,7 @@ class SAGGamesRouteWidget extends StatelessWidget {
               );
             }
             final sagGameList = state.sagGameList!;
-            return GridView.builder(
+            final grid = GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -61,9 +75,45 @@ class SAGGamesRouteWidget extends StatelessWidget {
                 );
               },
             );
+
+            if (state.isSAGGamesRefreshable) {
+              return CustomMaterialIndicator(
+                onRefresh: () async {
+                  final completer = Completer();
+                  context.addEvent(PullToRefreshBlocEvent(completer));
+                  await completer.future;
+                },
+                child: grid,
+              );
+            }
+
+            return grid;
           },
         ),
       ),
     );
+  }
+
+  static void handleError(
+    BuildContext context,
+    SAGGamesBSCViewError? sagGamesBSCError,
+  ) {
+    switch (sagGamesBSCError) {
+      case null:
+      case SAGGamesBSCUnknownError():
+        context.showErrorSnackBar(
+          _sagGamesBSCErrorToLocalization(context, sagGamesBSCError!),
+        );
+    }
+  }
+
+  static String _sagGamesBSCErrorToLocalization(
+    BuildContext context,
+    SAGGamesBSCViewError sagGamesBSCError,
+  ) {
+    switch (sagGamesBSCError) {
+      case SAGGamesBSCUnknownError():
+        return context.loc.system_error;
+    }
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/constants/space.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/core/presentation/extension/localozations.dart';
-import 'package:guesswork/core/presentation/widgets/space.dart';
 
+import '../bloc/sign_in_be.dart';
 import '../bloc/sign_in_bloc.dart';
-import '../bloc/sign_in_bloc_events.dart';
 
 const buttonIconSize = 26.0;
 
@@ -15,7 +15,7 @@ class AppleSignInButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => context.read<SignInBloc>().add(AppleSignInBlocEvent()),
+      onPressed: () => context.read<SignInBloc>().add(AppleSignInBE()),
       style: context.elevatedButtonStyle,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

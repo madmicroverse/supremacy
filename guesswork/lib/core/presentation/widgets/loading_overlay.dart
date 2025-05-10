@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:guesswork/core/domain/constants/space.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
-import 'package:guesswork/core/presentation/widgets/space.dart';
 
 const loadingStrokeWidth = 7.0;
 

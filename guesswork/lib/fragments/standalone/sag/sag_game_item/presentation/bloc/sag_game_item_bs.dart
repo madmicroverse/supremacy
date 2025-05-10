@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/image/games_image.dart';
+import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/extension/sag_game.dart';
 
 part 'sag_game_item_bs.freezed.dart';
+
+sealed class SAGGameItemViewError extends BaseError {}
+
+class SAGGameItemViewUrlError extends SAGGameItemViewError {}
+
+class SAGGameItemViewConnectionError extends SAGGameItemViewError {}
 
 @freezed
 abstract class SAGGameItemBS with _$SAGGameItemBS {
@@ -15,6 +22,7 @@ abstract class SAGGameItemBS with _$SAGGameItemBS {
     GamesSettings? gamesSettings,
     Path? revealedPath,
     @Default(1) double concealedRatio,
+    SAGGameItemViewError? sagGameItemViewError,
   }) = _SAGGameItemBS;
 }
 
@@ -36,6 +44,11 @@ extension SAGGameItemBSCMutations on SAGGameItemBS {
 
   SAGGameItemBS withConcealedRatio(double concealedRatio) =>
       copyWith(concealedRatio: concealedRatio);
+
+  SAGGameItemBS withError(SAGGameItemViewError sagGameItemViewImageError) =>
+      copyWith(sagGameItemViewError: sagGameItemViewImageError);
+
+  SAGGameItemBS get withoutError => copyWith(sagGameItemViewError: null);
 }
 
 extension SAGGameItemBSCQueries on SAGGameItemBS {
@@ -49,6 +62,10 @@ extension SAGGameItemBSCQueries on SAGGameItemBS {
       sagGameItem?.answer != nextState.sagGameItem?.answer;
 
   bool get isGamesImageAvailable => gamesImage != null;
+
+  bool get isErrorAvailable => sagGameItemViewError != null;
+
+  bool get isLoading => isGamesImageAvailable && !isErrorAvailable;
 
   bool get isRevealedPathAvailable => revealedPath != null;
 
@@ -66,4 +83,8 @@ extension SAGGameItemBSCQueries on SAGGameItemBS {
 
   bool doesRevealedRatioChange(SAGGameItemBS nextState) =>
       concealedRatio != nextState.concealedRatio;
+
+  bool isNewSAGGameItemViewError(SAGGameItemBS nextState) =>
+      sagGameItemViewError != nextState.sagGameItemViewError &&
+      nextState.sagGameItemViewError != null;
 }

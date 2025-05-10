@@ -1,4 +1,5 @@
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
 sealed class SAGGameBE {}
 
@@ -10,7 +11,18 @@ class InitSAGGameBE extends SAGGameBE {
 
 class InitAudioPlayersBE extends SAGGameBE {}
 
-class InitSAGGameItemLoopBE extends SAGGameBE {}
+class LaunchSAGGameItemBE extends SAGGameBE {
+  SAGGameItem sagGameItem;
+
+  LaunchSAGGameItemBE(this.sagGameItem);
+}
+
+class RetryUpsertSAGGameBE extends SAGGameBE {
+  SAGGame sagGame;
+  SAGGameItem sagGameItem;
+
+  RetryUpsertSAGGameBE(this.sagGame, this.sagGameItem);
+}
 
 class PopSAGGameBE extends SAGGameBE {}
 
@@ -29,3 +41,5 @@ class GamesSettingsUpdateBE extends SAGGameBE {
 
   GamesSettingsUpdateBE(this.gamesSettings);
 }
+
+class PopAfterUnknownErrorBE extends SAGGameBE {}

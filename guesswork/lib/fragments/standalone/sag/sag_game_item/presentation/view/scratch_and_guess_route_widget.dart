@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/constants/space.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
-import 'package:guesswork/core/presentation/widgets/space.dart';
+import 'package:guesswork/core/presentation/extension/localozations.dart';
+import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/bloc/sag_game_item_be.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_item/presentation/view/bloc_utils.dart';
 
 import '../bloc/sag_game_item_bloc.dart';
@@ -23,7 +25,11 @@ class SAGGameItemRouteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SAGGameItemBloc, SAGGameItemBS>(
+    return BlocConsumer<SAGGameItemBloc, SAGGameItemBS>(
+      listenWhen:
+          (state, nextState) => state.isNewSAGGameItemViewError(nextState),
+      listener:
+          (context, state) => handleError(context, state.sagGameItemViewError),
       buildWhen:
           (state, nextState) => state.doesGamesImageBecameAvailable(nextState),
       builder: (context, state) {
@@ -71,5 +77,37 @@ class SAGGameItemRouteWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  static void handleError(
+    BuildContext context,
+    SAGGameItemViewError? sagGameItemViewError,
+  ) {
+    switch (sagGameItemViewError) {
+      case null:
+      case SAGGameItemViewUrlError():
+        context.showErrorSnackBar(
+          context.loc.system_error,
+          duration: ContextWidgetBuilder.maxDuration,
+          snackBarAction: SnackBarAction(
+            label: context.loc.system_error_back_cta,
+            onPressed: () => context.addEvent(PopAfterUnknownErrorBE()),
+          ),
+        );
+      case SAGGameItemViewConnectionError():
+        context.showErrorSnackBar(
+          context.loc.no_internet_error,
+          duration: ContextWidgetBuilder.maxDuration,
+          snackBarAction: SnackBarAction(
+            label: context.loc.internet_error_cta,
+            onPressed:
+                () => context.addEvent(
+                  InitGamesImageBE(
+                    context.bloc.state.sagGameItem!.guessImageUrl,
+                  ),
+                ),
+          ),
+        );
+    }
   }
 }

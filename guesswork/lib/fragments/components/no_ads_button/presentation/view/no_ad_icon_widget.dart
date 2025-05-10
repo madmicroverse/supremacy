@@ -1,35 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
 
-/// A widget that displays a "No Ads" icon with customizable styling.
-///
-/// This widget creates a circular badge with a crossed-out ad symbol,
-/// indicating that the app or a specific feature is ad-free.
 class NoAdIconWidget extends StatelessWidget {
-  /// The size of the icon widget.
   final double size;
 
-  /// The background color of the icon.
-  final Color backgroundColor;
-
-  /// The color of the icon and text.
   final Color iconColor;
 
-  /// Whether to show the text "AD FREE" below the icon.
-  final bool showText;
-
-  /// Creates a [NoAdIconWidget].
-  ///
-  /// The [size] parameter defaults to 40.0.
-  /// The [backgroundColor] parameter defaults to a semi-transparent black.
-  /// The [iconColor] parameter defaults to white.
-  /// The [showText] parameter defaults to false.
   const NoAdIconWidget({
     Key? key,
     this.size = 40.0,
-    this.backgroundColor = const Color(0xCC000000),
     this.iconColor = Colors.white,
-    this.showText = false,
   }) : super(key: key);
 
   @override
@@ -75,21 +55,6 @@ class NoAdIconWidget extends StatelessWidget {
             ],
           ),
         ),
-
-        // Optional "AD FREE" text
-        if (showText)
-          Padding(
-            padding: const EdgeInsets.only(top: 4.0),
-            child: Text(
-              'AD FREE',
-              style: TextStyle(
-                color: iconColor,
-                fontSize: size * 0.25,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
       ],
     );
   }

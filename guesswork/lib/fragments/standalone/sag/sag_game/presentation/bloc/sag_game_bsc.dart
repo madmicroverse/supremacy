@@ -1,8 +1,22 @@
+import 'dart:math';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
+import '../../../../../../core/domain/entity/result.dart';
+
 part 'sag_game_bsc.freezed.dart';
+
+extension SAGGameItemList on List<SAGGameItem> {
+  SAGGameItem nextTo(SAGGameItem? currentSAGGameItem) {
+    final index = indexWhere((sagGameItem) {
+      final condition = sagGameItem.id == currentSAGGameItem?.id;
+      return condition;
+    });
+    return this[min(index + 1, length - 1)];
+  }
+}
 
 @freezed
 abstract class SAGGameBSC with _$SAGGameBSC {
@@ -12,6 +26,8 @@ abstract class SAGGameBSC with _$SAGGameBSC {
     @Default(false) isGameItemLoopInitialized,
     @Default(false) isClaimingPoints,
     GamesSettings? gamesSettings,
+    SAGGameViewError? sagGameViewError,
+    @Default(false) bool isLoading,
   }) = _SAGGameBSC;
 }
 
@@ -28,6 +44,15 @@ extension SAGGameBSCStateMutations on SAGGameBSC {
 
   SAGGameBSC get initializedGameItemLoop =>
       copyWith(isGameItemLoopInitialized: true);
+
+  SAGGameBSC withError(SAGGameViewError sagGameViewError) =>
+      copyWith(sagGameViewError: sagGameViewError);
+
+  SAGGameBSC get withoutError => copyWith(sagGameViewError: null);
+
+  SAGGameBSC get idleState => copyWith(isLoading: false);
+
+  SAGGameBSC get loadingState => copyWith(isLoading: true);
 }
 
 extension SAGGameBSCStateQueries on SAGGameBSC {
@@ -46,4 +71,22 @@ extension SAGGameBSCStateQueries on SAGGameBSC {
   bool get isSAGGameCompleted => sagGame?.isCompleted ?? false;
 
   bool get isSAGGameClaimed => sagGame?.isClaimed ?? false;
+
+  SAGGameItem nextSagGameItem({SAGGameItem? currentSAGGameItem}) =>
+      sagGame!.sageGameItemList.nextTo(currentSAGGameItem);
+
+  bool isNewSAGGameViewError(SAGGameBSC nextState) =>
+      sagGameViewError != nextState.sagGameViewError &&
+      nextState.sagGameViewError != null;
+}
+
+sealed class SAGGameViewError extends BaseError {}
+
+class SAGGameViewSystemError extends SAGGameViewError {}
+
+class SAGGameViewConnectionError extends SAGGameViewError {
+  SAGGame sagGame;
+  SAGGameItem sagGameItem;
+
+  SAGGameViewConnectionError(this.sagGame, this.sagGameItem);
 }

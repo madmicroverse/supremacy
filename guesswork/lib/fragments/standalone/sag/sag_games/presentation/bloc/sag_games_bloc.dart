@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
@@ -28,18 +29,39 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
     on<InitSAGGamesBlocEvent>(_initSAGGamesBlocEvent);
     on<UpdateSAGGameListBlocEvent>(_updateSAGGameListBlocEvent);
     on<SelectGameBlocEvent>(_selectGameBlocEvent);
+    on<PullToRefreshBlocEvent>(_pullToRefreshBlocEvent);
   }
 
   FutureOr<void> _initSAGGamesBlocEvent(
     InitSAGGamesBlocEvent event,
     Emitter<SAGGamesBSC> emit,
   ) async {
-    switch (event.sagGameSource) {
+    emit(state.withSAGGameSource(event.sagGameSource));
+    _loadSAGGamesBlocEvent(event.sagGameSource, emit);
+  }
+
+  FutureOr<void> _pullToRefreshBlocEvent(
+    PullToRefreshBlocEvent event,
+    Emitter<SAGGamesBSC> emit,
+  ) async {
+    if (state.isSAGGamesRefreshable) {
+      emit(state.withEmptySAGGameList);
+      await Future.delayed(10000.ms);
+      await _loadSAGGamesBlocEvent(state.sagGameSource!, emit);
+    }
+    event.completer.complete();
+  }
+
+  FutureOr<void> _loadSAGGamesBlocEvent(
+    SAGGameSource sagGameSource,
+    Emitter<SAGGamesBSC> emit,
+  ) async {
+    switch (sagGameSource) {
       case SAGGameSource.main:
       case SAGGameSource.top:
       case SAGGameSource.replay:
         final result = await _getSAGGamesUseCase(
-          sagGameSource: event.sagGameSource,
+          sagGameSource: sagGameSource,
           limit: 10,
         );
         switch (result) {
@@ -54,12 +76,10 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
             add(UpdateSAGGameListBlocEvent(sagGameList));
           case Error():
             switch (result.error) {
-              case AuthError():
-                // TODO: Handle this case.
-                throw UnimplementedError();
-              case NoDataAvailableError():
-                // TODO: Handle this case.
-                throw UnimplementedError();
+              case GetSAGGamesUseCaseUnknownError():
+                emit(state.withError(SAGGamesBSCUnknownError()));
+              case GetSAGGamesUseCaseUserUnauthorizedError():
+                _router.goNamed(signInRouteName);
             }
         }
       case SAGGameSource.favorite:
@@ -78,7 +98,9 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
   FutureOr<void> _updateSAGGameListBlocEvent(
     UpdateSAGGameListBlocEvent event,
     Emitter<SAGGamesBSC> emit,
-  ) async => emit(state.withSAGGameList(event.sagGameList));
+  ) {
+    emit(state.withSAGGameList(event.sagGameList));
+  }
 
   FutureOr<void> _selectGameBlocEvent(
     SelectGameBlocEvent event,

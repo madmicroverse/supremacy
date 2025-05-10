@@ -9,7 +9,7 @@ import 'package:guesswork/fragments/standalone/sag/data/framework/firebase/fires
 
 sealed class GetSagGamesOperationError extends BaseError {}
 
-class DataFetchError extends GetSagGamesOperationError {}
+class GetSagGamesOperationUnknownError extends GetSagGamesOperationError {}
 
 enum SAGGameSource { main, top, replay, favorite }
 
@@ -77,7 +77,7 @@ class GetSagGamesOperation {
         ),
       );
     } catch (error) {
-      return Error(DataFetchError());
+      return Error(GetSagGamesOperationUnknownError());
     }
   }
 

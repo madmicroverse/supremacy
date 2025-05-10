@@ -9,10 +9,10 @@ import 'package:guesswork/di/modules/router_module.dart';
 import '../../domain/use_case/anonymous_sign_in_use_case.dart';
 import '../../domain/use_case/apple_sign_in_use_case.dart';
 import '../../domain/use_case/google_sign_in_use_case.dart';
-import 'sign_in_bloc_events.dart';
+import 'sign_in_be.dart';
 import 'sign_in_bloc_state.dart';
 
-class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
+class SignInBloc extends Bloc<SignInBE, SignInBlocState> {
   final IRouter _router;
 
   final GoogleSignInUseCase _googleSignInUseCase;
@@ -25,15 +25,15 @@ class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
     this._appleSignInUseCase,
     this._anonymousSignInUseCase,
   ) : super(SignInBlocState()) {
-    on<InitSignInBlocEvent>(_initSignInBlocEvent);
-    on<PopSignInBlocEvent>(_popSignInBlocEvent);
-    on<GoogleSignInBlocEvent>(_googleSignInBlocEvent);
-    on<AppleSignInBlocEvent>(_appleSignInBlocEvent);
-    on<AnonymousSignInBlocEvent>(_anonymousSignInBlocEvent);
+    on<InitSignInBE>(_initSignInBE);
+    on<PopSignInBE>(_popSignInBE);
+    on<GoogleSignInBE>(_googleSignInBE);
+    on<AppleSignInBE>(_appleSignInBE);
+    on<AnonymousSignInBE>(_anonymousSignInBE);
   }
 
-  FutureOr<void> _initSignInBlocEvent(
-    InitSignInBlocEvent event,
+  FutureOr<void> _initSignInBE(
+    InitSignInBE event,
     Emitter<SignInBlocState> emit,
   ) async {
     emit(state.loadingState);
@@ -41,15 +41,15 @@ class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
     emit(state.idleState);
   }
 
-  FutureOr<void> _popSignInBlocEvent(
-    PopSignInBlocEvent event,
+  FutureOr<void> _popSignInBE(
+    PopSignInBE event,
     Emitter<SignInBlocState> emit,
   ) async {
     _router.pop();
   }
 
-  FutureOr<void> _googleSignInBlocEvent(
-    GoogleSignInBlocEvent event,
+  FutureOr<void> _googleSignInBE(
+    GoogleSignInBE event,
     Emitter<SignInBlocState> emit,
   ) async {
     emit(state.loadingState.noErrorState);
@@ -62,8 +62,8 @@ class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
     }
   }
 
-  FutureOr<void> _appleSignInBlocEvent(
-    AppleSignInBlocEvent event,
+  FutureOr<void> _appleSignInBE(
+    AppleSignInBE event,
     Emitter<SignInBlocState> emit,
   ) async {
     emit(state.loadingState.noErrorState);
@@ -76,8 +76,8 @@ class SignInBloc extends Bloc<SignInBlocEvent, SignInBlocState> {
     }
   }
 
-  FutureOr<void> _anonymousSignInBlocEvent(
-    AnonymousSignInBlocEvent event,
+  FutureOr<void> _anonymousSignInBE(
+    AnonymousSignInBE event,
     Emitter<SignInBlocState> emit,
   ) async {
     emit(state.loadingState.noErrorState);

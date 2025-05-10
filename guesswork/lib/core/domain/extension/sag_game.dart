@@ -62,6 +62,9 @@ extension SAGGameQueries on SAGGame? {
 extension SAGGameMutations on SAGGameItem {
   SAGGameItem withAnswer(SAGGameItemAnswer answer) => copyWith(answer: answer);
 
+  SAGGameItem withSAGGameTitle(String sagGameTitle) =>
+      copyWith(sagGameTitle: sagGameTitle);
+
   SAGGameItem get withoutAnswer => copyWith(answer: null);
 }
 

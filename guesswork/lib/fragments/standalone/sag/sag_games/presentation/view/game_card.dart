@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
@@ -28,14 +29,13 @@ class GameCard extends StatelessWidget {
           child: Stack(
             children: [
               Flexible(
-                child: Container(
+                child: SizedBox(
                   width: double.maxFinite,
-                  child: Image.network(
-                    sagGame.previewImage,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[800],
+                  child: CachedNetworkImage(
+                    imageUrl: sagGame.previewImage,
+                    fit: BoxFit.fill,
+                    errorWidget: (context, error, stackTrace) {
+                      return Center(
                         child: const Icon(
                           Icons.image_not_supported,
                           size: 50,
@@ -43,19 +43,15 @@ class GameCard extends StatelessWidget {
                         ),
                       );
                     },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        color: Colors.grey[900],
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.white70,
-                            value:
-                                loadingProgress.expectedTotalBytes != null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                          ),
+                    progressIndicatorBuilder: (
+                      context,
+                      child,
+                      loadingProgress,
+                    ) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white70,
+                          value: loadingProgress.progress,
                         ),
                       );
                     },

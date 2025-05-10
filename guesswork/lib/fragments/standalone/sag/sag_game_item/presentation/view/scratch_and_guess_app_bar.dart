@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guesswork/core/domain/extension/basic.dart';
 
 import '../bloc/sag_game_item_bs.dart';
 
@@ -18,7 +19,7 @@ class ScratchAndGuessAppBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(sagGameItemBS.sagGameItem?.setName ?? ''),
+      title: Text((sagGameItemBS.sagGameItem?.sagGameTitle).orEmpty),
       centerTitle: true,
       actions: [noAdsButton, settingsButton],
     );

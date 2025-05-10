@@ -5,9 +5,9 @@ import 'package:guesswork/fragments/standalone/sag/sag_game/domain/repository/sa
 
 sealed class GetSAGGamesUseCaseError extends BaseError {}
 
-class AuthError extends GetSAGGamesUseCaseError {}
+class GetSAGGamesUseCaseUnknownError extends GetSAGGamesUseCaseError {}
 
-class NoDataAvailableError extends GetSAGGamesUseCaseError {}
+class GetSAGGamesUseCaseUserUnauthorizedError extends GetSAGGamesUseCaseError {}
 
 class GetSAGGamesUseCase {
   final AccountRepository _accountRepository;
@@ -19,7 +19,7 @@ class GetSAGGamesUseCase {
     required SAGGameSource sagGameSource,
     required int limit,
   }) async {
-    final gamesUserResult = await _accountRepository.getGamesUser();
+    final gamesUserResult = await _accountRepository.getAuthGamesUser();
     switch (gamesUserResult) {
       case Success():
         final autResult = await _sagGameRepository.getSAGGames(
@@ -31,10 +31,18 @@ class GetSAGGamesUseCase {
           case Success():
             return Success(autResult.data);
           case Error():
-            return Error(NoDataAvailableError());
+            final error = autResult.error;
+            switch (error) {
+              case GetSAGGamesGetSAGGamesUnknownError():
+                return Error(GetSAGGamesUseCaseUnknownError());
+            }
         }
       case Error():
-        return Error(AuthError());
+        final error = gamesUserResult.error;
+        switch (error) {
+          case GetAuthGamesUserUnauthorizedError():
+            return Error(GetSAGGamesUseCaseUserUnauthorizedError());
+        }
     }
   }
 }

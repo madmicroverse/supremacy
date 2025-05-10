@@ -83,6 +83,10 @@ import 'package:guesswork/fragments/components/settings_button/di/settings_butto
     as _i659;
 import 'package:guesswork/fragments/components/settings_button/presentation/bloc/settings_button_bloc.dart'
     as _i581;
+import 'package:guesswork/fragments/standalone/app_wrapper/di/app_wrapper_module.dart'
+    as _i8;
+import 'package:guesswork/fragments/standalone/app_wrapper/presentation/bloc/app_wrapper_bloc.dart'
+    as _i99;
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/CreateSagGameOperation.dart'
     as _i1029;
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGameOperation.dart'
@@ -154,6 +158,7 @@ extension GetItInjectableX on _i174.GetIt {
     final sAGGameModule = _$SAGGameModule();
     final favoriteButtonModule = _$FavoriteButtonModule();
     final coinsModule = _$CoinsModule();
+    final appWrapperModule = _$AppWrapperModule();
     final sagGameHomeModule = _$SagGameHomeModule();
     final settingsButtonModule = _$SettingsButtonModule();
     final noAdsButtonModule = _$NoAdsButtonModule();
@@ -407,6 +412,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i878.GetGamesSettingsStreamUseCase>(),
       ),
     );
+    gh.factory<_i99.AppWrapperBloc>(
+      () => appWrapperModule.appWrapperBlocFactory(gh<_i5.IRouter>()),
+    );
     gh.factory<_i71.SagGameHomeBloc>(
       () => sagGameHomeModule.sagGameHomeBlocFactory(gh<_i5.IRouter>()),
     );
@@ -419,6 +427,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i409.Widget>(
       () => coinsModule.appBarWidgetFactory(gh<_i355.CoinsBloc>()),
       instanceName: 'coinsWidget',
+    );
+    gh.factoryParam<_i409.Widget, _i409.Widget, dynamic>(
+      (child, _) => appWrapperModule.appWrapperRouteWidgetFactory(
+        gh<_i99.AppWrapperBloc>(),
+        child,
+      ),
+      instanceName: 'appWrapperWidget',
     );
     gh.factory<_i1011.SettingsBloc>(
       () => settingsModule.appBarBlocFactory(
@@ -560,6 +575,8 @@ class _$SAGGameModule extends _i239.SAGGameModule {}
 class _$FavoriteButtonModule extends _i343.FavoriteButtonModule {}
 
 class _$CoinsModule extends _i233.CoinsModule {}
+
+class _$AppWrapperModule extends _i8.AppWrapperModule {}
 
 class _$SagGameHomeModule extends _i492.SagGameHomeModule {}
 

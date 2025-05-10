@@ -53,3 +53,5 @@ class ContinueSAGGameItemBE extends SAGGameItemBE {
 }
 
 class StopScratchPlayerBE extends SAGGameItemBE {}
+
+class PopAfterUnknownErrorBE extends SAGGameItemBE {}

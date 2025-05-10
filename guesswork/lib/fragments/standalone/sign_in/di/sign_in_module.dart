@@ -7,8 +7,8 @@ import 'package:injectable/injectable.dart';
 import '../domain/use_case/anonymous_sign_in_use_case.dart';
 import '../domain/use_case/apple_sign_in_use_case.dart';
 import '../domain/use_case/google_sign_in_use_case.dart';
+import '../presentation/bloc/sign_in_be.dart';
 import '../presentation/bloc/sign_in_bloc.dart';
-import '../presentation/bloc/sign_in_bloc_events.dart';
 import '../presentation/view/sign_in_route_widget.dart';
 
 const signInWidget = "sign_inRouteWidget";
@@ -46,7 +46,7 @@ abstract class SignInModule {
   Widget signInRouteWidgetFactory(SignInBloc bloc) {
     return BlocProvider(
       lazy: false,
-      create: (_) => bloc..add(InitSignInBlocEvent()),
+      create: (_) => bloc..add(InitSignInBE()),
       child: const SignInRouteWidget(),
     );
   }

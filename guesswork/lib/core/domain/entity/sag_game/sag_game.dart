@@ -21,7 +21,7 @@ abstract class SAGGameItem with _$SAGGameItem {
     required List<Option> optionList,
     required SAGGameItemAnswer? answer,
     required int answerOptionId,
-    String? setName,
+    @JsonKey(includeToJson: false) String? sagGameTitle,
   }) = _SAGGameItem;
 
   factory SAGGameItem.fromJson(Map<String, dynamic> json) =>

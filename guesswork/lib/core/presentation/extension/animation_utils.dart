@@ -50,4 +50,8 @@ extension WidgetAnimations on Widget {
       onPlay: (controller) => controller.repeat(),
     ).shimmer(duration: durationInMillis.ms, curve: Curves.easeInCubic);
   }
+
+  Widget get fadeIn {
+    return animate().fadeIn(duration: 300.ms, curve: Curves.easeInCubic);
+  }
 }

@@ -37,7 +37,7 @@ extension SignInBlocStateStateQueries on SignInBlocState {
   bool isLoadingCompleted(SignInBlocState nextState) =>
       isLoading && !nextState.isLoading;
 
-  bool isNewSignInBlocError(SignInBlocState nextState) =>
+  bool isNewSignInViewError(SignInBlocState nextState) =>
       signInViewError != nextState.signInViewError &&
       nextState.signInViewError != null;
 }
