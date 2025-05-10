@@ -28,34 +28,28 @@ class GameCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: Stack(
             children: [
-              Flexible(
-                child: SizedBox(
-                  width: double.maxFinite,
-                  child: CachedNetworkImage(
-                    imageUrl: sagGame.previewImage,
-                    fit: BoxFit.fill,
-                    errorWidget: (context, error, stackTrace) {
-                      return Center(
-                        child: const Icon(
-                          Icons.image_not_supported,
-                          size: 50,
-                          color: Colors.white54,
-                        ),
-                      );
-                    },
-                    progressIndicatorBuilder: (
-                      context,
-                      child,
-                      loadingProgress,
-                    ) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.white70,
-                          value: loadingProgress.progress,
-                        ),
-                      );
-                    },
-                  ),
+              SizedBox(
+                width: double.maxFinite,
+                child: CachedNetworkImage(
+                  imageUrl: sagGame.previewImage,
+                  fit: BoxFit.fill,
+                  errorWidget: (context, error, stackTrace) {
+                    return Center(
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 50,
+                        color: Colors.white54,
+                      ),
+                    );
+                  },
+                  progressIndicatorBuilder: (context, child, loadingProgress) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white70,
+                        value: loadingProgress.progress,
+                      ),
+                    );
+                  },
                 ),
               ),
               Align(alignment: Alignment.topRight, child: favoriteButton),
