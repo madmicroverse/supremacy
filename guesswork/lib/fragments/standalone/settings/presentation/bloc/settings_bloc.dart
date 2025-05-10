@@ -30,6 +30,7 @@ class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
     on<InitSettingsBE>(_initSettingsBE);
     on<UpdateSettingsBE>(_updateSettingsBE);
     on<SwitchSettingsBE>(_switchSettingsBE);
+    on<PopBE>(_popBE);
     on<SignOutBE>(_signOutBE);
   }
 
@@ -42,13 +43,17 @@ class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
     final result = await _getGamesSettingsUseCase();
     switch (result) {
       case Success():
+        _gamesSettingsSubscription?.cancel();
         _gamesSettingsSubscription = result.data.listen((gamesSettings) {
           add(UpdateSettingsBE(gamesSettings));
         });
       case Error():
-        switch (result.error) {
-          default:
-          // return emit(state.errorState(result.error.toString()));
+        final error = result.error;
+        switch (error) {
+          case GetGamesSettingsStreamUseCaseUnauthorizedError():
+            _router.goNamed(signInRouteName);
+          case GetGamesSettingsStreamUseCaseDataAccessError():
+            emit(state.withError(SettingsReadDataAccessError()));
         }
     }
   }
@@ -69,7 +74,13 @@ class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
       case Success():
         return;
       case Error():
-      // TODO perhaps try again?
+        final error = result.error;
+        switch (error) {
+          case SetGamesSettingsUseCaseUnauthorizedError():
+            _router.goNamed(signInRouteName);
+          case SetGamesSettingsUseCaseSystemError():
+            emit(state.withError(SettingsSystemError()));
+        }
     }
   }
 
@@ -82,5 +93,9 @@ class SettingsBloc extends Bloc<SettingsBE, SettingsBSC> {
   FutureOr<void> _signOutBE(SignOutBE event, Emitter<SettingsBSC> emit) {
     _signOutUseCase();
     _router.goNamed(signInRouteName);
+  }
+
+  FutureOr<void> _popBE(PopBE event, Emitter<SettingsBSC> emit) {
+    _router.pop();
   }
 }

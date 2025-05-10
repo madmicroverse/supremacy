@@ -66,11 +66,25 @@ class AccountRepositoryImpl extends AccountRepository {
   }
 
   @override
-  Future<Result<void, BaseError>> upsertGamesUser(GamesUser gamesUser) =>
-      _setGamesUserOperation(gamesUser);
+  Future<Result<void, UpsertGamesUserError>> upsertGamesUser(
+    GamesUser gamesUser,
+  ) async {
+    final result = await _setGamesUserOperation(gamesUser);
+    switch (result) {
+      case Success():
+        return Success(result.data);
+      case Error():
+        final error = result.error;
+        switch (error) {
+          case SetGamesUserOperationDataAccessError():
+            return Error(UpsertGamesUserDataAccessError());
+        }
+    }
+  }
 
   @override
-  Future<Result<Stream<GamesUser>, BaseError>> getGamesUserStream() async {
+  Future<Result<Stream<GamesUser>, GetGamesUserStreamError>>
+  getGamesUserStream() async {
     if (_gamesUserStream == null) {
       final result = await _getAuthGamesUserOperation();
       switch (result) {
@@ -88,10 +102,18 @@ class AccountRepositoryImpl extends AccountRepository {
                 },
               );
             case Error():
-              return Error(streamResult.error);
+              final streamError = streamResult.error;
+              switch (streamError) {
+                case GetGamesUserStreamOperationDataAccessError():
+                  return Error(GetGamesUserStreamDataAccessError());
+              }
           }
         case Error():
-          return Error(result.error);
+          final error = result.error;
+          switch (error) {
+            case UnauthorizedError():
+              return Error(GetGamesUserStreamUnauthorizedError());
+          }
       }
     }
 

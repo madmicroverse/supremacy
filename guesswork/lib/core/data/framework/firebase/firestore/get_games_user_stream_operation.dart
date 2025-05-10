@@ -4,6 +4,11 @@ import 'package:guesswork/core/data/framework/firebase/firestore/firestore_paths
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 
+sealed class GetGamesUserStreamOperationError extends BaseError {}
+
+class GetGamesUserStreamOperationDataAccessError
+    extends GetGamesUserStreamOperationError {}
+
 class GetGamesUserStreamOperation {
   final FirebaseFirestore _db;
 
@@ -12,7 +17,9 @@ class GetGamesUserStreamOperation {
   DocumentReference<Map<String, dynamic>> getGamesUserDocRef(String userId) =>
       _db.collection(fsUserPath).doc(userId);
 
-  Future<Result<Stream<GamesUser>, BaseError>> call(GamesUser gamesUser) async {
+  Future<Result<Stream<GamesUser>, GetGamesUserStreamOperationError>> call(
+    GamesUser gamesUser,
+  ) async {
     try {
       final gamesUserDocRef = getGamesUserDocRef(gamesUser.id);
       final gamesUserDoc = await gamesUserDocRef.get();
@@ -27,7 +34,7 @@ class GetGamesUserStreamOperation {
         ),
       );
     } catch (error) {
-      return Error(UnexpectedErrorError(error.toString()));
+      return Error(GetGamesUserStreamOperationDataAccessError());
     }
   }
 }

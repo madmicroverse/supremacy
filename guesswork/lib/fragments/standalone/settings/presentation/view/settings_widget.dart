@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/constants/space.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
+import 'package:guesswork/core/presentation/extension/context_colors.dart';
 import 'package:guesswork/core/presentation/extension/localozations.dart';
 
 import '../bloc/settings_be.dart';
@@ -132,5 +133,31 @@ class Settings extends StatelessWidget {
         },
       ),
     );
+  }
+
+  static void handleError(BuildContext context, SettingsError? settingsError) {
+    switch (settingsError) {
+      case null:
+      case SettingsReadDataAccessError():
+        context.showErrorSnackBar(
+          context.loc.no_internet_error,
+          duration: ContextWidgetBuilder.maxDuration,
+          snackBarAction: SnackBarAction(
+            textColor: context.colorScheme.onPrimary,
+            label: context.loc.internet_error_cta,
+            onPressed: () => context.addEvent(InitSettingsBE()),
+          ),
+        );
+      case SettingsSystemError():
+        context.showErrorSnackBar(
+          context.loc.system_error,
+          duration: ContextWidgetBuilder.maxDuration,
+          snackBarAction: SnackBarAction(
+            textColor: context.colorScheme.onPrimary,
+            label: context.loc.system_error_back_cta,
+            onPressed: () => context.addEvent(PopBE()),
+          ),
+        );
+    }
   }
 }

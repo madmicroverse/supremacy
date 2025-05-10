@@ -17,3 +17,5 @@ class SwitchSettingsBE extends SettingsBE {
 }
 
 class SignOutBE extends SettingsBE {}
+
+class PopBE extends SettingsBE {}
