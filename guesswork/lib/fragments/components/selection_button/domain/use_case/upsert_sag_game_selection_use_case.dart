@@ -1,3 +1,4 @@
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_selection/sag_game_favorite/upsert_sag_game_selection_operation.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
@@ -29,7 +30,7 @@ class UpsertSAGGameSelectionUseCase {
       case Success():
         final gamesUser = result.data;
         final upsertResult = await _gamesSelectionRepository
-            .upsertSAGGameSelection(gamesUser.id, sagGame);
+            .upsertSAGGameSelection(LiveSAGGameSource.favorites, gamesUser.id, sagGame);
         switch (upsertResult) {
           case Success():
             return Success(upsertResult.data);

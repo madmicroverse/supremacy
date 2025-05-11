@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_selection/sag_game_favorite/upsert_sag_game_selection_operation.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
 
@@ -9,6 +10,12 @@ class InitSAGGamesBlocEvent extends SAGGamesBE {
   final SAGGameSource sagGameSource;
 
   InitSAGGamesBlocEvent(this.sagGameSource);
+}
+
+class InitLiveSAGGamesBlocEvent extends SAGGamesBE {
+  final LiveSAGGameSource liveSAGGameSource;
+
+  InitLiveSAGGamesBlocEvent(this.liveSAGGameSource);
 }
 
 class SelectGameBlocEvent extends SAGGamesBE {

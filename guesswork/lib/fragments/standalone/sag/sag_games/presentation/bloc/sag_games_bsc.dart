@@ -42,10 +42,7 @@ extension SAGGamesBSCQueries on SAGGamesBSC {
       nextState.sagGamesBSCError != null;
 
   bool get isSAGGamesRefreshable =>
-      sagGameSource.isNotNull &&
-      sagGameList.isNotNull &&
-      sagGameList!.isEmpty &&
-      sagGameSource != SAGGameSource.selection;
+      sagGameSource.isNotNull && sagGameList.isNotNull && sagGameList!.isEmpty;
 }
 
 sealed class SAGGamesBSCViewError extends BaseError {}

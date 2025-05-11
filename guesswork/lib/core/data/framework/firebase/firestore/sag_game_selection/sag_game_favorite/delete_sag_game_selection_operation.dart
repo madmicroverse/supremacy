@@ -21,7 +21,7 @@ class DeleteSAGGameSelectionOperation {
       final gamesUserSAGGameSelectionDocRef = _db
           .collection(fsUserPath)
           .doc(gamesUserId)
-          .collection(fsSAGGameSelectionPath)
+          .collection(fsSAGGameFavoritePath)
           .doc(sagGameSelectionId);
       await gamesUserSAGGameSelectionDocRef.delete();
       return Success(null);

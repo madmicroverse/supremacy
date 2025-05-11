@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_selection/sag_game_favorite/upsert_sag_game_selection_operation.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
@@ -27,6 +28,7 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
     this._getSAGGameSelectionsStreamUseCase,
   ) : super(SAGGamesBSC()) {
     on<InitSAGGamesBlocEvent>(_initSAGGamesBlocEvent);
+    on<InitLiveSAGGamesBlocEvent>(_initLiveSAGGamesBlocEvent);
     on<UpdateSAGGameListBlocEvent>(_updateSAGGameListBlocEvent);
     on<SelectGameBlocEvent>(_selectGameBlocEvent);
     on<PullToRefreshBlocEvent>(_pullToRefreshBlocEvent);
@@ -58,8 +60,6 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
   ) async {
     switch (sagGameSource) {
       case SAGGameSource.main:
-      case SAGGameSource.top:
-      case SAGGameSource.event:
       case SAGGameSource.replay:
         final result = await _getSAGGamesUseCase(
           sagGameSource: sagGameSource,
@@ -83,16 +83,44 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
                 _router.goNamed(signInRouteName);
             }
         }
-      case SAGGameSource.selection:
-        final result = await _getSAGGameSelectionsStreamUseCase();
-        switch (result) {
-          case Success():
-            _sagGameSelectionListSubscription = result.data.listen(
-              (sagGameList) => add(UpdateSAGGameListBlocEvent(sagGameList)),
-            );
-          case Error():
-            print('');
+    }
+  }
+
+  FutureOr<void> _initLiveSAGGamesBlocEvent(
+    InitLiveSAGGamesBlocEvent event,
+    Emitter<SAGGamesBSC> emit,
+  ) async {
+    final result = await _getSAGGameSelectionsStreamUseCase(
+      event.liveSAGGameSource,
+    );
+    switch (result) {
+      case Success():
+        _sagGameSelectionListSubscription = result.data.listen(
+          (sagGameList) => add(UpdateSAGGameListBlocEvent(sagGameList)),
+        );
+      case Error():
+        final error = result.error;
+        switch (error) {
+          case GetSAGGameSelectionsStreamUseCaseDataAccessError():
+            throw UnimplementedError();
+          case GetSAGGameSelectionsStreamUseCaseUnauthorizedError():
+            throw UnimplementedError();
         }
+    }
+  }
+
+  FutureOr<void> _loadLiveSAGGamesBlocEvent(
+    LiveSAGGameSource liveSAGGameSource,
+    Emitter<SAGGamesBSC> emit,
+  ) async {
+    final result = await _getSAGGameSelectionsStreamUseCase(liveSAGGameSource);
+    switch (result) {
+      case Success():
+        _sagGameSelectionListSubscription = result.data.listen(
+          (sagGameList) => add(UpdateSAGGameListBlocEvent(sagGameList)),
+        );
+      case Error():
+        print('');
     }
   }
 

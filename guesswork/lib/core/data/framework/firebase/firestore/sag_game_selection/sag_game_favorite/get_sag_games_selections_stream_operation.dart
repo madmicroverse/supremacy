@@ -6,6 +6,8 @@ import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_select
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
+import 'upsert_sag_game_selection_operation.dart';
+
 sealed class GetSAGGameSelectionsStreamOperationError extends BaseError {}
 
 class GetSAGGameSelectionsStreamOperationDataAccessError
@@ -19,12 +21,16 @@ class GetSAGGameSelectionsStreamOperation {
   Future<
     Result<Stream<List<SAGGame>>, GetSAGGameSelectionsStreamOperationError>
   >
-  call({required String gamesUserId, List<QueryFilter>? filters}) async {
+  call({
+    required LiveSAGGameSource liveSAGGameSource,
+    required String gamesUserId,
+    List<QueryFilter>? filters,
+  }) async {
     try {
-      Query<Map<String, dynamic>> query = _db
-          .collection(fsUserPath)
-          .doc(gamesUserId)
-          .collection(fsSAGGameSelectionPath);
+      Query<Map<String, dynamic>> query = _liveSAGGameToPath(
+        liveSAGGameSource,
+        gamesUserId,
+      );
 
       if (filters != null && filters.isNotEmpty) {
         for (final filter in filters) {
@@ -53,6 +59,24 @@ class GetSAGGameSelectionsStreamOperation {
       );
     } catch (error) {
       return Error(GetSAGGameSelectionsStreamOperationDataAccessError());
+    }
+  }
+
+  CollectionReference<Map<String, dynamic>> _liveSAGGameToPath(
+    LiveSAGGameSource sagGameSource,
+    String? gamesUserId,
+  ) {
+    switch (sagGameSource) {
+      case LiveSAGGameSource.favorites:
+        return _db
+            .collection(fsUserPath)
+            .doc(gamesUserId)
+            .collection(fsSAGGameFavoritePath);
+        ;
+      case LiveSAGGameSource.top:
+        return _db.collection(fsSAGGameTopPath);
+      case LiveSAGGameSource.event:
+        return _db.collection(fsSAGGameEventPath);
     }
   }
 }

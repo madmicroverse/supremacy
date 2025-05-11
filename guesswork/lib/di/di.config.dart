@@ -575,11 +575,11 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       instanceName: 'sagGameItemRouteWidget',
     );
-    gh.factoryParam<_i409.Widget, _i207.SAGGameSource, dynamic>(
-      (sagGameSource, _) => sAGGamesModule.sagGamesRouteWidgetFactory(
+    gh.factoryParam<_i409.Widget, dynamic, dynamic>(
+      (gameSource, _) => sAGGamesModule.sagGamesRouteWidgetFactory(
         gh<_i24.SAGGamesBloc>(),
         gh<_i409.PreferredSizeWidget>(instanceName: 'appBarWidget'),
-        sagGameSource,
+        gameSource,
       ),
       instanceName: 'sagGamesRouteWidget',
     );

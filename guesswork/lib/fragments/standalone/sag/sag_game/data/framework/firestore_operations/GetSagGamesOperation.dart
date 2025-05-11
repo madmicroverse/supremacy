@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:guesswork/core/data/extension/firebase_auth_extension.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/firestore_paths.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/query_filter.dart';
-import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_selection/sag_game_favorite/firestore_paths.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/fragments/standalone/sag/data/framework/firebase/firestore/firestore_framework.dart';
@@ -11,7 +10,7 @@ sealed class GetSagGamesOperationError extends BaseError {}
 
 class GetSagGamesOperationUnknownError extends GetSagGamesOperationError {}
 
-enum SAGGameSource { main, top, replay, selection, event }
+enum SAGGameSource { main, replay }
 
 class GetSagGamesOperation {
   final FirebaseFirestore _db;
@@ -88,15 +87,6 @@ class GetSagGamesOperation {
     switch (sagGameSource) {
       case SAGGameSource.main:
         return _db.collection(fsSAGGamePath);
-      case SAGGameSource.top:
-        return _db.collection(fsSAGGameTopPath);
-      case SAGGameSource.event:
-        return _db.collection(fsSAGGameEventPath);
-      case SAGGameSource.selection:
-        return _db
-            .collection(fsUserPath)
-            .doc(gameUserId)
-            .collection(fsSAGGameSelectionPath);
       case SAGGameSource.replay:
         return _db
             .collection(fsUserPath)

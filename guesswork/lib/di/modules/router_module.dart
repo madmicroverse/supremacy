@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_selection/sag_game_favorite/upsert_sag_game_selection_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/signed_status.dart';
 import 'package:guesswork/core/data/framework/router_impl.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
@@ -150,7 +151,7 @@ abstract class NavModule {
           key: state.pageKey,
           child: GetIt.instance.get<Widget>(
             instanceName: sagGamesRouteWidget,
-            param1: SAGGameSource.selection,
+            param1: LiveSAGGameSource.favorites,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
@@ -192,7 +193,7 @@ abstract class NavModule {
           key: state.pageKey,
           child: GetIt.instance.get<Widget>(
             instanceName: sagGamesRouteWidget,
-            param1: SAGGameSource.top,
+            param1: LiveSAGGameSource.top,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
@@ -213,7 +214,7 @@ abstract class NavModule {
           key: state.pageKey,
           child: GetIt.instance.get<Widget>(
             instanceName: sagGamesRouteWidget,
-            param1: SAGGameSource.event,
+            param1: LiveSAGGameSource.event,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);

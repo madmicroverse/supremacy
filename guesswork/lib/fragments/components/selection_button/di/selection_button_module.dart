@@ -112,7 +112,11 @@ abstract class SelectionButtonModule {
   ) {
     return BlocProvider(
       lazy: false,
-      create: (_) => bloc..add(InitSAGGameSelectionBE(sagGame)),
+      create:
+          (_) =>
+              bloc..add(
+                InitSAGGameSelectionBE(LiveSAGGameSource.favorites, sagGame),
+              ),
       child: SelectionButton(),
     );
   }

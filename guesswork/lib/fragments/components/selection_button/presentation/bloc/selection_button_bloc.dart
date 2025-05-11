@@ -51,7 +51,9 @@ class SelectionButtonBloc extends Bloc<SelectionButtonBE, SelectionButtonBS> {
     InitSAGGameSelectionBE event,
     Emitter<SelectionButtonBS> emit,
   ) async {
-    final result = await _getGamesSelectionsStreamUseCase();
+    final result = await _getGamesSelectionsStreamUseCase(
+      event.liveSAGGameSource,
+    );
     switch (result) {
       case Success():
         _sagGameSelectionListSubscription = result.data.listen((

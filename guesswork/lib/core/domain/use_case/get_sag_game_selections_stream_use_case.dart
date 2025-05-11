@@ -1,3 +1,4 @@
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_selection/sag_game_favorite/upsert_sag_game_selection_operation.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
@@ -22,13 +23,13 @@ class GetSAGGameSelectionsStreamUseCase {
   );
 
   Future<Result<Stream<List<SAGGame>>, GetSAGGameSelectionsStreamUseCaseError>>
-  call() async {
+  call(LiveSAGGameSource liveSAGGameSource) async {
     final result = await _accountRepository.getGamesUser();
     switch (result) {
       case Success():
         final gamesUser = result.data;
         final streamResult = await _sagGameSelectionRepository
-            .getSAGGameSelectionsStream(gamesUser.id);
+            .getSAGGameSelectionsStream(liveSAGGameSource, gamesUser.id);
         switch (streamResult) {
           case Success<
             Stream<List<SAGGame>>,

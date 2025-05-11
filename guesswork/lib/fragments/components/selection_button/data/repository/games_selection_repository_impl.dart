@@ -14,9 +14,14 @@ class GamesSelectionRepositoryImpl extends SAGGameSelectionRepository {
   _getSAGGameSelectionsStreamOperation;
   final DeleteSAGGameSelectionOperation _deleteSAGGameSelectionOperation;
 
-  Stream<List<SAGGame>>? _gamesSelectionsStream;
+  Stream<List<SAGGame>>? _gamesFavoriteStream;
+  final _gamesFavoriteBehaviorSubject = BehaviorSubject<List<SAGGame>>();
 
-  final _gamesSelectionsBehaviorSubject = BehaviorSubject<List<SAGGame>>();
+  Stream<List<SAGGame>>? _gamesTopStream;
+  final _gamesTopBehaviorSubject = BehaviorSubject<List<SAGGame>>();
+
+  Stream<List<SAGGame>>? _gamesEventStream;
+  final _gamesEventBehaviorSubject = BehaviorSubject<List<SAGGame>>();
 
   GamesSelectionRepositoryImpl(
     this._upsertSAGGameSelectionOperation,
@@ -31,20 +36,44 @@ class GamesSelectionRepositoryImpl extends SAGGameSelectionRepository {
       SAGGameSelectionRepositoryGetSAGGameSelectionsStreamError
     >
   >
-  getSAGGameSelectionsStream(String gamesUserId) async {
-    if (_gamesSelectionsStream == null) {
+  getSAGGameSelectionsStream(
+    LiveSAGGameSource liveSAGGameSource,
+    String gamesUserId,
+  ) async {
+    switch (liveSAGGameSource) {
+      case LiveSAGGameSource.favorites:
+        return _favoriteStream(liveSAGGameSource, gamesUserId);
+      case LiveSAGGameSource.top:
+        return _topStream(liveSAGGameSource, gamesUserId);
+      case LiveSAGGameSource.event:
+        return _eventStream(liveSAGGameSource, gamesUserId);
+    }
+  }
+
+  Future<
+    Result<
+      Stream<List<SAGGame>>,
+      SAGGameSelectionRepositoryGetSAGGameSelectionsStreamError
+    >
+  >
+  _favoriteStream(
+    LiveSAGGameSource liveSAGGameSource,
+    String gamesUserId,
+  ) async {
+    if (_gamesFavoriteStream == null) {
       final result = await _getSAGGameSelectionsStreamOperation(
+        liveSAGGameSource: liveSAGGameSource,
         gamesUserId: gamesUserId,
       );
       switch (result) {
         case Success():
-          _gamesSelectionsStream = result.data;
-          _gamesSelectionsStream!.listen(
+          _gamesFavoriteStream = result.data;
+          _gamesFavoriteStream!.listen(
             (selections) {
-              _gamesSelectionsBehaviorSubject.add(selections);
+              _gamesFavoriteBehaviorSubject.add(selections);
             },
             onError: (error) {
-              _gamesSelectionsBehaviorSubject.addError(error);
+              _gamesFavoriteBehaviorSubject.addError(error);
             },
           );
         case Error():
@@ -57,13 +86,90 @@ class GamesSelectionRepositoryImpl extends SAGGameSelectionRepository {
           }
       }
     }
-    return Success(_gamesSelectionsBehaviorSubject.stream);
+    return Success(_gamesFavoriteBehaviorSubject.stream);
+  }
+
+  Future<
+    Result<
+      Stream<List<SAGGame>>,
+      SAGGameSelectionRepositoryGetSAGGameSelectionsStreamError
+    >
+  >
+  _topStream(LiveSAGGameSource liveSAGGameSource, String gamesUserId) async {
+    if (_gamesTopStream == null) {
+      final result = await _getSAGGameSelectionsStreamOperation(
+        liveSAGGameSource: liveSAGGameSource,
+        gamesUserId: gamesUserId,
+      );
+      switch (result) {
+        case Success():
+          _gamesTopStream = result.data;
+          _gamesTopStream!.listen(
+            (selections) {
+              _gamesTopBehaviorSubject.add(selections);
+            },
+            onError: (error) {
+              _gamesTopBehaviorSubject.addError(error);
+            },
+          );
+        case Error():
+          final error = result.error;
+          switch (error) {
+            case GetSAGGameSelectionsStreamOperationDataAccessError():
+              return Error(
+                SAGGameSelectionRepositoryGetSAGGameSelectionsStreamDataAccessError(),
+              );
+          }
+      }
+    }
+    return Success(_gamesTopBehaviorSubject.stream);
+  }
+
+  Future<
+    Result<
+      Stream<List<SAGGame>>,
+      SAGGameSelectionRepositoryGetSAGGameSelectionsStreamError
+    >
+  >
+  _eventStream(LiveSAGGameSource liveSAGGameSource, String gamesUserId) async {
+    if (_gamesEventStream == null) {
+      final result = await _getSAGGameSelectionsStreamOperation(
+        liveSAGGameSource: liveSAGGameSource,
+        gamesUserId: gamesUserId,
+      );
+      switch (result) {
+        case Success():
+          _gamesEventStream = result.data;
+          _gamesEventStream!.listen(
+            (selections) {
+              _gamesEventBehaviorSubject.add(selections);
+            },
+            onError: (error) {
+              _gamesEventBehaviorSubject.addError(error);
+            },
+          );
+        case Error():
+          final error = result.error;
+          switch (error) {
+            case GetSAGGameSelectionsStreamOperationDataAccessError():
+              return Error(
+                SAGGameSelectionRepositoryGetSAGGameSelectionsStreamDataAccessError(),
+              );
+          }
+      }
+    }
+    return Success(_gamesEventBehaviorSubject.stream);
   }
 
   @override
   Future<Result<void, SAGGameSelectionRepositoryUpsertSAGGameSelectionError>>
-  upsertSAGGameSelection(String gamesUserId, SAGGame sagGameSelection) async {
+  upsertSAGGameSelection(
+    LiveSAGGameSource liveSAGGameSource,
+    String gamesUserId,
+    SAGGame sagGameSelection,
+  ) async {
     final result = await _upsertSAGGameSelectionOperation(
+      liveSAGGameSource,
       gamesUserId,
       sagGameSelection,
     );

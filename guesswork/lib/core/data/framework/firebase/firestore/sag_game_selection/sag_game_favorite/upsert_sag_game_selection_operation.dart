@@ -9,22 +9,24 @@ sealed class UpsertSAGGameSelectionOperationError extends BaseError {}
 class UpsertSAGGameSelectionOperationDataAccessError
     extends UpsertSAGGameSelectionOperationError {}
 
+enum LiveSAGGameSource { favorites, top, event }
+
 class UpsertSAGGameSelectionOperation {
   final FirebaseFirestore _db;
 
   UpsertSAGGameSelectionOperation(this._db);
 
   Future<Result<void, UpsertSAGGameSelectionOperationError>> call(
-    String gamesUserId,
+    LiveSAGGameSource liveSAGGameSource,
+    String? gamesUserId,
     SAGGame sagGameSelection,
   ) async {
     try {
       final sagGameSelectionJson = sagGameSelection.toJson();
-      final gamesUserSAGGameSelectionDocRef = _db
-          .collection(fsUserPath)
-          .doc(gamesUserId)
-          .collection(fsSAGGameSelectionPath)
-          .doc(sagGameSelection.id);
+      final gamesUserSAGGameSelectionDocRef = _liveSAGGameToPath(
+        liveSAGGameSource,
+        gamesUserId,
+      ).doc(sagGameSelection.id);
       var gamesUserSAGGameSelectionDoc =
           await gamesUserSAGGameSelectionDocRef.get();
       if (!gamesUserSAGGameSelectionDoc.exists) {
@@ -33,6 +35,23 @@ class UpsertSAGGameSelectionOperation {
       return Success(null);
     } catch (error) {
       return Error(UpsertSAGGameSelectionOperationDataAccessError());
+    }
+  }
+
+  CollectionReference<Map<String, dynamic>> _liveSAGGameToPath(
+    LiveSAGGameSource sagGameSource,
+    String? gamesUserId,
+  ) {
+    switch (sagGameSource) {
+      case LiveSAGGameSource.favorites:
+        return _db
+            .collection(fsUserPath)
+            .doc(gamesUserId)
+            .collection(fsSAGGameFavoritePath);
+      case LiveSAGGameSource.top:
+        return _db.collection(fsSAGGameTopPath);
+      case LiveSAGGameSource.event:
+        return _db.collection(fsSAGGameEventPath);
     }
   }
 }

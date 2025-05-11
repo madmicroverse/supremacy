@@ -36,11 +36,17 @@ abstract class SAGGamesModule {
   Widget sagGamesRouteWidgetFactory(
     SAGGamesBloc bloc,
     @Named(appBarWidget) PreferredSizeWidget appBarWidget,
-    @factoryParam SAGGameSource sagGameSource,
+    @factoryParam dynamic gameSource,
   ) {
+    SAGGamesBE sagGamesBE;
+    if (gameSource is SAGGameSource) {
+      sagGamesBE = InitSAGGamesBlocEvent(gameSource);
+    } else {
+      sagGamesBE = InitLiveSAGGamesBlocEvent(gameSource);
+    }
     return BlocProvider(
       lazy: false,
-      create: (_) => bloc..add(InitSAGGamesBlocEvent(sagGameSource)),
+      create: (_) => bloc..add(sagGamesBE),
       child: SAGGamesRouteWidget(
         appBar: appBarWidget,
         sagGameSelectionButtonProvider:

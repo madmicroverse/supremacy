@@ -1,3 +1,4 @@
+import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_selection/sag_game_favorite/upsert_sag_game_selection_operation.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
 sealed class SelectionButtonBE {}
@@ -10,9 +11,10 @@ class UpdateGameSelectionsBE extends SelectionButtonBE {
 }
 
 class InitSAGGameSelectionBE extends SelectionButtonBE {
+  LiveSAGGameSource liveSAGGameSource;
   SAGGame sagGame;
 
-  InitSAGGameSelectionBE(this.sagGame);
+  InitSAGGameSelectionBE(this.liveSAGGameSource, this.sagGame);
 }
 
 class SelectionGameBE extends SelectionButtonBE {
