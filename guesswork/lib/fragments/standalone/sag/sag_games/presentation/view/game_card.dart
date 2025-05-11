@@ -5,13 +5,13 @@ import 'package:guesswork/core/presentation/extension/context_colors.dart';
 
 class GameCard extends StatelessWidget {
   final SAGGame sagGame;
-  final Widget favoriteButton;
+  final Widget selectionButton;
   final VoidCallback onTap;
 
   const GameCard({
     super.key,
     required this.sagGame,
-    required this.favoriteButton,
+    required this.selectionButton,
     required this.onTap,
   });
 
@@ -52,7 +52,7 @@ class GameCard extends StatelessWidget {
                   },
                 ),
               ),
-              Align(alignment: Alignment.topRight, child: favoriteButton),
+              Align(alignment: Alignment.topRight, child: selectionButton),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(

@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'sag_game_home_bs.freezed.dart';
 
 enum SAGGameHomeTab {
-  favorite(0),
+  selection(0),
   replay(1),
   main(2),
   top(3),

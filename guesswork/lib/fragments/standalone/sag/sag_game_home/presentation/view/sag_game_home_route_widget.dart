@@ -39,7 +39,7 @@ class SagGameHomeRouteWidget extends StatelessWidget {
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.favorite),
-                label: context.loc.sag_home_menu_favorites,
+                label: context.loc.sag_home_menu_favorite,
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.replay),

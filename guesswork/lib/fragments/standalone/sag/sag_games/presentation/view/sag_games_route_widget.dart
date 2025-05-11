@@ -21,12 +21,12 @@ extension ContextBloc on BuildContext {
 
 class SAGGamesRouteWidget extends StatelessWidget {
   final PreferredSizeWidget appBar;
-  final Widget Function(SAGGame sagGame) sagGameFavoriteButtonProvider;
+  final Widget Function(SAGGame sagGame) sagGameSelectionButtonProvider;
 
   const SAGGamesRouteWidget({
     super.key,
     required this.appBar,
-    required this.sagGameFavoriteButtonProvider,
+    required this.sagGameSelectionButtonProvider,
   });
 
   SAGGamesBloc _bloc(BuildContext context) => context.read<SAGGamesBloc>();
@@ -68,7 +68,7 @@ class SAGGamesRouteWidget extends StatelessWidget {
                 final sagGame = sagGameList[index];
                 return GameCard(
                   sagGame: sagGame,
-                  favoriteButton: sagGameFavoriteButtonProvider(sagGame),
+                  selectionButton: sagGameSelectionButtonProvider(sagGame),
                   onTap: () {
                     _bloc(context).add(SelectGameBlocEvent(sagGame));
                   },

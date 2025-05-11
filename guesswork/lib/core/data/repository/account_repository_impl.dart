@@ -94,8 +94,8 @@ class AccountRepositoryImpl extends AccountRepository {
             case Success():
               _gamesUserStream = streamResult.data;
               _gamesUserStream!.listen(
-                (favorites) {
-                  _gamesUserBehaviorSubject.add(favorites);
+                (selections) {
+                  _gamesUserBehaviorSubject.add(selections);
                 },
                 onError: (error) {
                   _gamesUserBehaviorSubject.addError(error);

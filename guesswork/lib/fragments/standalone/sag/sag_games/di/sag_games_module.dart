@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
-import 'package:guesswork/core/domain/use_case/get_sag_game_favorites_stream_use_case.dart';
+import 'package:guesswork/core/domain/use_case/get_sag_game_selections_stream_use_case.dart';
 import 'package:guesswork/fragments/components/app_bar/di/app_bar_module.dart';
-import 'package:guesswork/fragments/components/favorite_button/di/favorite_button_module.dart';
+import 'package:guesswork/fragments/components/selection_button/di/selection_button_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
 import 'package:injectable/injectable.dart';
 
@@ -22,12 +22,12 @@ abstract class SAGGamesModule {
   SAGGamesBloc sagGamesBlocFactory(
     IRouter router,
     GetSAGGamesUseCase getSAGGamesUseCase,
-    GetSAGGameFavoritesStreamUseCase getSAGGameFavoritesStreamUseCase,
+    GetSAGGameSelectionsStreamUseCase getSAGGameSelectionsStreamUseCase,
   ) {
     return SAGGamesBloc(
       router,
       getSAGGamesUseCase,
-      getSAGGameFavoritesStreamUseCase,
+      getSAGGameSelectionsStreamUseCase,
     );
   }
 
@@ -43,10 +43,10 @@ abstract class SAGGamesModule {
       create: (_) => bloc..add(InitSAGGamesBlocEvent(sagGameSource)),
       child: SAGGamesRouteWidget(
         appBar: appBarWidget,
-        sagGameFavoriteButtonProvider:
+        sagGameSelectionButtonProvider:
             (SAGGame sagGame) => GetIt.instance.get(
               param1: sagGame,
-              instanceName: sagGameFavoriteButtonWidget,
+              instanceName: sagGameSelectionButtonWidget,
             ),
       ),
     );

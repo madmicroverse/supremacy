@@ -45,7 +45,7 @@ extension SAGGamesBSCQueries on SAGGamesBSC {
       sagGameSource.isNotNull &&
       sagGameList.isNotNull &&
       sagGameList!.isEmpty &&
-      sagGameSource != SAGGameSource.favorite;
+      sagGameSource != SAGGameSource.selection;
 }
 
 sealed class SAGGamesBSCViewError extends BaseError {}

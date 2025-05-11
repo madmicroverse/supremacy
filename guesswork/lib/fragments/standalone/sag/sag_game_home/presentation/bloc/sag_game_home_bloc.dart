@@ -25,8 +25,8 @@ class SagGameHomeBloc extends Bloc<SagGameHomeBE, SagGameHomeBS> {
     Emitter<SagGameHomeBS> emit,
   ) async {
     switch (event.tab) {
-      case SAGGameHomeTab.favorite:
-        _router.replaceNamed(sagGamesFavoriteRouteName);
+      case SAGGameHomeTab.selection:
+        _router.replaceNamed(sagGamesSelectionRouteName);
       case SAGGameHomeTab.replay:
         _router.replaceNamed(sagGamesReplyRouteName);
       case SAGGameHomeTab.main:

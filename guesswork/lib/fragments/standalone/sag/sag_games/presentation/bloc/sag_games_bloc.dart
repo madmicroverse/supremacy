@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
-import 'package:guesswork/core/domain/use_case/get_sag_game_favorites_stream_use_case.dart';
+import 'package:guesswork/core/domain/use_case/get_sag_game_selections_stream_use_case.dart';
 import 'package:guesswork/di/modules/router_module.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/data/framework/firestore_operations/GetSagGamesOperation.dart';
 
@@ -16,15 +16,15 @@ import 'sag_games_bsc.dart';
 class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
   final IRouter _router;
   final GetSAGGamesUseCase _getSAGGamesUseCase;
-  final GetSAGGameFavoritesStreamUseCase _getSAGGameFavoritesStreamUseCase;
+  final GetSAGGameSelectionsStreamUseCase _getSAGGameSelectionsStreamUseCase;
 
-  StreamSubscription<List<SAGGame>>? _sagGameFavoriteListSubscription;
+  StreamSubscription<List<SAGGame>>? _sagGameSelectionListSubscription;
   List<PaginatedSagGames> paginatedSagGamesList = [];
 
   SAGGamesBloc(
     this._router,
     this._getSAGGamesUseCase,
-    this._getSAGGameFavoritesStreamUseCase,
+    this._getSAGGameSelectionsStreamUseCase,
   ) : super(SAGGamesBSC()) {
     on<InitSAGGamesBlocEvent>(_initSAGGamesBlocEvent);
     on<UpdateSAGGameListBlocEvent>(_updateSAGGameListBlocEvent);
@@ -83,11 +83,11 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
                 _router.goNamed(signInRouteName);
             }
         }
-      case SAGGameSource.favorite:
-        final result = await _getSAGGameFavoritesStreamUseCase();
+      case SAGGameSource.selection:
+        final result = await _getSAGGameSelectionsStreamUseCase();
         switch (result) {
           case Success():
-            _sagGameFavoriteListSubscription = result.data.listen(
+            _sagGameSelectionListSubscription = result.data.listen(
               (sagGameList) => add(UpdateSAGGameListBlocEvent(sagGameList)),
             );
           case Error():
@@ -112,7 +112,7 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
 
   @override
   Future<void> close() {
-    _sagGameFavoriteListSubscription?.cancel();
+    _sagGameSelectionListSubscription?.cancel();
     return super.close();
   }
 }

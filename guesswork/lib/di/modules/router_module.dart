@@ -23,7 +23,7 @@ const sagGamesMainRouteName = "sagGamesMainRouteName";
 const sagGamesTopRouteName = "sagGamesTopRouteName";
 const sagGamesEventRouteName = "sagGamesEventRouteName";
 const sagGamesReplyRouteName = "sagGamesReplyRouteName";
-const sagGamesFavoriteRouteName = "sagGamesFavoriteRouteName";
+const sagGamesSelectionRouteName = "sagGamesSelectionRouteName";
 const sagGameItemRouteName = "sagGameItemRouteName";
 const sagGameRouteName = "sagGameRouteName";
 const settingsRouteName = "settingsRouteName";
@@ -89,7 +89,7 @@ abstract class NavModule {
   @Injectable()
   @Named(sagGamesHomeRouteName)
   ShellRoute sagGamesHomeRouteFactory(
-    @Named(sagGamesFavoriteRouteName) GoRoute sagGamesFavoriteRoute,
+    @Named(sagGamesSelectionRouteName) GoRoute sagGamesSelectionRoute,
     @Named(sagGamesMainRouteName) GoRoute sagGamesMainRoute,
     @Named(sagGamesTopRouteName) GoRoute sagGamesTopRoute,
     @Named(sagGamesEventRouteName) GoRoute sagGamesEventRoute,
@@ -109,7 +109,7 @@ abstract class NavModule {
         );
       },
       routes: [
-        sagGamesFavoriteRoute,
+        sagGamesSelectionRoute,
         sagGamesReplyRoute,
         sagGamesMainRoute,
         sagGamesTopRoute,
@@ -140,17 +140,17 @@ abstract class NavModule {
   }
 
   @Injectable()
-  @Named(sagGamesFavoriteRouteName)
-  GoRoute sagGamesFavoriteRouteFactory() {
+  @Named(sagGamesSelectionRouteName)
+  GoRoute sagGamesSelectionRouteFactory() {
     return GoRoute(
-      path: sagGamesFavoriteRouteName.rootPath,
-      name: sagGamesFavoriteRouteName,
+      path: sagGamesSelectionRouteName.rootPath,
+      name: sagGamesSelectionRouteName,
       pageBuilder: (context, state) {
         return CustomTransitionPage(
           key: state.pageKey,
           child: GetIt.instance.get<Widget>(
             instanceName: sagGamesRouteWidget,
-            param1: SAGGameSource.favorite,
+            param1: SAGGameSource.selection,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
