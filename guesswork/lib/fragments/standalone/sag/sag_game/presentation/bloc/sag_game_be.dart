@@ -4,9 +4,9 @@ import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 sealed class SAGGameBE {}
 
 class InitSAGGameBE extends SAGGameBE {
-  final String sagGameId;
+  final SAGGame sagGame;
 
-  InitSAGGameBE(this.sagGameId);
+  InitSAGGameBE(this.sagGame);
 }
 
 class InitAudioPlayersBE extends SAGGameBE {}

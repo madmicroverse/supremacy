@@ -135,7 +135,7 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
     SelectGameBlocEvent event,
     Emitter<SAGGamesBSC> emit,
   ) {
-    _router.pushNamed(sagGameRouteName, extra: event.sagGame.id);
+    _router.pushNamed(sagGameRouteName, extra: event.sagGame);
   }
 
   @override

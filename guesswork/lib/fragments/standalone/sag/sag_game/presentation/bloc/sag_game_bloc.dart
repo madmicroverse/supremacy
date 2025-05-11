@@ -12,7 +12,6 @@ import 'package:guesswork/core/domain/extension/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
 import 'package:guesswork/di/modules/router_module.dart';
-import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/get_sag_game_use_case.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game/domain/use_case/upsert_user_sag_game_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 
@@ -21,7 +20,6 @@ import 'sag_game_bsc.dart';
 
 class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
   final IRouter _router;
-  final GetSAGGameUseCase _getSAGGameUseCase;
   final UpsertUserSAGGameUseCase _upsertUserSAGGameUseCase;
   final AddCoinsStreamUseCase _addCoinsStreamUseCase;
   final GetGamesSettingsStreamUseCase _getGamesSettingsUseCase;
@@ -34,13 +32,12 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
 
   SAGGameBloc(
     this._router,
-    this._getSAGGameUseCase,
     this._upsertUserSAGGameUseCase,
     this._addCoinsStreamUseCase,
     this._getGamesSettingsUseCase,
   ) : super(SAGGameBSC()) {
     on<PopSAGGameBE>(_popBlocEvent);
-    on<InitSAGGameBE>(_initGameSetBlocEvent);
+    on<InitSAGGameBE>(_initSAGGameBlocEvent);
     on<LaunchSAGGameItemBE>(_launchSAGGameItemBE);
     on<RetryUpsertSAGGameBE>(_retryUpsertSAGGameBE);
     on<GamesSettingsUpdateBE>(_gamesSettingsUpdateBE);
@@ -64,23 +61,13 @@ class SAGGameBloc extends Bloc<SAGGameBE, SAGGameBSC> {
     }
   }
 
-  FutureOr<void> _initGameSetBlocEvent(
+  FutureOr<void> _initSAGGameBlocEvent(
     InitSAGGameBE event,
     Emitter<SAGGameBSC> emit,
   ) async {
     _initGameSettingsBE();
-    add(InitAudioPlayersBE());
-    emit(state.loadingState);
-    final result = await _getSAGGameUseCase(event.sagGameId);
-    emit(state.idleState);
-    switch (result) {
-      case Success():
-        emit(state.withSAGGameBSC(result.data));
-        add(LaunchSAGGameItemBE(state.nextSagGameItem()));
-      case Error():
-        // final result = await _createSAGGameUseCase();
-        throw UnimplementedError();
-    }
+    emit(state.withSAGGameBSC(event.sagGame));
+    add(LaunchSAGGameItemBE(state.nextSagGameItem()));
   }
 
   FutureOr<void> _initAudioPlayersBE(

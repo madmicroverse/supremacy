@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/get_games_user_stream_operation.dart';
 import 'package:guesswork/core/data/framework/firebase/firestore/set_games_user_operation.dart';
+import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/repository/account_repository.dart';
 import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart';
@@ -126,14 +127,12 @@ abstract class SAGGameModule {
   @Injectable()
   SAGGameBloc gameSetBlocFactory(
     IRouter router,
-    GetSAGGameUseCase getSAGGameUseCase,
     UpsertUserSAGGameUseCase createGamesUserPointsUseCase,
     AddCoinsStreamUseCase addCoinsStreamUseCase,
     GetGamesSettingsStreamUseCase getGamesSettingsUseCase,
   ) {
     return SAGGameBloc(
       router,
-      getSAGGameUseCase,
       createGamesUserPointsUseCase,
       addCoinsStreamUseCase,
       getGamesSettingsUseCase,
@@ -144,12 +143,12 @@ abstract class SAGGameModule {
   @Injectable()
   Widget gameSetRouteWidgetFactory(
     SAGGameBloc bloc,
-    @factoryParam String sagGameId,
+    @factoryParam SAGGame sagGame,
     @Named(appBarWidget) PreferredSizeWidget appBarWidget,
   ) {
     return BlocProvider(
       lazy: false,
-      create: (_) => bloc..add(InitSAGGameBE(sagGameId)),
+      create: (_) => bloc..add(InitSAGGameBE(sagGame)),
       child: SAGGameRouteWidget(appBarWidget: appBarWidget),
     );
   }

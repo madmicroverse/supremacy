@@ -2,10 +2,8 @@ import 'dart:math';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:guesswork/core/domain/entity/account/games_user.dart';
+import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
-
-import '../../../../../../core/domain/entity/result.dart';
-
 part 'sag_game_bsc.freezed.dart';
 
 extension SAGGameItemList on List<SAGGameItem> {

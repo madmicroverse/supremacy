@@ -476,15 +476,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => noAdsButtonModule.appBarWidgetFactory(gh<_i366.NoAdsButtonBloc>()),
       instanceName: 'noAdsButtonWidget',
     );
-    gh.factory<_i544.SAGGameBloc>(
-      () => sAGGameModule.gameSetBlocFactory(
-        gh<_i5.IRouter>(),
-        gh<_i484.GetSAGGameUseCase>(),
-        gh<_i887.UpsertUserSAGGameUseCase>(),
-        gh<_i659.AddCoinsStreamUseCase>(),
-        gh<_i878.GetGamesSettingsStreamUseCase>(),
-      ),
-    );
     gh.factory<_i135.UpsertSAGGameSelectionUseCase>(
       () => selectionButtonModule.upsertGamesSelectionUseCaseFactory(
         gh<_i128.AccountRepository>(),
@@ -521,6 +512,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => signInModule.signInRouteWidgetFactory(gh<_i268.SignInBloc>()),
       instanceName: 'sign_inRouteWidget',
     );
+    gh.factory<_i544.SAGGameBloc>(
+      () => sAGGameModule.gameSetBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i887.UpsertUserSAGGameUseCase>(),
+        gh<_i659.AddCoinsStreamUseCase>(),
+        gh<_i878.GetGamesSettingsStreamUseCase>(),
+      ),
+    );
     gh.factory<_i409.Widget>(
       () => settingsButtonModule.appBarWidgetFactory(
         gh<_i581.SettingsButtonBloc>(),
@@ -550,14 +549,6 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       instanceName: 'appBarWidget',
     );
-    gh.factoryParam<_i409.Widget, String, dynamic>(
-      (sagGameId, _) => sAGGameModule.gameSetRouteWidgetFactory(
-        gh<_i544.SAGGameBloc>(),
-        sagGameId,
-        gh<_i409.PreferredSizeWidget>(instanceName: 'appBarWidget'),
-      ),
-      instanceName: 'sagGameRouteWidget',
-    );
     gh.factory<_i562.SelectionButtonBloc>(
       () => selectionButtonModule.selectionButtonBlocFactory(
         gh<_i5.IRouter>(),
@@ -582,6 +573,14 @@ extension GetItInjectableX on _i174.GetIt {
         gameSource,
       ),
       instanceName: 'sagGamesRouteWidget',
+    );
+    gh.factoryParam<_i409.Widget, _i815.SAGGame, dynamic>(
+      (sagGame, _) => sAGGameModule.gameSetRouteWidgetFactory(
+        gh<_i544.SAGGameBloc>(),
+        sagGame,
+        gh<_i409.PreferredSizeWidget>(instanceName: 'appBarWidget'),
+      ),
+      instanceName: 'sagGameRouteWidget',
     );
     gh.factoryParam<_i409.Widget, _i815.SAGGame, dynamic>(
       (sagGame, _) =>
