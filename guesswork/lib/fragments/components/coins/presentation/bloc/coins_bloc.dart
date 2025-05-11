@@ -7,6 +7,7 @@ import 'package:guesswork/core/domain/entity/account/games_user.dart';
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/extension/audio_player.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
+import 'package:guesswork/di/modules/router_module.dart';
 import 'package:guesswork/fragments/components/coins/domain/use_case/get_coins_stream_use_case.dart';
 import 'package:guesswork/fragments/standalone/settings/domain/use_case/get_game_settings_stream_use_case.dart';
 
@@ -87,9 +88,12 @@ class CoinsBloc extends Bloc<CoinsBE, CoinsBSC> {
           add(GamesSettingsUpdateBE(gamesSettings));
         });
       case Error():
-        switch (result.error) {
-          default:
-          // return emit(state.errorState(result.error.toString()));
+        final error = result.error;
+        switch (error) {
+          case GetGamesSettingsStreamUseCaseUnauthorizedError():
+            _router.goNamed(signInRouteName);
+          case GetGamesSettingsStreamUseCaseDataAccessError():
+
         }
     }
   }

@@ -7,11 +7,12 @@ import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
 import 'package:guesswork/core/domain/use_case/get_sag_game_favorites_stream_use_case.dart';
+import 'package:guesswork/di/modules/router_module.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/use_case/delete_sag_game_favorite_use_case.dart';
 import 'package:guesswork/fragments/components/favorite_button/domain/use_case/upsert_sag_game_favorite_use_case.dart';
 
 import 'favorite_button_be.dart';
-import 'favorite_button_bsc.dart';
+import 'favorite_button_bs.dart';
 
 class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
   final IRouter _router;
@@ -59,7 +60,13 @@ class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
           add(UpdateGameFavoritesBE(event.sagGame, gamesFavoriteList));
         });
       case Error():
-      // TODO ovi
+        final error = result.error;
+        switch (error) {
+          case GetSAGGameFavoritesStreamUseCaseDataAccessError():
+            emit(state.withError(FavoriteButtonViewDataAccessError()));
+          case GetSAGGameFavoritesStreamUseCaseUnauthorizedError():
+            _router.goNamed(signInRouteName);
+        }
     }
   }
 
@@ -73,17 +80,29 @@ class FavoriteButtonBloc extends Bloc<FavoriteButtonBE, FavoriteButtonBS> {
       );
       switch (result) {
         case Success():
-        // TODO ovi
+          break;
         case Error():
-        // TODO ovi
+          final error = result.error;
+          switch (error) {
+            case DeleteSAGGameFavoriteUseCaseUnauthorizedError():
+              _router.goNamed(signInRouteName);
+            case DeleteSAGGameFavoriteUseCaseDataAccessError():
+              emit(state.withError(FavoriteButtonViewDataAccessError()));
+          }
       }
     } else {
       final result = await _upsertGamesFavoriteUseCase(event.sagGameFavorite);
       switch (result) {
         case Success():
-        // TODO ovi
+          break;
         case Error():
-        // TODO ovi
+          final error = result.error;
+          switch (error) {
+            case UpsertSAGGameFavoriteUseCaseUnauthorizedError():
+              _router.goNamed(signInRouteName);
+            case UpsertSAGGameFavoriteUseCaseDataAccessError():
+              emit(state.withError(FavoriteButtonViewDataAccessError()));
+          }
       }
     }
   }

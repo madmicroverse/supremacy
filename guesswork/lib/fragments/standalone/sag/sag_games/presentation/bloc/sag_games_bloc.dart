@@ -59,6 +59,7 @@ class SAGGamesBloc extends Bloc<SAGGamesBE, SAGGamesBSC> {
     switch (sagGameSource) {
       case SAGGameSource.main:
       case SAGGameSource.top:
+      case SAGGameSource.event:
       case SAGGameSource.replay:
         final result = await _getSAGGamesUseCase(
           sagGameSource: sagGameSource,

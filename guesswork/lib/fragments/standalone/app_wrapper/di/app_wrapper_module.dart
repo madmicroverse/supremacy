@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/domain/framework/router.dart';
+import 'package:guesswork/core/domain/use_case/internet_available_stream_use_case.dart';
 import 'package:guesswork/fragments/standalone/app_wrapper/presentation/bloc/app_wrapper_be.dart';
 import 'package:injectable/injectable.dart';
 
@@ -12,8 +13,11 @@ const appWrapperWidget = "appWrapperWidget";
 @module
 abstract class AppWrapperModule {
   @Injectable()
-  AppWrapperBloc appWrapperBlocFactory(IRouter router) {
-    return AppWrapperBloc(router);
+  AppWrapperBloc appWrapperBlocFactory(
+    IRouter router,
+    GetInternetAvailabilityStreamUseCase getInternetAvailabilityStreamUseCase,
+  ) {
+    return AppWrapperBloc(router, getInternetAvailabilityStreamUseCase);
   }
 
   @Named(appWrapperWidget)

@@ -36,6 +36,8 @@ import 'package:guesswork/core/data/framework/firebase/signed_status.dart'
     as _i901;
 import 'package:guesswork/core/data/framework/firebase/user_framework.dart'
     as _i529;
+import 'package:guesswork/core/data/framework/internet_availability_operation.dart'
+    as _i1003;
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart' as _i815;
 import 'package:guesswork/core/domain/framework/router.dart' as _i5;
 import 'package:guesswork/core/domain/repository/account_repository.dart'
@@ -43,12 +45,18 @@ import 'package:guesswork/core/domain/repository/account_repository.dart'
 import 'package:guesswork/core/domain/repository/auth_repository.dart' as _i440;
 import 'package:guesswork/core/domain/repository/image_repository.dart'
     as _i780;
+import 'package:guesswork/core/domain/repository/internet_available_repository.dart'
+    as _i1067;
 import 'package:guesswork/core/domain/use_case/add_coins_use_case.dart'
     as _i659;
 import 'package:guesswork/core/domain/use_case/get_network_image_use_case.dart'
     as _i861;
 import 'package:guesswork/core/domain/use_case/get_sag_game_favorites_stream_use_case.dart'
     as _i375;
+import 'package:guesswork/core/domain/use_case/internet_available_stream_use_case.dart'
+    as _i346;
+import 'package:guesswork/core/domain/use_case/internet_available_use_case.dart'
+    as _i43;
 import 'package:guesswork/core/domain/use_case/sign_out_use_case.dart' as _i599;
 import 'package:guesswork/di/modules/account_module.dart' as _i550;
 import 'package:guesswork/di/modules/app_module.dart' as _i1048;
@@ -158,13 +166,16 @@ extension GetItInjectableX on _i174.GetIt {
     final sAGGameModule = _$SAGGameModule();
     final favoriteButtonModule = _$FavoriteButtonModule();
     final coinsModule = _$CoinsModule();
-    final appWrapperModule = _$AppWrapperModule();
     final sagGameHomeModule = _$SagGameHomeModule();
     final settingsButtonModule = _$SettingsButtonModule();
     final noAdsButtonModule = _$NoAdsButtonModule();
+    final appWrapperModule = _$AppWrapperModule();
     final settingsModule = _$SettingsModule();
-    final sAGGamesModule = _$SAGGamesModule();
     final scratchAndGuessModule = _$ScratchAndGuessModule();
+    final sAGGamesModule = _$SAGGamesModule();
+    gh.factory<_i1003.InternetAvailabilityStreamOperation>(
+      () => global.internetAvailabilityStreamOperationFactory(),
+    );
     gh.factory<_i780.ImageRepository>(() => global.imageRepositoryFactory());
     await gh.factoryAsync<_i409.ThemeData>(
       () => appModule.themeDataFactory(),
@@ -194,6 +205,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i583.GoRoute>(
       () => navModule.signInRouteFactory(),
       instanceName: 'signInRouteName',
+    );
+    gh.factory<_i583.GoRoute>(
+      () => navModule.sagGamesTopRouteFactory(),
+      instanceName: 'sagGamesTopRouteName',
     );
     gh.singleton<_i529.GetAuthGamesUserOperation>(
       () => accountModule.userFrameworkFactory(gh<_i59.FirebaseAuth>()),
@@ -288,6 +303,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => navModule.settingsRouteFactory(),
       instanceName: 'settingsRouteName',
     );
+    gh.factory<_i583.GoRoute>(
+      () => navModule.sagGamesEventRouteFactory(),
+      instanceName: 'sagGamesEventRouteName',
+    );
     gh.singleton<_i572.SAGGameFavoriteRepository>(
       () => favoriteButtonModule.gamesFavoriteRepositoryFactory(
         gh<_i143.UpsertSAGGameFavoriteOperation>(),
@@ -295,22 +314,40 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i775.DeleteSAGGameFavoriteOperation>(),
       ),
     );
+    gh.factory<_i583.ShellRoute>(
+      () => navModule.sagGamesHomeRouteFactory(
+        gh<_i583.GoRoute>(instanceName: 'sagGamesFavoriteRouteName'),
+        gh<_i583.GoRoute>(instanceName: 'sagGamesMainRouteName'),
+        gh<_i583.GoRoute>(instanceName: 'sagGamesTopRouteName'),
+        gh<_i583.GoRoute>(instanceName: 'sagGamesEventRouteName'),
+        gh<_i583.GoRoute>(instanceName: 'sagGamesReplyRouteName'),
+      ),
+      instanceName: 'sagGamesHomeRouteName',
+    );
     gh.factory<_i599.SignOutUseCase>(
       () => accountModule.signOutUseCaseFactory(gh<_i440.AuthRepository>()),
     );
     gh.factory<_i315.AnonymousSignInUseCase>(
       () => signInModule.anonymousSignInUseCase(gh<_i440.AuthRepository>()),
     );
+    await gh.singletonAsync<_i583.GoRouter>(
+      () => navModule.goRouterFactory(
+        gh<_i440.AuthRepository>(),
+        gh<_i583.GoRoute>(instanceName: 'signInRouteName'),
+        gh<_i583.ShellRoute>(instanceName: 'sagGamesHomeRouteName'),
+        gh<_i583.GoRoute>(instanceName: 'sagGameRouteName'),
+        gh<_i583.GoRoute>(instanceName: 'sagGameItemRouteName'),
+        gh<_i583.GoRoute>(instanceName: 'settingsRouteName'),
+      ),
+      preResolve: true,
+    );
+    gh.factory<_i1067.InternetAvailabilityRepository>(
+      () => global.internetAvailabilityRepositoryFactory(
+        gh<_i1003.InternetAvailabilityStreamOperation>(),
+      ),
+    );
     gh.factory<_i861.GetNetworkImageUseCase>(
       () => global.getNetworkImageUseCaseFactory(gh<_i780.ImageRepository>()),
-    );
-    gh.factory<_i583.ShellRoute>(
-      () => navModule.sagGamesHomeRouteFactory(
-        gh<_i583.GoRoute>(instanceName: 'sagGamesFavoriteRouteName'),
-        gh<_i583.GoRoute>(instanceName: 'sagGamesMainRouteName'),
-        gh<_i583.GoRoute>(instanceName: 'sagGamesReplyRouteName'),
-      ),
-      instanceName: 'sagGamesHomeRouteName',
     );
     gh.singleton<_i128.AccountRepository>(
       () => accountModule.accountRepositoryFactory(
@@ -318,6 +355,23 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i462.GetGamesUserOperation>(),
         gh<_i30.GetGamesUserStreamOperation>(),
         gh<_i160.SetGamesUserOperation>(),
+      ),
+    );
+    gh.singleton<_i5.IRouter>(() => navModule.router(gh<_i583.GoRouter>()));
+    gh.factory<_i346.GetInternetAvailabilityStreamUseCase>(
+      () => global.getInternetAvailabilityStreamUseCaseFactory(
+        gh<_i1067.InternetAvailabilityRepository>(),
+      ),
+    );
+    gh.factory<_i43.GetInternetAvailabilityUseCase>(
+      () => global.getInternetAvailabilityUseCaseFactory(
+        gh<_i1067.InternetAvailabilityRepository>(),
+      ),
+    );
+    gh.factory<_i409.MaterialApp>(
+      () => appModule.crosswordBlockFactory(
+        gh<_i409.ThemeData>(),
+        gh<_i583.GoRouter>(),
       ),
     );
     gh.factory<_i664.SAGGameRepository>(
@@ -348,10 +402,44 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i128.AccountRepository>(),
       ),
     );
+    gh.factory<_i355.CoinsBloc>(
+      () => coinsModule.coinsBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i840.GetCoinsStreamUseCase>(),
+        gh<_i878.GetGamesSettingsStreamUseCase>(),
+      ),
+    );
+    gh.factory<_i71.SagGameHomeBloc>(
+      () => sagGameHomeModule.sagGameHomeBlocFactory(gh<_i5.IRouter>()),
+    );
+    gh.factory<_i581.SettingsButtonBloc>(
+      () => settingsButtonModule.appBarBlocFactory(gh<_i5.IRouter>()),
+    );
+    gh.factory<_i366.NoAdsButtonBloc>(
+      () => noAdsButtonModule.appBarBlocFactory(gh<_i5.IRouter>()),
+    );
+    gh.factory<_i409.Widget>(
+      () => coinsModule.appBarWidgetFactory(gh<_i355.CoinsBloc>()),
+      instanceName: 'coinsWidget',
+    );
+    gh.factory<_i99.AppWrapperBloc>(
+      () => appWrapperModule.appWrapperBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i346.GetInternetAvailabilityStreamUseCase>(),
+      ),
+    );
     gh.factory<_i887.UpsertUserSAGGameUseCase>(
       () => sAGGameModule.upsertUserSAGGameUseCaseFactory(
         gh<_i128.AccountRepository>(),
         gh<_i664.SAGGameRepository>(),
+      ),
+    );
+    gh.factory<_i1011.SettingsBloc>(
+      () => settingsModule.appBarBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i878.GetGamesSettingsStreamUseCase>(),
+        gh<_i244.SetGamesSettingsUseCase>(),
+        gh<_i599.SignOutUseCase>(),
       ),
     );
     gh.factory<_i430.GetSAGGamesUseCase>(
@@ -386,85 +474,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i128.AccountRepository>(),
         gh<_i572.SAGGameFavoriteRepository>(),
       ),
-    );
-    await gh.singletonAsync<_i583.GoRouter>(
-      () => navModule.goRouterFactory(
-        gh<_i440.AuthRepository>(),
-        gh<_i583.GoRoute>(instanceName: 'signInRouteName'),
-        gh<_i583.ShellRoute>(instanceName: 'sagGamesHomeRouteName'),
-        gh<_i583.GoRoute>(instanceName: 'sagGameRouteName'),
-        gh<_i583.GoRoute>(instanceName: 'sagGameItemRouteName'),
-        gh<_i583.GoRoute>(instanceName: 'settingsRouteName'),
-      ),
-      preResolve: true,
-    );
-    gh.singleton<_i5.IRouter>(() => navModule.router(gh<_i583.GoRouter>()));
-    gh.factory<_i409.MaterialApp>(
-      () => appModule.crosswordBlockFactory(
-        gh<_i409.ThemeData>(),
-        gh<_i583.GoRouter>(),
-      ),
-    );
-    gh.factory<_i355.CoinsBloc>(
-      () => coinsModule.coinsBlocFactory(
-        gh<_i5.IRouter>(),
-        gh<_i840.GetCoinsStreamUseCase>(),
-        gh<_i878.GetGamesSettingsStreamUseCase>(),
-      ),
-    );
-    gh.factory<_i99.AppWrapperBloc>(
-      () => appWrapperModule.appWrapperBlocFactory(gh<_i5.IRouter>()),
-    );
-    gh.factory<_i71.SagGameHomeBloc>(
-      () => sagGameHomeModule.sagGameHomeBlocFactory(gh<_i5.IRouter>()),
-    );
-    gh.factory<_i581.SettingsButtonBloc>(
-      () => settingsButtonModule.appBarBlocFactory(gh<_i5.IRouter>()),
-    );
-    gh.factory<_i366.NoAdsButtonBloc>(
-      () => noAdsButtonModule.appBarBlocFactory(gh<_i5.IRouter>()),
-    );
-    gh.factory<_i409.Widget>(
-      () => coinsModule.appBarWidgetFactory(gh<_i355.CoinsBloc>()),
-      instanceName: 'coinsWidget',
-    );
-    gh.factoryParam<_i409.Widget, _i409.Widget, dynamic>(
-      (child, _) => appWrapperModule.appWrapperRouteWidgetFactory(
-        gh<_i99.AppWrapperBloc>(),
-        child,
-      ),
-      instanceName: 'appWrapperWidget',
-    );
-    gh.factory<_i1011.SettingsBloc>(
-      () => settingsModule.appBarBlocFactory(
-        gh<_i5.IRouter>(),
-        gh<_i878.GetGamesSettingsStreamUseCase>(),
-        gh<_i244.SetGamesSettingsUseCase>(),
-        gh<_i599.SignOutUseCase>(),
-      ),
-    );
-    gh.factory<_i24.SAGGamesBloc>(
-      () => sAGGamesModule.sagGamesBlocFactory(
-        gh<_i5.IRouter>(),
-        gh<_i430.GetSAGGamesUseCase>(),
-        gh<_i375.GetSAGGameFavoritesStreamUseCase>(),
-      ),
-    );
-    gh.factory<_i188.FavoriteButtonBloc>(
-      () => favoriteButtonModule.favoriteButtonBlocFactory(
-        gh<_i5.IRouter>(),
-        gh<_i660.UpsertSAGGameFavoriteUseCase>(),
-        gh<_i375.GetSAGGameFavoritesStreamUseCase>(),
-        gh<_i654.DeleteSAGGameFavoriteUseCase>(),
-      ),
-    );
-    gh.factoryParam<_i409.Widget, _i815.SAGGame, dynamic>(
-      (sagGame, _) =>
-          favoriteButtonModule.sagGameFavoriteButtonComponentFactory(
-            gh<_i188.FavoriteButtonBloc>(),
-            sagGame,
-          ),
-      instanceName: 'sagGameFavoriteButtonWidget',
     );
     gh.factory<_i374.SAGGameItemBloc>(
       () => scratchAndGuessModule.sagGameItemBlocFactory(
@@ -511,6 +520,13 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       instanceName: 'settingsButtonWidget',
     );
+    gh.factoryParam<_i409.Widget, _i409.Widget, dynamic>(
+      (child, _) => appWrapperModule.appWrapperRouteWidgetFactory(
+        gh<_i99.AppWrapperBloc>(),
+        child,
+      ),
+      instanceName: 'appWrapperWidget',
+    );
     gh.factory<_i409.Widget>(
       () => settingsModule.appBarWidgetFactory(
         gh<_i1011.SettingsBloc>(),
@@ -535,6 +551,21 @@ extension GetItInjectableX on _i174.GetIt {
       ),
       instanceName: 'sagGameRouteWidget',
     );
+    gh.factory<_i24.SAGGamesBloc>(
+      () => sAGGamesModule.sagGamesBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i430.GetSAGGamesUseCase>(),
+        gh<_i375.GetSAGGameFavoritesStreamUseCase>(),
+      ),
+    );
+    gh.factory<_i188.FavoriteButtonBloc>(
+      () => favoriteButtonModule.favoriteButtonBlocFactory(
+        gh<_i5.IRouter>(),
+        gh<_i660.UpsertSAGGameFavoriteUseCase>(),
+        gh<_i375.GetSAGGameFavoritesStreamUseCase>(),
+        gh<_i654.DeleteSAGGameFavoriteUseCase>(),
+      ),
+    );
     gh.factoryParam<_i409.Widget, _i815.SAGGameItem, dynamic>(
       (sagGameItem, _) => scratchAndGuessModule.sagGameItemRouteWidgetFactory(
         gh<_i374.SAGGameItemBloc>(),
@@ -543,6 +574,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i409.Widget>(instanceName: 'noAdsButtonWidget'),
       ),
       instanceName: 'sagGameItemRouteWidget',
+    );
+    gh.factoryParam<_i409.Widget, _i815.SAGGame, dynamic>(
+      (sagGame, _) =>
+          favoriteButtonModule.sagGameFavoriteButtonComponentFactory(
+            gh<_i188.FavoriteButtonBloc>(),
+            sagGame,
+          ),
+      instanceName: 'sagGameFavoriteButtonWidget',
     );
     gh.factoryParam<_i409.Widget, _i207.SAGGameSource, dynamic>(
       (sagGameSource, _) => sAGGamesModule.sagGamesRouteWidgetFactory(
@@ -576,16 +615,16 @@ class _$FavoriteButtonModule extends _i343.FavoriteButtonModule {}
 
 class _$CoinsModule extends _i233.CoinsModule {}
 
-class _$AppWrapperModule extends _i8.AppWrapperModule {}
-
 class _$SagGameHomeModule extends _i492.SagGameHomeModule {}
 
 class _$SettingsButtonModule extends _i659.SettingsButtonModule {}
 
 class _$NoAdsButtonModule extends _i496.NoAdsButtonModule {}
 
+class _$AppWrapperModule extends _i8.AppWrapperModule {}
+
 class _$SettingsModule extends _i52.SettingsModule {}
 
-class _$SAGGamesModule extends _i78.SAGGamesModule {}
-
 class _$ScratchAndGuessModule extends _i404.ScratchAndGuessModule {}
+
+class _$SAGGamesModule extends _i78.SAGGamesModule {}

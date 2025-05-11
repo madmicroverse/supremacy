@@ -1,2 +1,4 @@
 const fsSAGGamePath = 'sag_game';
-const fsSAGGameUniquePath = 'sag_game_unique';
+const fsSAGGameTopPath = 'sag_game_top';
+const fsSAGGameEventPath = 'sag_game_event';
+const fsSAGGameReplayPath = 'sag_game_replay';

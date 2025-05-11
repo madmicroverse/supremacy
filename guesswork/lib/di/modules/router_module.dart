@@ -20,6 +20,8 @@ const signInRouteName = "signInRouteName";
 const sagGamesHomeRouteName = "sagGamesHomeRouteName";
 
 const sagGamesMainRouteName = "sagGamesMainRouteName";
+const sagGamesTopRouteName = "sagGamesTopRouteName";
+const sagGamesEventRouteName = "sagGamesEventRouteName";
 const sagGamesReplyRouteName = "sagGamesReplyRouteName";
 const sagGamesFavoriteRouteName = "sagGamesFavoriteRouteName";
 const sagGameItemRouteName = "sagGameItemRouteName";
@@ -89,6 +91,8 @@ abstract class NavModule {
   ShellRoute sagGamesHomeRouteFactory(
     @Named(sagGamesFavoriteRouteName) GoRoute sagGamesFavoriteRoute,
     @Named(sagGamesMainRouteName) GoRoute sagGamesMainRoute,
+    @Named(sagGamesTopRouteName) GoRoute sagGamesTopRoute,
+    @Named(sagGamesEventRouteName) GoRoute sagGamesEventRoute,
     @Named(sagGamesReplyRouteName) GoRoute sagGamesReplyRoute,
   ) {
     return ShellRoute(
@@ -100,12 +104,17 @@ abstract class NavModule {
             param1: child,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Create your custom transition here
             return FadeTransition(opacity: animation, child: child);
           },
         );
       },
-      routes: [sagGamesFavoriteRoute, sagGamesReplyRoute, sagGamesMainRoute],
+      routes: [
+        sagGamesFavoriteRoute,
+        sagGamesReplyRoute,
+        sagGamesMainRoute,
+        sagGamesTopRoute,
+        sagGamesEventRoute,
+      ],
     );
   }
 
@@ -123,7 +132,6 @@ abstract class NavModule {
             param1: SAGGameSource.replay,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Create your custom transition here
             return FadeTransition(opacity: animation, child: child);
           },
         );
@@ -145,7 +153,6 @@ abstract class NavModule {
             param1: SAGGameSource.favorite,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Create your custom transition here
             return FadeTransition(opacity: animation, child: child);
           },
         );
@@ -167,7 +174,48 @@ abstract class NavModule {
             param1: SAGGameSource.main,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Create your custom transition here
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      },
+    );
+  }
+
+  @Injectable()
+  @Named(sagGamesTopRouteName)
+  GoRoute sagGamesTopRouteFactory() {
+    return GoRoute(
+      path: sagGamesTopRouteName.rootPath,
+      name: sagGamesTopRouteName,
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: GetIt.instance.get<Widget>(
+            instanceName: sagGamesRouteWidget,
+            param1: SAGGameSource.top,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      },
+    );
+  }
+
+  @Injectable()
+  @Named(sagGamesEventRouteName)
+  GoRoute sagGamesEventRouteFactory() {
+    return GoRoute(
+      path: sagGamesEventRouteName.rootPath,
+      name: sagGamesEventRouteName,
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: GetIt.instance.get<Widget>(
+            instanceName: sagGamesRouteWidget,
+            param1: SAGGameSource.event,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
         );
@@ -189,7 +237,6 @@ abstract class NavModule {
             param1: state.extra,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Create your custom transition here
             return FadeTransition(opacity: animation, child: child);
           },
         );
@@ -211,7 +258,6 @@ abstract class NavModule {
             param1: state.extra,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Create your custom transition here
             return FadeTransition(opacity: animation, child: child);
           },
         );
@@ -233,7 +279,6 @@ abstract class NavModule {
             param1: state.extra,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Create your custom transition here
             return FadeTransition(opacity: animation, child: child);
           },
         );

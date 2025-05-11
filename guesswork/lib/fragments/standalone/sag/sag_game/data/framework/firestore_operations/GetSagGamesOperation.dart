@@ -11,7 +11,7 @@ sealed class GetSagGamesOperationError extends BaseError {}
 
 class GetSagGamesOperationUnknownError extends GetSagGamesOperationError {}
 
-enum SAGGameSource { main, top, replay, favorite }
+enum SAGGameSource { main, top, replay, favorite, event }
 
 class GetSagGamesOperation {
   final FirebaseFirestore _db;
@@ -89,8 +89,9 @@ class GetSagGamesOperation {
       case SAGGameSource.main:
         return _db.collection(fsSAGGamePath);
       case SAGGameSource.top:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        return _db.collection(fsSAGGameTopPath);
+      case SAGGameSource.event:
+        return _db.collection(fsSAGGameEventPath);
       case SAGGameSource.favorite:
         return _db
             .collection(fsUserPath)
@@ -100,7 +101,7 @@ class GetSagGamesOperation {
         return _db
             .collection(fsUserPath)
             .doc(gameUserId)
-            .collection(fsSAGGameUniquePath);
+            .collection(fsSAGGameReplayPath);
     }
   }
 }

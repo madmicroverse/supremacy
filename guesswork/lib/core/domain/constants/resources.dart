@@ -21,7 +21,8 @@ enum AudioAsset {
 
 /// Enum representing audio assets with their corresponding paths
 enum ImageAsset {
-  googleSignIn('assets/images/google_sign_in.png');
+  googleSignIn('assets/images/google_sign_in.png'),
+  coins('assets/images/coins.webp');
 
   final String path;
 

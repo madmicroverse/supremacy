@@ -32,11 +32,9 @@ class SagGameHomeBloc extends Bloc<SagGameHomeBE, SagGameHomeBS> {
       case SAGGameHomeTab.main:
         _router.replaceNamed(sagGamesMainRouteName);
       case SAGGameHomeTab.top:
-        // TODO: Handle this case.
-        throw UnimplementedError();
-      case SAGGameHomeTab.other:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        _router.replaceNamed(sagGamesTopRouteName);
+      case SAGGameHomeTab.event:
+        _router.replaceNamed(sagGamesEventRouteName);
     }
     emit(state.withTab(event.tab));
   }

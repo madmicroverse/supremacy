@@ -2,6 +2,7 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guesswork/core/domain/constants/resources.dart';
 import 'package:guesswork/core/domain/extension/object_utils.dart';
 import 'package:guesswork/core/presentation/extension/animation_utils.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
@@ -23,8 +24,8 @@ class Coins extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CoinsBloc, CoinsBSC>(
       builder: (context, state) {
-        return InkWell(
-          onTap: () {},
+        return Visibility(
+          visible: state.isVisible,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
@@ -32,10 +33,10 @@ class Coins extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  Container(
+                  SizedBox(
                     height: kToolbarHeight - 20,
-                    child: Image.asset(
-                      'assets/images/coins.webp',
+                    child: Image(
+                      image: ImageAsset.coins.source,
                       fit: BoxFit.fitWidth,
                     ),
                   ),

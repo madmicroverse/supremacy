@@ -24,7 +24,7 @@ class UpsertUserSAGGameOperation {
 
   CollectionReference<Map<String, dynamic>> gamesUserSagGamesUniqueDoc(
     String userId,
-  ) => _db.collection(fsUserPath).doc(userId).collection(fsSAGGameUniquePath);
+  ) => _db.collection(fsUserPath).doc(userId).collection(fsSAGGameReplayPath);
 
   Future<Result<String, UpsertUserSAGGameOperationError>> call({
     required String gamesUserId,

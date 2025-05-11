@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:guesswork/fragments/components/favorite_button/presentation/bloc/favorite_button_bsc.dart';
+import 'package:guesswork/fragments/components/favorite_button/presentation/bloc/favorite_button_bs.dart';
 
 import '../bloc/favorite_button_be.dart';
 import '../bloc/favorite_button_bloc.dart';
@@ -18,10 +18,13 @@ class FavoriteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<FavoriteButtonBloc, FavoriteButtonBS>(
       builder: (context, state) {
-        return IconButton.filled(
-          onPressed: state.onPressed,
-          icon: Icon(
-            state.isFavoriteSafe ? Icons.favorite : Icons.favorite_border,
+        return Visibility(
+          visible: state.isVisible,
+          child: IconButton.filled(
+            onPressed: state.onPressed,
+            icon: Icon(
+              state.isFavoriteSafe ? Icons.favorite : Icons.favorite_border,
+            ),
           ),
         );
       },

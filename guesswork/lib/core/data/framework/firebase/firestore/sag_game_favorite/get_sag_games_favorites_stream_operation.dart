@@ -6,15 +6,18 @@ import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_favori
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
+sealed class GetSAGGameFavoritesStreamOperationError extends BaseError {}
+
+class GetSAGGameFavoritesStreamOperationDataAccessError
+    extends GetSAGGameFavoritesStreamOperationError {}
+
 class GetSAGGameFavoritesStreamOperation {
   final FirebaseFirestore _db;
 
   GetSAGGameFavoritesStreamOperation(this._db);
 
-  Future<Result<Stream<List<SAGGame>>, BaseError>> call({
-    required String gamesUserId,
-    List<QueryFilter>? filters,
-  }) async {
+  Future<Result<Stream<List<SAGGame>>, GetSAGGameFavoritesStreamOperationError>>
+  call({required String gamesUserId, List<QueryFilter>? filters}) async {
     try {
       Query<Map<String, dynamic>> query = _db
           .collection(fsUserPath)
@@ -47,7 +50,7 @@ class GetSAGGameFavoritesStreamOperation {
         }),
       );
     } catch (error) {
-      return Error(UnexpectedErrorError(error.toString()));
+      return Error(GetSAGGameFavoritesStreamOperationDataAccessError());
     }
   }
 }

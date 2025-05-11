@@ -4,12 +4,17 @@ import 'package:guesswork/core/data/framework/firebase/firestore/sag_game_favori
 import 'package:guesswork/core/domain/entity/result.dart';
 import 'package:guesswork/core/domain/entity/sag_game/sag_game.dart';
 
+sealed class UpsertSAGGameFavoriteOperationError extends BaseError {}
+
+class UpsertSAGGameFavoriteOperationDataAccessError
+    extends UpsertSAGGameFavoriteOperationError {}
+
 class UpsertSAGGameFavoriteOperation {
   final FirebaseFirestore _db;
 
   UpsertSAGGameFavoriteOperation(this._db);
 
-  Future<Result<void, BaseError>> call(
+  Future<Result<void, UpsertSAGGameFavoriteOperationError>> call(
     String gamesUserId,
     SAGGame sagGameFavorite,
   ) async {
@@ -27,7 +32,7 @@ class UpsertSAGGameFavoriteOperation {
       }
       return Success(null);
     } catch (error) {
-      return Error(UnexpectedErrorError(error.toString()));
+      return Error(UpsertSAGGameFavoriteOperationDataAccessError());
     }
   }
 }

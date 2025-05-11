@@ -7,7 +7,7 @@ enum SAGGameHomeTab {
   replay(1),
   main(2),
   top(3),
-  other(4);
+  event(4);
 
   final int i;
 

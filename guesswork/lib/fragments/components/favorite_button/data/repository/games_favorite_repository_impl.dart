@@ -24,16 +24,20 @@ class GamesFavoriteRepositoryImpl extends SAGGameFavoriteRepository {
   );
 
   @override
-  Future<Result<Stream<List<SAGGame>>, BaseError>> getSAGGameFavoritesStream(
-    String gamesUserId,
-  ) async {
+  Future<
+    Result<
+      Stream<List<SAGGame>>,
+      SAGGameFavoriteRepositoryGetSAGGameFavoritesStreamError
+    >
+  >
+  getSAGGameFavoritesStream(String gamesUserId) async {
     if (_gamesFavoritesStream == null) {
-      final streamResult = await _getSAGGameFavoritesStreamOperation(
+      final result = await _getSAGGameFavoritesStreamOperation(
         gamesUserId: gamesUserId,
       );
-      switch (streamResult) {
+      switch (result) {
         case Success():
-          _gamesFavoritesStream = streamResult.data;
+          _gamesFavoritesStream = result.data;
           _gamesFavoritesStream!.listen(
             (favorites) {
               _gamesFavoritesBehaviorSubject.add(favorites);
@@ -43,21 +47,58 @@ class GamesFavoriteRepositoryImpl extends SAGGameFavoriteRepository {
             },
           );
         case Error():
-          return Error(streamResult.error);
+          final error = result.error;
+          switch (error) {
+            case GetSAGGameFavoritesStreamOperationDataAccessError():
+              return Error(
+                SAGGameFavoriteRepositoryGetSAGGameFavoritesStreamDataAccessError(),
+              );
+          }
       }
     }
     return Success(_gamesFavoritesBehaviorSubject.stream);
   }
 
   @override
-  Future<Result<void, BaseError>> upsertSAGGameFavorite(
-    String gamesUserId,
-    SAGGame sagGameFavorite,
-  ) => _upsertSAGGameFavoriteOperation(gamesUserId, sagGameFavorite);
+  Future<Result<void, SAGGameFavoriteRepositoryUpsertSAGGameFavoriteError>>
+  upsertSAGGameFavorite(String gamesUserId, SAGGame sagGameFavorite) async {
+    final result = await _upsertSAGGameFavoriteOperation(
+      gamesUserId,
+      sagGameFavorite,
+    );
+    switch (result) {
+      case Success():
+        return Success(result.data);
+      case Error():
+        final error = result.error;
+        switch (error) {
+          case UpsertSAGGameFavoriteOperationDataAccessError():
+            return Error(
+              SAGGameFavoriteRepositoryUpsertSAGGameFavoriteDataAccessError(),
+            );
+        }
+    }
+  }
 
   @override
-  Future<Result<void, BaseError>> deleteSAGGameFavorite(
-    String gamesUserId,
-    String sagGameFavoriteId,
-  ) => _deleteSAGGameFavoriteOperation(gamesUserId, sagGameFavoriteId);
+  Future<Result<void, SAGGameFavoriteRepositoryDeleteSAGGameFavoriteError>>
+  deleteSAGGameFavorite(String gamesUserId, String sagGameFavoriteId) async {
+    final result = await _deleteSAGGameFavoriteOperation(
+      gamesUserId,
+      sagGameFavoriteId,
+    );
+
+    switch (result) {
+      case Success():
+        return Success(result.data);
+      case Error():
+        final error = result.error;
+        switch (error) {
+          case DeleteSAGGameFavoriteOperationDataAccessError():
+            return Error(
+              SAGGameFavoriteRepositoryDeleteSAGGameFavoriteDataAccessError(),
+            );
+        }
+    }
+  }
 }

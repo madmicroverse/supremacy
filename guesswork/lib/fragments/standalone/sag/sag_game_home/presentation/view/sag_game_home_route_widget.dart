@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guesswork/core/presentation/extension/context_colors.dart';
+import 'package:guesswork/core/presentation/extension/localozations.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_home/presentation/bloc/sag_game_home_be.dart';
 import 'package:guesswork/fragments/standalone/sag/sag_game_home/presentation/bloc/sag_game_home_bs.dart';
 
@@ -35,20 +36,26 @@ class SagGameHomeRouteWidget extends StatelessWidget {
                 (index) => context.addEvent(
                   SelectTabBE(SAGGameHomeTab.fromInt(index)),
                 ),
-            items: const <BottomNavigationBarItem>[
+            items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.favorite),
-                label: 'Favorites',
+                label: context.loc.sag_home_menu_favorites,
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.replay),
-                label: 'Replay',
+                label: context.loc.sag_home_menu_replay,
               ),
-              BottomNavigationBarItem(icon: Icon(Icons.games), label: 'Games'),
-              BottomNavigationBarItem(icon: Icon(Icons.diamond), label: 'Best'),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: 'Settings',
+                icon: Icon(Icons.games),
+                label: context.loc.sag_home_menu_all,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.star),
+                label: context.loc.sag_home_menu_top,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.hourglass_top_outlined),
+                label: context.loc.sag_home_menu_event,
               ),
             ],
           ),
